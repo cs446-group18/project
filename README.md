@@ -1,6 +1,6 @@
 # CS 446 – Group 18 Project
 
-DelayWise is a flight delay prediction & monitoring tool for passengers and airport staff.
+DelayWise is a flight delay prediction & monitoring Android app for passengers and airport staff.
 
 ## Team
 
