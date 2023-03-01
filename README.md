@@ -1,4 +1,4 @@
-# CS 446 – group 18 project
+# CS 446 – Group 18 Project
 
 Nothing's here yet...
 
