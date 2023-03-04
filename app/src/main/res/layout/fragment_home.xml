@@ -8,13 +8,14 @@
     tools:context=".ui.home.HomeFragment">
 
     <LinearLayout
-        android:id="@+id/linearLayout"
+        android:id="@+id/headerLayout"
         android:layout_width="0dp"
-        android:layout_height="150px"
+        android:layout_height="300px"
         android:gravity="center"
         android:orientation="horizontal"
-        android:paddingVertical="40px"
+        android:paddingVertical="30px"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -24,5 +25,50 @@
             android:layout_height="wrap_content"
             android:src="@drawable/__plane_icon" />
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/textLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="84dp"
+        android:orientation="vertical"
+        android:paddingVertical="40px"
+        android:paddingHorizontal="100px"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/delayWise"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:fontFamily="@font/montserrat_extrabold"
+            android:src="@drawable/__plane_icon"
+            android:text="Welcome to"
+            android:textColor="@color/black"
+            android:textSize="28sp" />
+
+        <TextView
+            android:id="@+id/welcome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_extrabold"
+            android:text="DelayWise!"
+            android:textColor="@color/black"
+            android:textSize="45sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/search_instructions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_variablefont_wght"
+            android:text="Enter a flight number, airline, or airport:"
+            android:textSize="18sp"
+            android:textFontWeight="800"
+            android:paddingTop="30px"/>
+    </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
