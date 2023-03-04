@@ -12,14 +12,14 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.cs446group18.delaywise.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:id="@+id/nav_flightinfo"
+        android:name="com.cs446group18.delaywise.ui.flightinfo.FlightInfoFragment"
+        android:label="@string/menu_flightinfo"
+        tools:layout="@layout/fragment_flightinfo" />
 
     <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="com.cs446group18.delaywise.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:id="@+id/nav_savedflights"
+        android:name="com.cs446group18.delaywise.ui.savedflights.SavedFlightsFragment"
+        android:label="@string/menu_savedflights"
+        tools:layout="@layout/fragment_flightinfo" />
 </navigation>
