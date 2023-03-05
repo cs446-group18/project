@@ -28,7 +28,7 @@
 
     <LinearLayout
         android:id="@+id/textLayout"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="84dp"
         android:orientation="vertical"
@@ -64,10 +64,25 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat_variablefont_wght"
-            android:text="Enter a flight number, airline, or airport:"
+            android:text="Enter a flight number/airline/airport:"
             android:textSize="18sp"
-            android:textFontWeight="800"
+            android:textFontWeight="900"
             android:paddingTop="30px"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/searchBox"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="268dp"
+        android:orientation="vertical"
+        android:paddingHorizontal="100px"
+        android:paddingVertical="40px"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
     </LinearLayout>
 
 

@@ -2,6 +2,7 @@ package com.cs446group18.delaywise
 
 import android.os.Bundle
 import android.view.Menu
+import android.widget.Button
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -16,6 +17,15 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+
+    fun myFunc() {
+        println("myFunc called!")
+    }
+
+    override fun onSearchRequested(): Boolean {
+        println("onSearchRequested called!")
+        return super.onSearchRequested();
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +44,12 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_home, R.id.nav_flightinfo, R.id.nav_savedflights), drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        val button = findViewById<Button>(R.id.content_main_button)
+        button.setOnClickListener {
+            println("click!")
+            onSearchRequested()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
