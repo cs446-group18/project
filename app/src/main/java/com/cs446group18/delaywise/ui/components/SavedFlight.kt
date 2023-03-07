@@ -116,7 +116,7 @@ fun SavedFlight() {
                         modifier = Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.CenterEnd
                     ) {
-                        Icon(Icons.Sharp.NavigateNext, contentDescription = null)
+                        Icon(Icons.Sharp.NavigateNext, contentDescription = null, modifier = Modifier.size(19.dp), tint = Color.LightGray)
                     }
                 }
                 Text(modifier = Modifier.padding(), text = buildAnnotatedString {
