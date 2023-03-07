@@ -43,10 +43,13 @@ fun ListItem(item: ListItem, onSearchInputChange: (String) -> Unit) {
         }
     }
 }
-
+val mockData = listOf(ListItem("AC8838"), ListItem("AC8839"), ListItem("AF4031"), ListItem("DL4980"))
 suspend fun mockApi(searchText: String): List<ListItem> {
     delay(500L) // synthetic delay
-    return listOf(ListItem("AC8838"), ListItem("AC8839"), ListItem("AF4031"), ListItem("DL4980"))
+
+    return mockData.filter{
+        (listItem) -> listItem.contains(searchText)
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
