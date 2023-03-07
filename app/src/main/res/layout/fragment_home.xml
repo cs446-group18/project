@@ -30,17 +30,17 @@
         android:id="@+id/textLayout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="100dp"
         android:orientation="vertical"
         android:paddingHorizontal="100px"
-        android:paddingTop="80px"
+        android:paddingTop="40px"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/delayWise"
+            android:id="@+id/welcome"
             android:layout_width="wrap_content"
             android:layout_height="35dp"
             android:fontFamily="@font/montserrat_extrabold"
@@ -50,7 +50,7 @@
             android:textSize="28sp" />
 
         <TextView
-            android:id="@+id/welcome"
+            android:id="@+id/delayWise"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat_extrabold"
@@ -73,10 +73,10 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="235dp"
+        android:layout_marginTop="260dp"
         android:orientation="vertical"
         android:paddingHorizontal="100px"
-        android:paddingVertical="25px"
+        android:paddingVertical="42px"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -86,6 +86,34 @@
             android:id="@+id/searchBox"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/saved_flights_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="475dp"
+        android:orientation="vertical"
+        android:paddingHorizontal="100px"
+        android:paddingTop="40px"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/saved_flights_heading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_extrabold"
+            android:text="Saved Flights"
+            android:textColor="@color/black"
+            android:textSize="28sp">
+        </TextView>
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/scrollableMenu"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
     </LinearLayout>
 
 

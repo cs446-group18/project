@@ -9,6 +9,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -43,41 +45,53 @@ fun ListItem(item: ListItem, onSearchInputChange: (String) -> Unit) {
         }
     }
 }
-
-suspend fun mockApi(searchText: String): List<ListItem> {
+val mockData = listOf(ListItem("AC8838"), ListItem("AC8839"), ListItem("AF4031"), ListItem("DL4980"))
+suspend fun mockApi(searchText: TextFieldValue): List<ListItem> {
     delay(500L) // synthetic delay
-    return listOf(ListItem("AC8838"), ListItem("AC8839"), ListItem("AF4031"), ListItem("DL4980"))
+
+    return mockData.filter{
+        (listItem) -> listItem.lowercase().contains(searchText.text.lowercase())
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBox() {
-    var searchInput by remember {
-        mutableStateOf("")
+    var textFieldValueState by remember{
+        mutableStateOf(
+            TextFieldValue(
+                text = ""
+            )
+        )
     }
+
     var searchResults by remember {
         mutableStateOf(listOf<ListItem>())
     }
     val scope = rememberCoroutineScope()
 
     Column {
-        TextField(
-            value = searchInput,
-            shape = RoundedCornerShape(8.dp),
-            colors = TextFieldDefaults.textFieldColors(
-                focusedIndicatorColor = Color(R.color.main_blue).copy(
-                    alpha = 1F
-                )
-            ),
-            onValueChange = {
-                searchInput = it
-                scope.launch {
-                    searchResults = mockApi(it)
-                }
-            },
-            placeholder = { Text("ex. AA5555") },
-            modifier = Modifier.fillMaxWidth()
-        )
+        Card(
+            elevation = CardDefaults.cardElevation(15.dp)
+        ) {
+            TextField(
+                value = textFieldValueState,
+                shape = RoundedCornerShape(8.dp),
+                colors = TextFieldDefaults.textFieldColors(
+                    focusedIndicatorColor = Color(R.color.main_blue).copy(
+                        alpha = 1F
+                    )
+                ),
+                onValueChange = {
+                    textFieldValueState = it
+                    scope.launch {
+                        searchResults = mockApi(it)
+                    }
+                },
+                placeholder = { Text("ex. AA5555") },
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
@@ -85,7 +99,10 @@ fun SearchBox() {
         ) {
             items(searchResults) { item ->
                 ListItem(item, onSearchInputChange = {
-                    searchInput = it
+                    textFieldValueState = TextFieldValue(
+                        text = it,
+                        selection = TextRange(it.length)
+                    )
                 })
             }
         }
