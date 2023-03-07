@@ -4,8 +4,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.sharp.NavigateNext
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -63,7 +66,10 @@ fun SavedFlight() {
                             append("LH 1810")
                         }
                     })
-                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
                         Text(buildAnnotatedString {
                             withStyle(
                                 style = SpanStyle(
@@ -106,6 +112,12 @@ fun SavedFlight() {
                             append("BCN (Barcelona)")
                         }
                     })
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        Icon(Icons.Sharp.NavigateNext, contentDescription = null)
+                    }
                 }
                 Text(modifier = Modifier.padding(), text = buildAnnotatedString {
                     withStyle(
@@ -119,14 +131,6 @@ fun SavedFlight() {
             }
         }
     }
-//        ExtendedFloatingActionButton(
-//            icon = {Icon(painterResource(id = R.drawable.__plane_icon_white), null)},
-//            text = { Text("FloatingActionButton") },
-//            onClick = { /*do something*/ },
-//            elevation = FloatingActionButtonDefaults.elevation(8.dp),
-//            containerColor = Color.White,
-//            shape = RectangleShape,
-//        )
 }
 
 @Preview
