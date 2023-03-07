@@ -7,6 +7,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.cs446group18.delaywise.databinding.FragmentHomeBinding
+import com.cs446group18.delaywise.ui.components.DelayType
+import com.cs446group18.delaywise.ui.components.SavedFlightCard
+import com.cs446group18.delaywise.ui.components.ScrollableMenu
 import com.cs446group18.delaywise.ui.components.SearchBox
 
 class HomeFragment : Fragment() {
@@ -30,6 +33,13 @@ class HomeFragment : Fragment() {
 
         binding.searchBox.setContent {
             SearchBox()
+        }
+
+        binding.scrollableMenu.setContent{
+            ScrollableMenu(listOf(
+                    SavedFlightCard("LH1810", "Likely 1h Delay", DelayType.LIKELY, "MUC(Munich)", "BCN(Barcelona)", "Mon 21 March, 2022")
+                )
+            )
         }
 
         homeViewModel.text.observe(viewLifecycleOwner) {}

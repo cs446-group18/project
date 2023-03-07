@@ -12,7 +12,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.cs446group18.delaywise.R
@@ -72,23 +71,27 @@ fun SearchBox() {
     val scope = rememberCoroutineScope()
 
     Column {
-        TextField(
-            value = textFieldValueState,
-            shape = RoundedCornerShape(8.dp),
-            colors = TextFieldDefaults.textFieldColors(
-                focusedIndicatorColor = Color(R.color.main_blue).copy(
-                    alpha = 1F
-                )
-            ),
-            onValueChange = {
-                textFieldValueState = it
-                scope.launch {
-                    searchResults = mockApi(it)
-                }
-            },
-            placeholder = { Text("ex. AA5555") },
-            modifier = Modifier.fillMaxWidth()
-        )
+        Card(
+            elevation = CardDefaults.cardElevation(15.dp)
+        ) {
+            TextField(
+                value = textFieldValueState,
+                shape = RoundedCornerShape(8.dp),
+                colors = TextFieldDefaults.textFieldColors(
+                    focusedIndicatorColor = Color(R.color.main_blue).copy(
+                        alpha = 1F
+                    )
+                ),
+                onValueChange = {
+                    textFieldValueState = it
+                    scope.launch {
+                        searchResults = mockApi(it)
+                    }
+                },
+                placeholder = { Text("ex. AA5555") },
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()

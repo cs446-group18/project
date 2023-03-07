@@ -24,8 +24,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cs446group18.delaywise.R
 
+
+enum class DelayType {
+    DELAYED, LIKELY, ONTIME
+}
+
+val delayTypeColor: Map<DelayType, Color> = mapOf(
+    DelayType.DELAYED to Color(0xffBF0000),
+    DelayType.LIKELY to Color(0xffFF9900),
+    DelayType.ONTIME to Color(0xff00BF1F)
+)
+
+
+
+//fontWeight = FontWeight.W500,
+//color = Color(0xffFF9900),
+//fontSize = 12.sp
 @Composable
-fun SavedFlight() {
+fun SavedFlightCard(flightNumber: String, delayText: String, delayType: DelayType, departAirport: String, arrivalAirport: String, dateDepart: String) {
     Card(
         elevation = CardDefaults.cardElevation(15.dp),
         shape = RoundedCornerShape(size = 12.dp),
@@ -63,7 +79,7 @@ fun SavedFlight() {
                                 color = Color.Black,
                             )
                         ) {
-                            append("LH 1810")
+                            append(flightNumber)
                         }
                     })
                     Box(
@@ -73,11 +89,12 @@ fun SavedFlight() {
                         Text(buildAnnotatedString {
                             withStyle(
                                 style = SpanStyle(
-                                    fontWeight = FontWeight.W500, color = Color(0xffFF9900),
+                                    fontWeight = FontWeight.W500,
+                                    color = delayTypeColor[delayType] ?: Color.Black,
                                     fontSize = 12.sp
                                 )
                             ) {
-                                append("Likely 1h Delay")
+                                append(delayText)
                             }
                         })
                     }
@@ -92,7 +109,7 @@ fun SavedFlight() {
                                 color = Color.Gray
                             )
                         ) {
-                            append("MUC (Munich)")
+                            append(departAirport)
                         }
                     })
                     Image(
@@ -109,7 +126,7 @@ fun SavedFlight() {
                                 color = Color.Gray
                             )
                         ) {
-                            append("BCN (Barcelona)")
+                            append(arrivalAirport)
                         }
                     })
                     Box(
@@ -125,7 +142,7 @@ fun SavedFlight() {
                             color = Color.LightGray
                         )
                     ) {
-                        append("Mon 21 March, 2022")
+                        append(dateDepart)
                     }
                 })
             }
@@ -135,4 +152,4 @@ fun SavedFlight() {
 
 @Preview
 @Composable
-fun PreviewSavedFlight() = SavedFlight()
+fun PreviewSavedFlight() = SavedFlightCard("LH1810", "Likely 1h Delay", DelayType.LIKELY, "MUC(Munich)", "BCN(Barcelona)", "Mon 21 March, 2022")
