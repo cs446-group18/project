@@ -9,7 +9,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.cs446group18.delaywise.R
@@ -44,20 +47,25 @@ fun ListItem(item: ListItem, onSearchInputChange: (String) -> Unit) {
     }
 }
 val mockData = listOf(ListItem("AC8838"), ListItem("AC8839"), ListItem("AF4031"), ListItem("DL4980"))
-suspend fun mockApi(searchText: String): List<ListItem> {
+suspend fun mockApi(searchText: TextFieldValue): List<ListItem> {
     delay(500L) // synthetic delay
 
     return mockData.filter{
-        (listItem) -> listItem.contains(searchText)
+        (listItem) -> listItem.lowercase().contains(searchText.text.lowercase())
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBox() {
-    var searchInput by remember {
-        mutableStateOf("")
+    var textFieldValueState by remember{
+        mutableStateOf(
+            TextFieldValue(
+                text = ""
+            )
+        )
     }
+
     var searchResults by remember {
         mutableStateOf(listOf<ListItem>())
     }
@@ -65,7 +73,7 @@ fun SearchBox() {
 
     Column {
         TextField(
-            value = searchInput,
+            value = textFieldValueState,
             shape = RoundedCornerShape(8.dp),
             colors = TextFieldDefaults.textFieldColors(
                 focusedIndicatorColor = Color(R.color.main_blue).copy(
@@ -73,7 +81,7 @@ fun SearchBox() {
                 )
             ),
             onValueChange = {
-                searchInput = it
+                textFieldValueState = it
                 scope.launch {
                     searchResults = mockApi(it)
                 }
@@ -88,7 +96,10 @@ fun SearchBox() {
         ) {
             items(searchResults) { item ->
                 ListItem(item, onSearchInputChange = {
-                    searchInput = it
+                    textFieldValueState = TextFieldValue(
+                        text = it,
+                        selection = TextRange(it.length)
+                    )
                 })
             }
         }
