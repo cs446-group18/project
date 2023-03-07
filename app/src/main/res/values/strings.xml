@@ -10,4 +10,6 @@
     <string name="menu_home">Home</string>
     <string name="menu_flightinfo">Flight Info</string>
     <string name="menu_savedflights">Saved Flights</string>
+    <string name="app_label">Home Search Bar</string>
+    <string name="search_hint">ex. AA5555</string>
 </resources>
