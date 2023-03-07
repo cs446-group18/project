@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,11 +24,12 @@ import com.cs446group18.delaywise.R
 @Composable
 fun SavedFlight() {
     Card(
-        elevation = CardDefaults.cardElevation(10.dp),
+        elevation = CardDefaults.cardElevation(15.dp),
         shape = RoundedCornerShape(size = 12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(15.dp)
+            .padding(10.dp)
             .clickable { },
     ) {
         Row(
@@ -38,7 +40,7 @@ fun SavedFlight() {
             Column(
                 modifier = Modifier.padding(15.dp)
             ) {
-                Image(painterResource(R.drawable.__plane_icon_white), null)
+                Image(modifier = Modifier.size(40.dp), painter = painterResource(R.drawable.__plane_icon), contentDescription = null)
             }
             Column(
                 modifier = Modifier.padding(15.dp)
@@ -55,20 +57,52 @@ fun SavedFlight() {
                         }
                     }
                 )
-                Row(            modifier = Modifier.padding(all = 5.dp),
+                Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center) {
                     Text(
-                        buildAnnotatedString {
-                            append("MUC")
+                        modifier = Modifier.padding(end = 5.dp),
+                        text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    color = Color.Gray
+                                )
+                            ) {
+                                append("MUC (Munich)")
+                            }
                         }
                     )
                     Image(
-                        modifier = Modifier.size(12.dp),
-                        painter = painterResource(id = R.drawable.__plane_icon_white),
+                        modifier = Modifier.size(20.dp).padding(end = 5.dp),
+                        painter = painterResource(id = R.drawable.__plane_icon),
                         contentDescription = null
                     )
+
+                    Text(
+                        modifier = Modifier.padding(end = 5.dp),
+                        text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    color = Color.Gray
+                                )
+                            ) {
+                                append("BCN (Barcelona)")
+                            }
+                        }
+                    )
                 }
+                Text(
+                    modifier = Modifier.padding(),
+                    text = buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                color = Color.LightGray
+                            )
+                        ) {
+                            append("Mon 21 March, 2022")
+                        }
+                    }
+                )
             }
         }
     }
