@@ -6,16 +6,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.*
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cs446group18.delaywise.R
-import com.cs446group18.delaywise.ui.components.BottomBar
-import com.cs446group18.delaywise.ui.components.SavedFlight
-import com.cs446group18.delaywise.ui.components.SearchBox
-import com.cs446group18.delaywise.ui.components.TopBar
+import com.cs446group18.delaywise.ui.components.*
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 
 private val appFontFamily = FontFamily(
     fonts = listOf(
@@ -53,14 +52,22 @@ fun HomeView(
             Text("Enter a flight number airline, or airport:")
             SearchBox()
             Spacer(modifier = Modifier.height(20.dp))
-            Column {
-                SavedFlight()
-                SavedFlight()
-            }
+            ScrollableMenu(
+                listOf(
+                    SavedFlightCard(
+                        "LH1810",
+                        "Likely 1h Delay",
+                        DelayType.LIKELY,
+                        "MUC(Munich)",
+                        "BCN(Barcelona)",
+                        "Mon 21 March, 2022"
+                    )
+                )
+            )
         }
     }
 }
-//
-//@Preview
-//@Composable
-//fun Preview() = HomeView(EmptyDestinationsNavigator)
+
+@Preview
+@Composable
+fun Preview() = HomeView(EmptyDestinationsNavigator)
