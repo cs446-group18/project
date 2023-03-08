@@ -36,13 +36,13 @@ fun BottomBar(
             color = Color(0xCCF6F7FA),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(80.dp, 30.dp)
+                .padding(40.dp, 30.dp)
                 .height(40.dp)
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(25.dp, 0.dp)
+                modifier = Modifier.padding(45.dp, 0.dp)
             ) {
 
                 IconButton(onClick = {
