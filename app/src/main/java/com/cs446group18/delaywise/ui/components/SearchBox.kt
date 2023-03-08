@@ -1,5 +1,6 @@
 package com.cs446group18.delaywise.ui.components
 
+import android.util.Log
 import android.view.MotionEvent
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -13,7 +14,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.*
 import androidx.compose.foundation.gestures.*
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
@@ -75,26 +80,11 @@ fun SearchBox() {
     }
     val scope = rememberCoroutineScope()
 
-    var isExpanded by remember { mutableStateOf(false) }
+    var showDropDown by remember {
+        mutableStateOf(false)
+    }
 
-    Column (Modifier
-//        .pointerInput(Unit) {
-//            // Handle the pointer events
-//            awaitPointerEventScope {
-//                val event = awaitPointerEvent()
-//                if (event.changes.any {it.changedToUp()}) {
-//                    if (!isExpanded) {
-//                        if (!event.changes.any { it.id == pointerId && it.position in bounds }) {
-//                            isExpanded = true
-//                        }
-//                    }
-//                }
-//                else {
-//                    isExpanded = true
-//                }
-//            }
-//        }
-    ) {
+    Column {
         TextField(
             value = textFieldValueState,
             shape = RoundedCornerShape(8.dp),
@@ -111,21 +101,27 @@ fun SearchBox() {
                 }
             },
             placeholder = { Text("ex. AA5555") },
-            modifier = Modifier.fillMaxWidth(),
-        )
-        LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(max = 220.dp)
-                .clip(shape = RoundedCornerShape(8.dp))
-        ) {
-            items(searchResults) { item ->
-                ListItem(item, onSearchInputChange = {
-                    textFieldValueState = TextFieldValue(
-                        text = it,
-                        selection = TextRange(it.length)
-                    )
-                })
+                .onFocusChanged {
+                    showDropDown = it.isFocused
+                }
+        )
+        if (showDropDown) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 220.dp)
+                    .clip(shape = RoundedCornerShape(8.dp))
+            ) {
+                items(searchResults) { item ->
+                    ListItem(item, onSearchInputChange = {
+                        textFieldValueState = TextFieldValue(
+                            text = it,
+                            selection = TextRange(it.length)
+                        )
+                    })
+                }
             }
         }
     }
