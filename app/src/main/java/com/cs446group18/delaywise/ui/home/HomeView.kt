@@ -7,6 +7,9 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.paint
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.*
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -53,6 +56,10 @@ fun HomeView(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .paint(
+                    painter = painterResource(id = R.drawable.homepage_bg),
+                    contentScale = ContentScale.FillHeight,
+                )
                 .padding(contentPadding)
                 .padding(30.dp)
         ) {

@@ -4,16 +4,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Flight
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import com.cs446group18.delaywise.ui.destinations.HomeViewDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 fun TopBar(navigator: DestinationsNavigator) {
     val scope = rememberCoroutineScope()
     CenterAlignedTopAppBar(
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(Color(0x00000000)),
         title = {
             IconButton(onClick = {
                 scope.launch {
@@ -55,3 +56,7 @@ fun TopBar(navigator: DestinationsNavigator) {
         }
     )
 }
+
+@Preview
+@Composable
+fun TopBarPreview() = TopBar(EmptyDestinationsNavigator)
