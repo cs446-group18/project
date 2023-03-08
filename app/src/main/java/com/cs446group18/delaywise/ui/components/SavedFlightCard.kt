@@ -23,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cs446group18.delaywise.R
+import com.cs446group18.delaywise.ui.home.HomeViewModel
 
 
 enum class DelayType {
@@ -35,21 +36,15 @@ val delayTypeColor: Map<DelayType, Color> = mapOf(
     DelayType.ONTIME to Color(0xff00BF1F)
 )
 
-
-
-//fontWeight = FontWeight.W500,
-//color = Color(0xffFF9900),
-//fontSize = 12.sp
 @Composable
-fun SavedFlightCard(flightNumber: String, delayText: String, delayType: DelayType, departAirport: String, arrivalAirport: String, dateDepart: String) {
+fun SavedFlightCard(flightData: HomeViewModel.Flight) {
     Card(
         elevation = CardDefaults.cardElevation(15.dp),
         shape = RoundedCornerShape(size = 12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.85F)),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(10.dp)
-            .clickable { },
+            .clickable { }
     ) {
         Row(
             modifier = Modifier.padding(all = 5.dp),
@@ -57,7 +52,7 @@ fun SavedFlightCard(flightNumber: String, delayText: String, delayType: DelayTyp
             horizontalArrangement = Arrangement.Center
         ) {
             Column(
-                modifier = Modifier.padding(15.dp)
+                modifier = Modifier.padding(all = 10.dp)
             ) {
                 Image(
                     modifier = Modifier.size(40.dp),
@@ -79,7 +74,7 @@ fun SavedFlightCard(flightNumber: String, delayText: String, delayType: DelayTyp
                                 color = Color.Black,
                             )
                         ) {
-                            append(flightNumber)
+                            append(flightData.flightNumber)
                         }
                     })
                     Box(
@@ -90,11 +85,11 @@ fun SavedFlightCard(flightNumber: String, delayText: String, delayType: DelayTyp
                             withStyle(
                                 style = SpanStyle(
                                     fontWeight = FontWeight.W500,
-                                    color = delayTypeColor[delayType] ?: Color.Black,
+                                    color = delayTypeColor[flightData.delayType] ?: Color.Black,
                                     fontSize = 12.sp
                                 )
                             ) {
-                                append(delayText)
+                                append(flightData.delayText)
                             }
                         })
                     }
@@ -109,13 +104,13 @@ fun SavedFlightCard(flightNumber: String, delayText: String, delayType: DelayTyp
                                 color = Color.Gray
                             )
                         ) {
-                            append(departAirport)
+                            append(flightData.departAirport)
                         }
                     })
                     Image(
                         modifier = Modifier
-                            .size(20.dp)
-                            .padding(end = 5.dp),
+                            .size(15.dp)
+                            .padding(end = 2.dp),
                         painter = painterResource(id = R.drawable.__plane_icon),
                         contentDescription = null
                     )
@@ -126,23 +121,23 @@ fun SavedFlightCard(flightNumber: String, delayText: String, delayType: DelayTyp
                                 color = Color.Gray
                             )
                         ) {
-                            append(arrivalAirport)
+                            append(flightData.arrivalAirport)
                         }
                     })
                     Box(
                         modifier = Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.CenterEnd
                     ) {
-                        Icon(Icons.Sharp.NavigateNext, contentDescription = null, modifier = Modifier.size(19.dp), tint = Color.LightGray)
+                        Icon(Icons.Sharp.NavigateNext, contentDescription = null, modifier = Modifier.size(35.dp), tint = Color.LightGray)
                     }
                 }
                 Text(modifier = Modifier.padding(), text = buildAnnotatedString {
                     withStyle(
                         style = SpanStyle(
-                            color = Color.LightGray
+                            color = Color.DarkGray
                         )
                     ) {
-                        append(dateDepart)
+                        append(flightData.dateDepart)
                     }
                 })
             }
@@ -152,4 +147,4 @@ fun SavedFlightCard(flightNumber: String, delayText: String, delayType: DelayTyp
 
 @Preview
 @Composable
-fun PreviewSavedFlight() = SavedFlightCard("LH1810", "Likely 1h Delay", DelayType.LIKELY, "MUC(Munich)", "BCN(Barcelona)", "Mon 21 March, 2022")
+fun PreviewSavedFlight() = SavedFlightCard(flightData = HomeViewModel.Flight("LH1810", "Likely 1h Delay", DelayType.LIKELY, "MUC(Munich)", "BCN(Barcelona)", "Mon 21 March, 2022"))
