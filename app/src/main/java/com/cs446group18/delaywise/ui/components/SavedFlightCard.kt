@@ -148,4 +148,4 @@ fun SavedFlightCard(flightData: HomeViewModel.Flight) {
 
 @Preview
 @Composable
-fun PreviewSavedFlight() = SavedFlightCard(flightData = HomeViewModel.Flight("LH1810", "Likely 1h Delay", DelayType.LIKELY, "MUC(Munich)", "BCN(Barcelona)", "Mon 21 March, 2022"))
+fun PreviewSavedFlightCard() = SavedFlightCard(flightData = HomeViewModel.Flight("LH1810", "Likely 1h Delay", DelayType.LIKELY, "MUC(Munich)", "BCN(Barcelona)", "Mon 21 March, 2022"))
