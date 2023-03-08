@@ -44,6 +44,7 @@ fun SavedFlightCard(flightData: HomeViewModel.Flight) {
         colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.85F)),
         modifier = Modifier
             .fillMaxWidth()
+            .padding(3.dp)
             .clickable { }
     ) {
         Row(

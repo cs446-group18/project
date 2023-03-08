@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.*
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cs446group18.delaywise.R
@@ -30,6 +31,15 @@ private val appFontFamily = FontFamily(
         Font(
             resId = R.font.montserrat_extrabold,
             weight = FontWeight.W900,
+            style = FontStyle.Normal
+        ),
+    )
+)
+private val bodyFontFamily = FontFamily(
+    fonts = listOf(
+        Font(
+            resId = R.font.montserrat_regular,
+            weight = FontWeight.W400,
             style = FontStyle.Normal
         ),
     )
@@ -70,21 +80,21 @@ fun HomeView(
                     painter = painterResource(id = R.drawable.homepage_bg),
                     contentScale = ContentScale.FillHeight,
                 )
-                .padding(contentPadding)
-//                .padding(contentPadding.calculateLeftPadding(layoutDirection = z))
-//                .padding(contentPadding.calculateRightPadding())
-//                .padding(contentPadding.calculateTopPadding())
-                .padding(30.dp)
+                .padding(top = 70.dp)
+                .padding(horizontal = 30.dp)
+                .padding(contentPadding.calculateEndPadding(layoutDirection = LayoutDirection.Ltr))
+
         ) {
-            Text("Welcome to", fontFamily = appFontFamily, fontSize = 20.sp)
+            Text("Welcome to", fontFamily = appFontFamily, fontSize = 28.sp)
             Text("DelayWise!", fontFamily = appFontFamily, fontSize = 40.sp)
-            Text("Enter a flight number airline, or airport:")
+            Text("Enter a flight number or airport:", fontFamily = bodyFontFamily, fontSize = 15.sp)
+            Spacer(modifier = Modifier.height(15.dp))
             SearchBox()
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(15.dp))
             Text("Saved Flights", fontSize = 28.sp, fontFamily = appFontFamily)
             LazyColumn(
-                modifier = Modifier.fillMaxWidth().heightIn(max = 800.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                modifier = Modifier.fillMaxWidth().heightIn(max = 423.dp),
+                verticalArrangement = Arrangement.spacedBy(3.dp),
             ){
                 items(savedFlightsList) {
                         flight -> SavedFlightCard(flightData = flight)
