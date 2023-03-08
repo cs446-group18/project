@@ -49,7 +49,7 @@ fun SavedFlightCard(flightData: HomeViewModel.Flight) {
     Card(
         elevation = CardDefaults.cardElevation(15.dp),
         shape = RoundedCornerShape(size = 12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.85F)),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
         modifier = Modifier
             .fillMaxWidth()
             .padding(3.dp)
@@ -164,7 +164,7 @@ fun SavedFlightCard(flightData: HomeViewModel.Flight) {
 fun PreviewSavedFlightCard() = SavedFlightCard(
     flightData = HomeViewModel.Flight(
         "LH1810",
-        "Lufthansa",
+        "LH",
         "Likely 1h Delay",
         DelayType.LIKELY,
         "MUC(Munich)",
