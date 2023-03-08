@@ -135,4 +135,4 @@ fun SavedFlight() {
 
 @Preview
 @Composable
-fun PreviewSavedFlight() = SavedFlight()
+fun Preview() = SavedFlight()
