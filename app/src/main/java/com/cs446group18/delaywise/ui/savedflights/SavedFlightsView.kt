@@ -63,6 +63,7 @@ fun SavedFlightsView(
             SavedFlightCard(
                 flightData = HomeViewModel.Flight(
                     "AC8839",
+                    "AC",
                     "Delayed",
                     DelayType.DELAYED,
                     "RDU(Raleigh)",
@@ -73,6 +74,7 @@ fun SavedFlightsView(
             SavedFlightCard(
                 flightData = HomeViewModel.Flight(
                     "AC834",
+                    "AC",
                     "Likely 15m Delay",
                     DelayType.LIKELY,
                     "YYZ(Toronto)",
@@ -83,6 +85,7 @@ fun SavedFlightsView(
             SavedFlightCard(
                 flightData = HomeViewModel.Flight(
                     "LH1810",
+                    "LH",
                     "On-Time",
                     DelayType.ONTIME,
                     "MUC(Munich)",
@@ -93,6 +96,7 @@ fun SavedFlightsView(
             SavedFlightCard(
                 flightData = HomeViewModel.Flight(
                     "AC8838",
+                    "AC",
                     "Likely 1h Delay",
                     DelayType.LIKELY,
                     "YYZ(Toronto)",

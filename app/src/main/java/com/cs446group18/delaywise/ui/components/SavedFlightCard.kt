@@ -36,8 +36,16 @@ val delayTypeColor: Map<DelayType, Color> = mapOf(
     DelayType.ONTIME to Color(0xff00BF1F)
 )
 
+private val airlineMap = mapOf(
+    "default" to R.drawable.__plane_icon,
+    "LH" to R.drawable.lufthansa,
+    "AC" to R.drawable.aircanada
+)
+
 @Composable
 fun SavedFlightCard(flightData: HomeViewModel.Flight) {
+    val airlineAsset =
+        if (airlineMap.containsKey(flightData.airline)) airlineMap[flightData.airline] else airlineMap["default"];
     Card(
         elevation = CardDefaults.cardElevation(15.dp),
         shape = RoundedCornerShape(size = 12.dp),
@@ -57,7 +65,7 @@ fun SavedFlightCard(flightData: HomeViewModel.Flight) {
             ) {
                 Image(
                     modifier = Modifier.size(40.dp),
-                    painter = painterResource(R.drawable.__plane_icon),
+                    painter = painterResource(airlineAsset!!),
                     contentDescription = null
                 )
             }
@@ -129,7 +137,12 @@ fun SavedFlightCard(flightData: HomeViewModel.Flight) {
                         modifier = Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.CenterEnd
                     ) {
-                        Icon(Icons.Sharp.NavigateNext, contentDescription = null, modifier = Modifier.size(35.dp), tint = Color.LightGray)
+                        Icon(
+                            Icons.Sharp.NavigateNext,
+                            contentDescription = null,
+                            modifier = Modifier.size(35.dp),
+                            tint = Color.LightGray
+                        )
                     }
                 }
                 Text(modifier = Modifier.padding(), text = buildAnnotatedString {
@@ -148,4 +161,14 @@ fun SavedFlightCard(flightData: HomeViewModel.Flight) {
 
 @Preview
 @Composable
-fun PreviewSavedFlightCard() = SavedFlightCard(flightData = HomeViewModel.Flight("LH1810", "Likely 1h Delay", DelayType.LIKELY, "MUC(Munich)", "BCN(Barcelona)", "Mon 21 March, 2022"))
+fun PreviewSavedFlightCard() = SavedFlightCard(
+    flightData = HomeViewModel.Flight(
+        "LH1810",
+        "Lufthansa",
+        "Likely 1h Delay",
+        DelayType.LIKELY,
+        "MUC(Munich)",
+        "BCN(Barcelona)",
+        "Mon 21 March, 2022"
+    )
+)

@@ -8,6 +8,7 @@ import com.cs446group18.delaywise.ui.components.DelayType
 class HomeViewModel : ViewModel() {
     data class Flight(
         val flightNumber : String,
+        val airline : String,
         val delayText : String,
         val delayType: DelayType,
         val departAirport: String,
