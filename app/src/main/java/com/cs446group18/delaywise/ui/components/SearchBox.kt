@@ -1,5 +1,7 @@
 package com.cs446group18.delaywise.ui.components
 
+import android.util.Log
+import android.view.MotionEvent
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -8,7 +10,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.*
+import androidx.compose.foundation.gestures.*
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
@@ -24,7 +34,7 @@ data class ListItem(val name: String)
 fun ListItem(item: ListItem, onSearchInputChange: (String) -> Unit) {
     Card(
         modifier = Modifier
-            .heightIn(min = 50.dp)
+            //.heightIn(min = 50.dp)
             .fillMaxWidth()
             .clickable { onSearchInputChange(item.name) },
         shape = RoundedCornerShape(0),
@@ -45,7 +55,7 @@ fun ListItem(item: ListItem, onSearchInputChange: (String) -> Unit) {
         }
     }
 }
-val mockData = listOf(ListItem("AC8838"), ListItem("AC8839"), ListItem("AF4031"), ListItem("DL4980"))
+val mockData = listOf(ListItem("AC8838"), ListItem("AC8839"), ListItem("AF4031"), ListItem("DL4980"), ListItem("stuff1"),ListItem("stuff2"),ListItem("stuff3"),ListItem("stuff4"),ListItem("stuff5"),ListItem("stuff6"),ListItem("stuff7"),ListItem("stuff8"),ListItem("stuff9"),ListItem("stuff10"))
 suspend fun mockApi(searchText: TextFieldValue): List<ListItem> {
     delay(500L) // synthetic delay
 
@@ -70,45 +80,52 @@ fun SearchBox() {
     }
     val scope = rememberCoroutineScope()
 
+    var showDropDown by remember {
+        mutableStateOf(false)
+    }
+
     Column {
-        Card(
-            elevation = CardDefaults.cardElevation(15.dp)
-        ) {
-            TextField(
-                value = textFieldValueState,
-                shape = RoundedCornerShape(8.dp),
-                colors = TextFieldDefaults.textFieldColors(
-                    focusedIndicatorColor = Color(R.color.main_blue).copy(
-                        alpha = 1F
-                    )
-                ),
-                onValueChange = {
-                    textFieldValueState = it
-                    scope.launch {
-                        searchResults = mockApi(it)
-                    }
-                },
-                placeholder = { Text("ex. AA5555") },
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
-        LazyColumn(
+        TextField(
+            value = textFieldValueState,
+            shape = RoundedCornerShape(8.dp),
+            colors = TextFieldDefaults.textFieldColors(
+                containerColor = Color.White,
+                focusedIndicatorColor = Color(R.color.main_blue).copy(
+                    alpha = 1F
+                )
+            ),
+            onValueChange = {
+                textFieldValueState = it
+                scope.launch {
+                    searchResults = mockApi(it)
+                }
+            },
+            placeholder = { Text("ex. AA5555") },
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(max = 150.dp)
-        ) {
-            items(searchResults) { item ->
-                ListItem(item, onSearchInputChange = {
-                    textFieldValueState = TextFieldValue(
-                        text = it,
-                        selection = TextRange(it.length)
-                    )
-                })
+                .onFocusChanged {
+                    showDropDown = it.isFocused
+                }
+        )
+        if (showDropDown) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 220.dp)
+                    .clip(shape = RoundedCornerShape(8.dp))
+            ) {
+                items(searchResults) { item ->
+                    ListItem(item, onSearchInputChange = {
+                        textFieldValueState = TextFieldValue(
+                            text = it,
+                            selection = TextRange(it.length)
+                        )
+                    })
+                }
             }
         }
     }
 }
-
 @Preview
 @Composable
 fun PreviewBox() = SearchBox()
