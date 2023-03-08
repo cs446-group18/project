@@ -52,6 +52,7 @@ fun HomeView(
             Text("Enter a flight number airline, or airport:")
             SearchBox()
             Spacer(modifier = Modifier.height(20.dp))
+            Text("Saved Flights", fontSize = 28.sp, fontFamily = appFontFamily)
             ScrollableMenu(
                 listOf(
                     SavedFlightCard(
