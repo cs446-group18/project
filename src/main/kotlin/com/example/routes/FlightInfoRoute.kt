@@ -18,9 +18,6 @@ fun Route.flightInfo() {
         call.respondText(body)
     }
     get("/") {
-        val client = HttpClient()
-        val response = client.get("https://airlabs.co/api/v9/routes?api_key=b0134401-3dd2-469c-85cf-4974afbf338b&flight_iata=AC8838")
-        val body :String= response.body()
-        call.respondText(body)
+        call.respond(200)
     }
 }
