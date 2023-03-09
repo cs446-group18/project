@@ -6,16 +6,23 @@ import io.ktor.client.request.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
 
 val API_KEY_AIRLABS = "b0134401-3dd2-469c-85cf-4974afbf338b"
 fun Route.flightInfo() {
     get("/flightInfo/{id}") {
         val flightIata = call.parameters["id"]
-        println("flight iata is $flightIata")
         val client = HttpClient()
         val response = client.get("https://airlabs.co/api/v9/routes?api_key=$API_KEY_AIRLABS&flight_iata=$flightIata")
-        val body :String= response.body()
-        call.respondText(body)
+        val body: String= response.body()
+        val json = Json { ignoreUnknownKeys = true }
+        val jsonObject: JsonObject = json.decodeFromString(JsonObject.serializer(), body)
+
+        // Accessing values in the JsonObject
+        val output = jsonObject["response"].toString() // access a property by name
+
+        call.respondText(output)
     }
     get("/") {
         call.respond(200)
