@@ -4,9 +4,11 @@ import com.example.models.FlightInfo
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -46,8 +48,8 @@ fun Route.flightInfo() {
         // TODO: If the flight is operating today, then we retrieve delay information for the flight
         // TODO: insert conditional statement here
         // httpResponse = client.get("https://airlabs.co/api/v9/flight?api_key=$API_KEY_AIRLABS&flight_iata=$flightIata")
-
-        call.respondText(flightInfo.toString())
+        val jsonFlightInfo = Json.encodeToString(flightInfo)
+        call.respondText(jsonFlightInfo, ContentType.Application.Json)
     }
 
     get("/") {
