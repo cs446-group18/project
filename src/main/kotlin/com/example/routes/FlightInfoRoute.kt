@@ -47,7 +47,8 @@ fun Route.flightInfo() {
         // TODO: insert conditional statement here
         // httpResponse = client.get("https://airlabs.co/api/v9/flight?api_key=$API_KEY_AIRLABS&flight_iata=$flightIata")
 
-        call.respondText(flightInfo.toString())
+        // call.respondText(flightInfo.toString())
+        call.respond(flightInfo)
     }
 
     get("/") {
