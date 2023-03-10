@@ -1,5 +1,6 @@
 package com.example.routes
 
+import com.example.models.FlightInfo
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -10,26 +11,59 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
+import java.time.*
+import java.time.format.DateTimeFormatter
 
-val API_KEY_AIRLABS = "b0134401-3dd2-469c-85cf-4974afbf338b"
+const val API_KEY_AIRLABS = "b0134401-3dd2-469c-85cf-4974afbf338b"
+
 fun Route.flightInfo() {
-    get("/flightInfo/{id}") {
-        val flightIata = call.parameters["id"]
+    get("/flightInfo/{flight_iata}") {    // TODO: add date parameter
+        // val flightDate = call.parameters["date"]
+        val flightIata = call.parameters["flight_iata"]
         val client = HttpClient()
-        val response = client.get("https://airlabs.co/api/v9/routes?api_key=$API_KEY_AIRLABS&flight_iata=$flightIata")
-        val body: String= response.body()
         val json = Json { ignoreUnknownKeys = true }
-        val jsonObject: JsonObject = json.decodeFromString(JsonObject.serializer(), body)
 
-        // Accessing values in the JsonObject
-        val responseArray: JsonArray = jsonObject["response"] as JsonArray
-        val responseJsonObject: JsonObject = responseArray.first() as JsonObject
-        val depTime: JsonElement? = responseJsonObject["dep_time"]
-        println(depTime)
+        // Make API call to AirLabs Route DB for route information
+        var httpResponse = client.get("https://airlabs.co/api/v9/routes?api_key=$API_KEY_AIRLABS&flight_iata=$flightIata")
+        var responseObject: JsonObject = json.decodeFromString(JsonObject.serializer(), httpResponse.body())
+        val routeObject: JsonObject = (responseObject["response"] as JsonArray).first() as JsonObject
 
-        call.respondText(depTime.toString())
+        // Retrieve flight info fields from route Json object to create data class
+        val flightInfo = FlightInfo(
+            flightIata = flightIata!!,
+            flightNumber = routeObject["flight_number"].toString(),
+            airlineIata = routeObject["airline_iata"].toString(),
+            depAirportIata = routeObject["dep_iata"].toString(),
+            depTerminal = (routeObject["dep_terminals"] as JsonArray).first().toString(),
+            depScheduled = getTime(routeObject["dep_time"].toString()),
+            arrAirportIata = routeObject["arr_iata"].toString(),
+            arrTerminal = (routeObject["arr_terminals"] as JsonArray).first().toString(),
+            arrScheduled = getTime(routeObject["arr_time"].toString()),
+            updated = getDateTime(routeObject["updated"].toString())
+        )
+        val operatingDays: List<String> = (routeObject["days"] as JsonArray).map{it.toString().trim('"')}       // days of week this flight operates, used to generate schedules
+
+        // TODO: If the flight is operating today, then we retrieve delay information for the flight
+        // TODO: insert conditional statement here
+        // httpResponse = client.get("https://airlabs.co/api/v9/flight?api_key=$API_KEY_AIRLABS&flight_iata=$flightIata")
+
+        call.respondText(flightInfo.toString())
     }
+
     get("/") {
         call.respond(200)
     }
+}
+
+// Function taking in a string with format '"HH:MM"' and converts it into a LocalDateTime for flightInfo
+fun getTime(timeString: String): LocalDateTime {
+    val time = LocalTime.parse(timeString.trim('"'), DateTimeFormatter.ofPattern("HH:mm"))
+    return LocalDateTime.of(LocalDate.now(), time)
+}
+
+// Function taking in a string with format '"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"' and converts it into a LocalDateTime for flightInfo
+fun getDateTime(dateTimeString: String): LocalDateTime {
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+    val instant = Instant.parse(dateTimeString.trim('"'))
+    return instant.atZone(ZoneOffset.UTC).toLocalDateTime()
 }
