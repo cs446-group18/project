@@ -9,10 +9,7 @@ import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.*
 import java.time.*
 import java.time.format.DateTimeFormatter
 
@@ -23,11 +20,10 @@ fun Route.flightInfo() {
         // val flightDate = call.parameters["date"]
         val flightIata = call.parameters["flight_iata"]
         val client = HttpClient()
-        val json = Json { ignoreUnknownKeys = true }
 
         // Make API call to AirLabs Route DB for route information
         var httpResponse = client.get("https://airlabs.co/api/v9/routes?api_key=$API_KEY_AIRLABS&flight_iata=$flightIata")
-        var responseObject: JsonObject = json.decodeFromString(JsonObject.serializer(), httpResponse.body())
+        var responseObject: JsonObject = Json.decodeFromString(JsonObject.serializer(), httpResponse.body())
         val routeObject: JsonObject = (responseObject["response"] as JsonArray).first() as JsonObject
 
         // Retrieve flight info fields from route Json object to create data class
@@ -45,11 +41,14 @@ fun Route.flightInfo() {
         )
         val operatingDays: List<String> = (routeObject["days"] as JsonArray).map{it.toString().trim('"')}       // days of week this flight operates, used to generate schedules
 
-        // TODO: If the flight is operating today, then we retrieve delay information for the flight
-        // TODO: insert conditional statement here
-        // httpResponse = client.get("https://airlabs.co/api/v9/flight?api_key=$API_KEY_AIRLABS&flight_iata=$flightIata")
-        val jsonFlightInfo = Json.encodeToString(flightInfo)
-        call.respondText(jsonFlightInfo, ContentType.Application.Json)
+        // If the date of the flight is today, retrieve delay information for the flight
+        // TODO: insert conditional statement here to check date of flight
+        httpResponse = client.get("https://airlabs.co/api/v9/flight?api_key=$API_KEY_AIRLABS&flight_iata=$flightIata")
+        responseObject = Json.decodeFromString(JsonObject.serializer(), httpResponse.body())
+
+        val encodeDefaultJson = Json { encodeDefaults = true; isLenient = true}
+        val responseJson = encodeDefaultJson.encodeToString(flightInfo)
+        call.respondText(responseJson, ContentType.Application.Json)
     }
 
     get("/") {
