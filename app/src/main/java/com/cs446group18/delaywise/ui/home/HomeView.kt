@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.layout.ContentScale
@@ -19,12 +20,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cs446group18.delaywise.Model
 import com.cs446group18.delaywise.R
 import com.cs446group18.delaywise.ui.components.*
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 private val appFontFamily = FontFamily(
     fonts = listOf(
@@ -60,6 +64,7 @@ fun HomeView(
     navigator: DestinationsNavigator
 ) {
     val focusManager = LocalFocusManager.current
+    val scope = rememberCoroutineScope()
     Scaffold(
         modifier = Modifier.clickable(
             indication = null,
@@ -93,7 +98,9 @@ fun HomeView(
             Spacer(modifier = Modifier.height(15.dp))
             Text("Saved Flights", fontSize = 28.sp, fontFamily = appFontFamily)
             LazyColumn(
-                modifier = Modifier.fillMaxWidth().heightIn(max = 423.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 423.dp),
                 verticalArrangement = Arrangement.spacedBy(3.dp),
             ){
                 items(savedFlightsList) {
