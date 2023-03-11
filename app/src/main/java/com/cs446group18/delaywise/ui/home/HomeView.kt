@@ -97,7 +97,8 @@ fun HomeView(
                 verticalArrangement = Arrangement.spacedBy(3.dp),
             ){
                 items(savedFlightsList) {
-                        flight -> SavedFlightCard(flightData = flight)
+                        flight -> SavedFlightCard(flightData = flight, navigator =  navigator)
+
                 }
             }
         }

@@ -12,4 +12,26 @@
     <string name="menu_savedflights">Saved Flights</string>
     <string name="app_label">Home Search Bar</string>
     <string name="search_hint">ex. AA5555</string>
+
+    <string name="departing_airport_abr">MUN</string>
+    <string name="departing_airport_name">Munich Airport</string>
+    <string name="departing_flight_time">10:00</string>
+    <string name="departing_flight_date">Mon 21 Mar</string>
+
+    <string name="arriving_airport_abr">BCN</string>
+    <string name="arriving_airport_name">Barcelona Airport</string>
+    <string name="arriving_flight_time">12:55</string>
+    <string name="arriving_flight_date">Mon 21 Mar</string>
+
+    <string name="flight_number_label">Flight Number:</string>
+    <string name="airline_label">Airline:</string>
+    <string name="departure_airport_label">Departure Airport:</string>
+    <string name="average_delay_over_label">Average Delay Over:</string>
+
+    <string name="flight_number">LH2656 (Barcelona)</string>
+    <string name="departing_airport_name_2">Munich International Airport Franz Josef Strauss</string>
+    <string name="average_delay_over">43% , 25 min</string>
+
+    <string name="more_flights_from_airport_label">More flights from this airport:</string>
+
 </resources>
