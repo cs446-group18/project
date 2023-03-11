@@ -1,6 +1,27 @@
 package com.example.models
 
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
 import java.time.LocalDateTime
+import kotlinx.serialization.*
+import kotlinx.serialization.encoding.*
+import kotlinx.serialization.descriptors.*
+import java.time.format.DateTimeFormatter
+
+@Serializer(forClass = LocalDateTime::class)
+object LocalDateTimeSerializer : KSerializer<LocalDateTime> {
+    private val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("LocalDateTime", PrimitiveKind.STRING)
+
+    override fun serialize(encoder: Encoder, value: LocalDateTime) {
+        encoder.encodeString(value.format(formatter))
+    }
+
+    override fun deserialize(decoder: Decoder): LocalDateTime {
+        return LocalDateTime.parse(decoder.decodeString(), formatter)
+    }
+}
 
 enum class FlightStatus {
     SCHEDULED,
@@ -9,7 +30,7 @@ enum class FlightStatus {
     EN_ROUTE,
     DELAYED
 }
-
+@Serializable
 data class FlightInfo(
     // Flight information
     val flightIata: String,                     // flight IATA code; airline IATA + flight number (e.g. AC8835)
@@ -24,9 +45,12 @@ data class FlightInfo(
     val depAirportName: String? = null,         // name of departure airport (e.g. "Toronto Pearson International Airport")
     val depTerminal: String?,                   // terminal in departure airport (e.g. "1" for Terminal 1 in YYZ)
     val depGate: String? = null,                // gate in departure airport (e.g. "F64" in YYZ)
-    val depScheduled: LocalDateTime,            // original scheduled departure time in local timezone (e.g. 18:35)
-    val depEstimated: LocalDateTime? = null,    // estimated departure time accounting for delays (e.g. 19:05)
-    val depActual: LocalDateTime? = null,       // actual departure time if plane has taken off (e.g. 19:12)
+    @Serializable(with = LocalDateTimeSerializer::class)
+    @Contextual val depScheduled: LocalDateTime,            // original scheduled departure time in local timezone (e.g. 18:35)
+    @Serializable(with = LocalDateTimeSerializer::class)
+    @Contextual val depEstimated: LocalDateTime? = null,    // estimated departure time accounting for delays (e.g. 19:05)
+    @Serializable(with = LocalDateTimeSerializer::class)
+    @Contextual val depActual: LocalDateTime? = null,       // actual departure time if plane has taken off (e.g. 19:12)
     val depCity: String? = null,                // city of departure (e.g. "Toronto")
     val depCountry: String? = null,             // country of departure (e.g. "Canada")
 
@@ -35,9 +59,12 @@ data class FlightInfo(
     val arrAirportName: String? = null,         // name of arrival airport (e.g. "Raleigh-Durham International Airport")
     val arrTerminal: String?,                   // terminal in arrival airport (e.g. "2" for Terminal 2 in RDU)
     val arrGate: String? = null,                // gate in arrival airport (e.g. "C12" in RDU)
-    val arrScheduled: LocalDateTime,            // original arrival departure time (e.g. 20:22)
-    val arrEstimated: LocalDateTime? = null,    // estimated arrival time accounting for delays (e.g. 20:43)
-    val arrActual: LocalDateTime? = null,       // actual arrival time if plane has taken off (e.g. 20:46)
+    @Serializable(with = LocalDateTimeSerializer::class)
+    @Contextual val arrScheduled: LocalDateTime,            // original arrival departure time (e.g. 20:22)
+    @Serializable(with = LocalDateTimeSerializer::class)
+    @Contextual val arrEstimated: LocalDateTime? = null,    // estimated arrival time accounting for delays (e.g. 20:43)
+    @Serializable(with = LocalDateTimeSerializer::class)
+    @Contextual val arrActual: LocalDateTime? = null,       // actual arrival time if plane has taken off (e.g. 20:46)
     val arrCity: String? = null,                // city of arrival (e.g. "Raleigh-Durham")
     val arrCountry: String? = null,             // country of arrival (e.g. "USA")
 
@@ -58,5 +85,6 @@ data class FlightInfo(
     // we can provide a list of other flights operating this route on this day so users can see alternatives
 
     // Internal information for debugging
-    val updated: LocalDateTime? = null          // date information was last updated, for identifying outdated info
+    @Serializable(with = LocalDateTimeSerializer::class)
+    @Contextual val updated: LocalDateTime? = null          // date information was last updated, for identifying outdated info
 )
