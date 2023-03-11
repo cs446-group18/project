@@ -90,13 +90,6 @@ fun HomeView(
                 .padding(contentPadding.calculateEndPadding(layoutDirection = LayoutDirection.Ltr))
 
         ) {
-            Button(onClick = {
-                scope.launch(Dispatchers.IO) {
-                    Model.getFlight()
-                }
-            }) {
-                Text("test button")
-            }
             Text("Welcome to", fontFamily = appFontFamily, fontSize = 28.sp)
             Text("DelayWise!", fontFamily = appFontFamily, fontSize = 40.sp)
             Text("Enter a flight number or airport:", fontFamily = bodyFontFamily, fontSize = 15.sp)
