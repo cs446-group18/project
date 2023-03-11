@@ -17,6 +17,10 @@ class FlightInfoViewModel : ViewModel() {
         val arrivalDate: String,
 
     )
+    data class FlightGateInfo(
+        val terminal : String,
+        val gate : String,
+        )
 
     private val _text = MutableLiveData<String>().apply {
         value = "This is gallery Fragment"
