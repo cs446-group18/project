@@ -110,7 +110,7 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                     modifier = Modifier
                         .size(40.dp)
                         .padding(end = 2.dp),
-                    painter = painterResource(id = R.drawable.__plane_icon),
+                    painter = painterResource(id = R.drawable.baseline_arrow_forward_24),
                     contentDescription = null
                 )
 

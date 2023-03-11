@@ -69,7 +69,8 @@ fun SavedFlightsView(
                     "RDU(Raleigh)",
                     "YYZ(Toronto)",
                     "Delayed to 5pm; Wed 15 March, 2023"
-                )
+                ),
+                navigator = navigator
             )
             SavedFlightCard(
                 flightData = HomeViewModel.Flight(
@@ -80,7 +81,8 @@ fun SavedFlightsView(
                     "YYZ(Toronto)",
                     "MUC(Munich)",
                     "Scheduled 8:30pm; Wed 15 March, 2023"
-                )
+                ),
+                navigator = navigator
             )
             SavedFlightCard(
                 flightData = HomeViewModel.Flight(
@@ -91,7 +93,8 @@ fun SavedFlightsView(
                     "MUC(Munich)",
                     "BCN(Barcelona)",
                     "Scheduled 9am; Mon 16 March, 2023"
-                )
+                ),
+                navigator = navigator
             )
             SavedFlightCard(
                 flightData = HomeViewModel.Flight(
@@ -102,7 +105,8 @@ fun SavedFlightsView(
                     "YYZ(Toronto)",
                     "RDU(Raleigh)",
                     "Scheduled 2pm; Mon 21 March, 2023"
-                )
+                ),
+                navigator = navigator
             )
         }
     }

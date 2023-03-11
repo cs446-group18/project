@@ -11,6 +11,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,7 +24,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cs446group18.delaywise.R
+import com.cs446group18.delaywise.ui.destinations.FlightInfoViewDestination
+import com.cs446group18.delaywise.ui.destinations.SavedFlightsViewDestination
 import com.cs446group18.delaywise.ui.home.HomeViewModel
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
+import kotlinx.coroutines.launch
 
 
 enum class DelayType {
@@ -43,7 +49,8 @@ private val airlineMap = mapOf(
 )
 
 @Composable
-fun SavedFlightCard(flightData: HomeViewModel.Flight) {
+fun SavedFlightCard(flightData: HomeViewModel.Flight,  navigator: DestinationsNavigator) {
+    val scope = rememberCoroutineScope()
     val airlineAsset =
         if (airlineMap.containsKey(flightData.airline)) airlineMap[flightData.airline] else airlineMap["default"];
     Card(
@@ -53,7 +60,10 @@ fun SavedFlightCard(flightData: HomeViewModel.Flight) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(3.dp)
-            .clickable { }
+            .clickable {
+                scope.launch { navigator.navigate(FlightInfoViewDestination) }
+
+            }
     ) {
         Row(
             modifier = Modifier.padding(all = 5.dp),
@@ -170,5 +180,6 @@ fun PreviewSavedFlightCard() = SavedFlightCard(
         "MUC(Munich)",
         "BCN(Barcelona)",
         "Mon 21 March, 2022"
-    )
+    ),
+    navigator = EmptyDestinationsNavigator
 )
