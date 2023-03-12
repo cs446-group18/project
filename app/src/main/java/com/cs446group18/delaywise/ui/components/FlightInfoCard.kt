@@ -117,7 +117,7 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                             withStyle(
                                 style = SpanStyle(
                                     fontWeight = FontWeight.Normal,
-                                    color = Color.Gray
+                                    color = Color.Black
                                 )
                             ) {
                                 append("10-15 min")
@@ -132,10 +132,10 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                             withStyle(
                                 style = SpanStyle(
                                     fontWeight = FontWeight.Normal,
-                                    color = Color.Black
+                                    color = Color.Gray
                                 )
                             ) {
-                                append("Perdicted")
+                                append("Predicted")
                             }
                         })
                     }
@@ -151,7 +151,7 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                             withStyle(
                                 style = SpanStyle(
                                     fontWeight = FontWeight.Normal,
-                                    color = Color.Gray
+                                    color = Color.Black
                                 )
                             ) {
                                 append("45%")
@@ -166,7 +166,7 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                             withStyle(
                                 style = SpanStyle(
                                     fontWeight = FontWeight.Normal,
-                                    color = Color.Black
+                                    color = Color.Gray
                                 )
                             ) {
                                 append("Likelihood")
@@ -217,7 +217,7 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                         Text(fontSize = 16.sp, modifier = Modifier.padding(end = 5.dp), text = buildAnnotatedString {
                             withStyle(
                                 style = SpanStyle(
-                                    color = Color.Gray
+                                    color = Color.Black
                                 )
                             ) {
                                 append(flightInfoData.departDate)
@@ -416,7 +416,7 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                     Text(fontSize = 16.sp, modifier = Modifier.padding(end = 5.dp), text = buildAnnotatedString {
                         withStyle(
                             style = SpanStyle(
-                                color = Color.Gray
+                                color = Color.Black
                             )
                         ) {
                             append(flightInfoData.arrivalDate)
@@ -622,7 +622,7 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                         withStyle(
                             style = SpanStyle(
                                 fontWeight = FontWeight.Normal,
-                                color = Color.Gray
+                                color = Color.Black
                             )
                         ) {
                             append("43%")
@@ -637,7 +637,7 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                         withStyle(
                             style = SpanStyle(
                                 fontWeight = FontWeight.Normal,
-                                color = Color.Black
+                                color = Color.Gray
                             )
                         ) {
                             append("Rate of Delay")
@@ -656,7 +656,7 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                         withStyle(
                             style = SpanStyle(
                                 fontWeight = FontWeight.Normal,
-                                color = Color.Gray
+                                color = Color.Black
                             )
                         ) {
                             append("25 min")
@@ -671,7 +671,7 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                         withStyle(
                             style = SpanStyle(
                                 fontWeight = FontWeight.Normal,
-                                color = Color.Black
+                                color = Color.Gray
                             )
                         ) {
                             append("Avg. Delay")
@@ -690,7 +690,7 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                         withStyle(
                             style = SpanStyle(
                                 fontWeight = FontWeight.Normal,
-                                color = Color.Gray
+                                color = Color.Black
                             )
                         ) {
                             append("10%")
@@ -705,7 +705,7 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                         withStyle(
                             style = SpanStyle(
                                 fontWeight = FontWeight.Normal,
-                                color = Color.Black
+                                color = Color.Gray
                             )
                         ) {
                             append("Cancellation Rate")
