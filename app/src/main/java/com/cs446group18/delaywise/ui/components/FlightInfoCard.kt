@@ -1,6 +1,6 @@
 package com.cs446group18.delaywise.ui.components
 
-import androidx.compose.foundation.Image
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -19,7 +18,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.cs446group18.delaywise.R
 import com.cs446group18.delaywise.ui.flightinfo.FlightInfoViewModel
 
 
@@ -204,7 +202,7 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                                     color = Color.Gray
                                 )
                             ) {
-                                append("2")
+                                append(flightInfoData.departTerminal)
                             }
                         })
                     }
@@ -250,7 +248,7 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                                     color = Color.Gray
                                 )
                             ) {
-                                append("K6")
+                                append(flightInfoData.departGate)
                             }
                         })
                     }
@@ -401,7 +399,7 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                                 color = Color.Gray
                             )
                         ) {
-                            append("2")
+                            append(flightInfoData.arrivalTerminal)
                         }
                     })
                 }
@@ -447,7 +445,7 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                                 color = Color.Gray
                             )
                         ) {
-                            append("K6")
+                            append(flightInfoData.arrivalGate)
                         }
                     })
                 }
@@ -474,7 +472,7 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
         colors = CardDefaults.cardColors(containerColor = Color.White),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(0.dp)
+            .padding(5.dp)
             .clickable { }
     ){
         Row(
@@ -617,7 +615,12 @@ fun PreviewFlightInfoCard() = FlightInfoCard(
     "10:55",
     "12:55",
     "Mon 21 Mar",
-    "Mon 21 Mar"
+    "Mon 21 Mar",
+        "2",
+        "K6",
+        "15",
+        "A21"
+
     )
 )
 
