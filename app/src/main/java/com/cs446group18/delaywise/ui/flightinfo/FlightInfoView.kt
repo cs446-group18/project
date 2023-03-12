@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cs446group18.delaywise.R
 import com.cs446group18.delaywise.ui.components.BottomBar
-import com.cs446group18.delaywise.ui.components.FlightGateCard
 import com.cs446group18.delaywise.ui.components.FlightInfoCard
 import com.cs446group18.delaywise.ui.components.TopBar
 import com.ramcosta.composedestinations.annotation.Destination
@@ -69,7 +68,11 @@ fun FlightInfoView(
                     "10:55",
                     "12:55",
                     "Mon 21 Mar",
-                    "Mon 21 Mar"
+                    "Mon 21 Mar",
+                    "2",
+                    "K6",
+                    "15",
+                    "A21"
             ))
 
 
