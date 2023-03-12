@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
-class FlightInfoViewModel : ViewModel() {
+class FlightInfoViewModel(private val flightIata: String) : ViewModel() {
     private val _flightState = MutableSharedFlow<UiState<FlightInfo>>()
     val flightState = _flightState.asSharedFlow()
 
@@ -20,7 +20,7 @@ class FlightInfoViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             _flightState.emit(UiState.Loading())
             try {
-                val flight = Model.getFlight()
+                val flight = Model.getFlight(flightIata)
                 _flightState.emit(
                     UiState.Loaded(flight)
                 )
@@ -31,29 +31,6 @@ class FlightInfoViewModel : ViewModel() {
             }
         }
     }
-
-//    data class FlightInfo(
-//        val flightIata: String,
-//        val flightNumber: String,
-//        val airlineIata: String,
-//        val depAirportIata: String,
-//        val depTerminal: String,
-//        val arrAirportIata: String,
-//        val arrTerminal: String,
-//        val depCity: String,
-//        val departTime: String,
-//        val departDate: String,
-//        val arrCity: String,
-//        val arrivalTime: String,
-//        val arrivalDate: String,
-//        val arrAirportName: String,
-//        val depAirportName: String,
-//        val airlineName: String,
-//        val delay: Int?,
-//        val flightDuration: Int,
-//        val depGate: String,
-//        val arrGate: String,
-//    )
 
     data class FlightGateInfo(
         val departTerminal: String,

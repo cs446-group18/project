@@ -62,7 +62,7 @@ fun SavedFlightCard(flightData: HomeViewModel.Flight,  navigator: DestinationsNa
             .fillMaxWidth()
             .padding(3.dp)
             .clickable {
-                scope.launch { navigator.navigate(FlightInfoViewDestination) }
+                scope.launch { navigator.navigate(FlightInfoViewDestination(flightData.flightNumber)) }
             }
     ) {
         Row(

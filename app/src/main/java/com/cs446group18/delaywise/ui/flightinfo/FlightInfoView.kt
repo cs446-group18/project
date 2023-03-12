@@ -42,7 +42,8 @@ private val appFontFamily = FontFamily(
 @Composable
 fun FlightInfoView(
     navigator: DestinationsNavigator,
-    flightInfoViewModel: FlightInfoViewModel = viewModel(),
+    flightIata: String,
+    flightInfoViewModel: FlightInfoViewModel = viewModel { FlightInfoViewModel(flightIata) },
 ) {
     Scaffold(
         topBar = {
@@ -78,4 +79,4 @@ fun FlightInfoView(
 
 @Preview
 @Composable
-fun PreviewFlightInfoView() = FlightInfoView(EmptyDestinationsNavigator)
+fun PreviewFlightInfoView() = FlightInfoView(EmptyDestinationsNavigator, "AC8838")

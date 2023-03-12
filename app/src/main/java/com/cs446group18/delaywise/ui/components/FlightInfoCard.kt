@@ -17,7 +17,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.cs446group18.delaywise.ui.flightinfo.FlightInfoViewModel
 import com.cs446group18.lib.models.FlightInfo
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -78,7 +77,7 @@ fun FlightInfoCard(flightInfoData: FlightInfo) {
                                     color = Color.Black,
                                 )
                             ) {
-                                append("Duration: " + flightInfoData.flightDuration)
+                                append("Duration: ${flightInfoData.flightDuration} minutes")
                             }
                         })
                 }

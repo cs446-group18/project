@@ -14,8 +14,8 @@ val client = HttpClient(CIO) {
 }
 
 object Model {
-    suspend fun getFlight() : FlightInfo {
-        val response = client.get("http://10.0.2.2:8082/flightInfo/AC8838")
+    suspend fun getFlight(flightIata: String) : FlightInfo {
+        val response = client.get("http://10.0.2.2:8082/flightInfo/${flightIata}")
         val bodyText = response.bodyAsText()
         val parsedJson = Json { ignoreUnknownKeys = true }.decodeFromString<FlightInfo>(bodyText)
         return parsedJson
