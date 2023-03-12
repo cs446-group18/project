@@ -65,7 +65,7 @@ fun Route.flightInfo() {
             "canceled" -> FlightStatus.CANCELLED
             else -> FlightStatus.UNKNOWN
         }
-        if (Duration.between(flightInfo.depScheduled, flightInfo.depEstimated).toMinutes() >= 15.0 && flightInfo.flightStatus == FlightStatus.SCHEDULED) flightInfo.flightStatus = FlightStatus.DELAYED
+        if (flightInfo.depEstimated != null && Duration.between(flightInfo.depScheduled, flightInfo.depEstimated).toMinutes() >= 15.0 && flightInfo.flightStatus == FlightStatus.SCHEDULED) flightInfo.flightStatus = FlightStatus.DELAYED
 
         flightInfo.depAirportName = parseElement(infoObject["dep_name"])
         flightInfo.depCity = parseElement(infoObject["dep_city"])
