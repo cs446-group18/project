@@ -28,7 +28,14 @@ fun Route.flightInfo() {
         // Make API call to AirLabs Route DB for route information
         var httpResponse = client.get("https://airlabs.co/api/v9/routes?api_key=$API_KEY_AIRLABS&flight_iata=$flightIata")
         var responseObject: JsonObject = Json.decodeFromString(JsonObject.serializer(), httpResponse.body())
-        val routeObject: JsonObject = (responseObject["response"] as JsonArray).first() as JsonObject
+
+        //Check if iata_code is valid
+        val resp :JsonArray = responseObject["response"] as JsonArray
+        if (resp.isNullOrEmpty()) {
+            call.respond(HttpStatusCode.BadRequest, "Iata Code is Invalid")
+        }
+
+        val routeObject: JsonObject = resp.first() as JsonObject
 
         // Retrieve flight info fields from route Json object to create data class
         var flightInfo = FlightInfo(
