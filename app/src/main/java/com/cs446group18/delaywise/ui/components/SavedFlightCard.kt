@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import com.cs446group18.delaywise.R
 import com.cs446group18.delaywise.ui.destinations.FlightInfoViewDestination
 import com.cs446group18.delaywise.ui.destinations.SavedFlightsViewDestination
+import com.cs446group18.delaywise.ui.flightinfo.FlightInfoViewModel
 import com.cs446group18.delaywise.ui.home.HomeViewModel
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
@@ -62,7 +63,6 @@ fun SavedFlightCard(flightData: HomeViewModel.Flight,  navigator: DestinationsNa
             .padding(3.dp)
             .clickable {
                 scope.launch { navigator.navigate(FlightInfoViewDestination) }
-
             }
     ) {
         Row(

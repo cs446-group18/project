@@ -1,6 +1,5 @@
 package com.cs446group18.delaywise.ui.components
 
-
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,10 +18,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cs446group18.delaywise.ui.flightinfo.FlightInfoViewModel
+import com.cs446group18.lib.models.FlightInfo
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 
+// TODO: move to ui.flightinfo package because it's specific to that screen
 @Composable
-fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
+fun FlightInfoCard(flightInfoData: FlightInfo) {
     Card(
         elevation = CardDefaults.cardElevation(0.dp),
         shape = RoundedCornerShape(size = 12.dp),
@@ -40,7 +43,7 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                 .fillMaxWidth()
                 .padding(3.dp)
                 .clickable { }
-        ){
+        ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
@@ -48,30 +51,36 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                 Column(
                     modifier = Modifier.padding( start = 25.dp, end = 15.dp,  bottom = 5.dp)
                 ) {
-                    Text(fontSize = 18.sp, modifier = Modifier.padding(end = 5.dp), text = buildAnnotatedString {
-                        withStyle(
-                            style = SpanStyle(
-                                fontWeight = FontWeight.Normal,
-                                color = Color.Black,
-                            )
-                        ) {
-                            append("Delayed: " + flightInfoData.flightDelay + " min")
-                        }
-                    })
+                    Text(
+                        fontSize = 18.sp,
+                        modifier = Modifier.padding(end = 5.dp),
+                        text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    fontWeight = FontWeight.Normal,
+                                    color = Color.Black,
+                                )
+                            ) {
+                                append("Delayed: ${flightInfoData.delay ?: 0} min")
+                            }
+                        })
                 }
                 Column(
                     modifier = Modifier.padding(start = 45.dp , bottom = 5.dp)
                 ) {
-                    Text(fontSize = 18.sp, modifier = Modifier.padding(end = 5.dp), text = buildAnnotatedString {
-                        withStyle(
-                            style = SpanStyle(
-                                fontWeight = FontWeight.Normal,
-                                color = Color.Black,
-                            )
-                        ) {
-                            append("Duration: " + flightInfoData.flightDuration)
-                        }
-                    })
+                    Text(
+                        fontSize = 18.sp,
+                        modifier = Modifier.padding(end = 5.dp),
+                        text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    fontWeight = FontWeight.Normal,
+                                    color = Color.Black,
+                                )
+                            ) {
+                                append("Duration: " + flightInfoData.flightDuration)
+                            }
+                        })
                 }
             }
         }
@@ -83,7 +92,7 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                 .fillMaxWidth()
                 .padding(0.dp)
                 .clickable { }
-        ){
+        ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
@@ -97,30 +106,39 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Text(fontSize = 20.sp, modifier = Modifier.padding(end = 5.dp), text = buildAnnotatedString {
-                            withStyle(
-                                style = SpanStyle(
-                                    fontWeight = FontWeight.Medium,
-                                    color = Color.Black,
-                                )
-                            ) {
-                                append(flightInfoData.departAirport + " : " + flightInfoData.departCity)
-                            }
-                        })
+                        Text(
+                            fontSize = 20.sp,
+                            modifier = Modifier.padding(end = 5.dp),
+                            text = buildAnnotatedString {
+                                withStyle(
+                                    style = SpanStyle(
+                                        fontWeight = FontWeight.Medium,
+                                        color = Color.Black,
+                                    )
+                                ) {
+                                    append(flightInfoData.depAirportName + " : " + flightInfoData.depCity)
+                                }
+                            })
                     }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Text(fontSize = 16.sp, modifier = Modifier.padding(end = 5.dp), text = buildAnnotatedString {
-                            withStyle(
-                                style = SpanStyle(
-                                    color = Color.Gray
-                                )
-                            ) {
-                                append(flightInfoData.departDate)
-                            }
-                        })
+                        Text(
+                            fontSize = 16.sp,
+                            modifier = Modifier.padding(end = 5.dp),
+                            text = buildAnnotatedString {
+                                withStyle(
+                                    style = SpanStyle(
+                                        color = Color.Gray
+                                    )
+                                ) {
+                                    val scheduled = flightInfoData.depScheduled
+                                    if (scheduled != null) {
+                                        append(scheduled.format(DateTimeFormatter.ISO_LOCAL_TIME) ?: "")
+                                    }
+                                }
+                            })
                     }
                 }
 
@@ -137,44 +155,53 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Text(fontSize = 16.sp, modifier = Modifier.padding(end = 5.dp), text = buildAnnotatedString {
-                            withStyle(
-                                style = SpanStyle(
-                                    color = Color.Black
-                                )
-                            ) {
-                                append("Estimated Departure:")
-                            }
-                        })
-                    }
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(fontSize = 16.sp,modifier = Modifier.padding(start = 10.dp), text = buildAnnotatedString {
-                            withStyle(
-                                style = SpanStyle(
-                                    color = Color.Red
-                                )
-                            ) {
-                                append("10:00")
-                            }
-                        })
-                    }
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(fontSize = 16.sp,modifier = Modifier.padding(start = 10.dp), text = buildAnnotatedString {
-                            withStyle(
+                        Text(
+                            fontSize = 16.sp,
+                            modifier = Modifier.padding(end = 5.dp),
+                            text = buildAnnotatedString {
+                                withStyle(
                                     style = SpanStyle(
-                                    color = Color.Gray
+                                        color = Color.Black
+                                    )
+                                ) {
+                                    append("Estimated Departure:")
+                                }
+                            })
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            fontSize = 16.sp,
+                            modifier = Modifier.padding(start = 10.dp),
+                            text = buildAnnotatedString {
+                                withStyle(
+                                    style = SpanStyle(
+                                        color = Color.Red
+                                    )
+                                ) {
+                                    append("10:00")
+                                }
+                            })
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            fontSize = 16.sp,
+                            modifier = Modifier.padding(start = 10.dp),
+                            text = buildAnnotatedString {
+                                withStyle(
+                                    style = SpanStyle(
+                                        color = Color.Gray
 
-                                )
-                            ) {
-                                append("12:30")
-                            }
-                        })
+                                    )
+                                ) {
+                                    append("12:30")
+                                }
+                            })
                     }
                 }
                 Column(
@@ -184,15 +211,18 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Text(fontSize = 16.sp,modifier = Modifier.padding(end = 5.dp), text = buildAnnotatedString {
-                            withStyle(
-                                style = SpanStyle(
-                                    color = Color.Black
-                                )
-                            ) {
-                                append("Terminal: ")
-                            }
-                        })
+                        Text(
+                            fontSize = 16.sp,
+                            modifier = Modifier.padding(end = 5.dp),
+                            text = buildAnnotatedString {
+                                withStyle(
+                                    style = SpanStyle(
+                                        color = Color.Black
+                                    )
+                                ) {
+                                    append("Terminal: ")
+                                }
+                            })
                     }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -204,7 +234,7 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                                     color = Color.Gray
                                 )
                             ) {
-                                append(flightInfoData.departTerminal)
+                                append(flightInfoData.depTerminal ?: "??")
                             }
                         })
                     }
@@ -230,15 +260,18 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Text(fontSize = 16.sp, modifier = Modifier.padding(end = 5.dp), text = buildAnnotatedString {
-                            withStyle(
-                                style = SpanStyle(
-                                    color = Color.Black
-                                )
-                            ) {
-                                append("Gate:")
-                            }
-                        })
+                        Text(
+                            fontSize = 16.sp,
+                            modifier = Modifier.padding(end = 5.dp),
+                            text = buildAnnotatedString {
+                                withStyle(
+                                    style = SpanStyle(
+                                        color = Color.Black
+                                    )
+                                ) {
+                                    append("Gate:")
+                                }
+                            })
                     }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -250,7 +283,7 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                                     color = Color.Gray
                                 )
                             ) {
-                                append(flightInfoData.departGate)
+                                append(flightInfoData.depGate ?: "??")
                             }
                         })
                     }
@@ -282,7 +315,7 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
             .fillMaxWidth()
             .padding(0.dp)
             .clickable { }
-    ){
+    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
@@ -296,30 +329,39 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Text(fontSize = 20.sp, modifier = Modifier.padding(end = 5.dp), text = buildAnnotatedString {
-                        withStyle(
-                            style = SpanStyle(
-                                fontWeight = FontWeight.Medium,
-                                color = Color.Black,
-                            )
-                        ) {
-                            append(flightInfoData.arrivalAirport + " : " + flightInfoData.arrivalCity)
-                        }
-                    })
+                    Text(
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(end = 5.dp),
+                        text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color.Black,
+                                )
+                            ) {
+                                append(flightInfoData.arrAirportName + " : " + flightInfoData.arrCity)
+                            }
+                        })
                 }
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Text(fontSize = 16.sp, modifier = Modifier.padding(end = 5.dp), text = buildAnnotatedString {
-                        withStyle(
-                            style = SpanStyle(
-                                color = Color.Gray
-                            )
-                        ) {
-                            append(flightInfoData.arrivalDate)
-                        }
-                    })
+                    Text(
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(end = 5.dp),
+                        text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    color = Color.Gray
+                                )
+                            ) {
+                                val scheduled = flightInfoData.depScheduled
+                                if (scheduled != null) {
+                                    append(scheduled.format(DateTimeFormatter.ISO_LOCAL_TIME))
+                                }
+                            }
+                        })
                 }
             }
 
@@ -336,15 +378,18 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Text(fontSize = 16.sp, modifier = Modifier.padding(end = 5.dp), text = buildAnnotatedString {
-                        withStyle(
-                            style = SpanStyle(
-                                color = Color.Black
-                            )
-                        ) {
-                            append("Estimated Arrival:")
-                        }
-                    })
+                    Text(
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(end = 5.dp),
+                        text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    color = Color.Black
+                                )
+                            ) {
+                                append("Estimated Arrival:")
+                            }
+                        })
                 }
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -371,7 +416,10 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
 
                             )
                         ) {
-                            append(flightInfoData.arrivalTime)
+                            val scheduled = flightInfoData.arrScheduled
+                            if (scheduled != null) {
+                                append(scheduled.format(DateTimeFormatter.ISO_LOCAL_TIME))
+                            }
                         }
                     })
                 }
@@ -383,15 +431,18 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Text(fontSize = 16.sp,modifier = Modifier.padding(end = 5.dp), text = buildAnnotatedString {
-                        withStyle(
-                            style = SpanStyle(
-                                color = Color.Black
-                            )
-                        ) {
-                            append("Terminal: ")
-                        }
-                    })
+                    Text(
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(end = 5.dp),
+                        text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    color = Color.Black
+                                )
+                            ) {
+                                append("Terminal: ")
+                            }
+                        })
                 }
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -403,7 +454,7 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                                 color = Color.Gray
                             )
                         ) {
-                            append(flightInfoData.arrivalTerminal)
+                            append(flightInfoData.arrTerminal ?: "??")
                         }
                     })
                 }
@@ -429,15 +480,18 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Text(fontSize = 16.sp, modifier = Modifier.padding(end = 5.dp), text = buildAnnotatedString {
-                        withStyle(
-                            style = SpanStyle(
-                                color = Color.Black
-                            )
-                        ) {
-                            append("Gate:")
-                        }
-                    })
+                    Text(
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(end = 5.dp),
+                        text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    color = Color.Black
+                                )
+                            ) {
+                                append("Gate:")
+                            }
+                        })
                 }
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -449,7 +503,7 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                                 color = Color.Gray
                             )
                         ) {
-                            append(flightInfoData.arrivalGate)
+                            append(flightInfoData.arrGate ?: "??")
                         }
                     })
                 }
@@ -605,26 +659,31 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
 
 
 }
+
 @Preview
 @Composable
 fun PreviewFlightInfoCard() = FlightInfoCard(
-    flightInfoData = FlightInfoViewModel.FlightInfo(
-        35,
-        "2h10m",
-    "Lufthansa 256 (LU256)",
-    "MUC",
-    "BCN",
-    "Munich",
-    "Barcelona",
-    "10:55",
-    "12:55",
-    "Mon 21 Mar",
-    "Mon 21 Mar",
-        "2",
-        "K6",
-        "15",
-        "A21"
-
+    flightInfoData = FlightInfo(
+        delay = 35,
+        flightDuration = 60*2+10,
+        flightNumber = "Lufthansa 256 (LU256)",
+        depAirportIata = "MUC",
+        arrAirportIata = "BCN",
+        depCity = "Munich",
+        arrCity = "Barcelona",
+        depScheduled = LocalDateTime.now(),
+        depEstimated = LocalDateTime.now().plusMinutes(5), // late 5 mins
+        arrScheduled = LocalDateTime.now().plusHours(1),
+        arrEstimated = LocalDateTime.now().plusHours(1).minusMinutes(5), // early 5 mins
+        depTerminal = "2",
+        depGate = "K6",
+        arrTerminal = "15",
+        arrGate = "A21",
+        flightIata = "LH256",
+        airlineIata = "LH",
+        airlineName = "Lufthansa",
+        arrAirportName = "Munich International Airport",
+        depAirportName = "Barcelona International Airport",
     )
 )
 
