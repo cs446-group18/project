@@ -25,18 +25,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.cs446group18.delaywise.R
+import com.cs446group18.delaywise.ui.destinations.FlightInfoViewDestination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 data class ListItem(val name: String)
 
 @Composable
-fun ListItem(item: ListItem, onSearchInputChange: (String) -> Unit) {
+fun ListItem(item: ListItem, onSelect: (String) -> Unit) {
     Card(
         modifier = Modifier
             //.heightIn(min = 50.dp)
             .fillMaxWidth()
-            .clickable { onSearchInputChange(item.name) },
+            .clickable { onSelect(item.name) },
         shape = RoundedCornerShape(0),
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
@@ -66,7 +69,7 @@ suspend fun mockApi(searchText: TextFieldValue): List<ListItem> {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchBox() {
+fun SearchBox(navigator: DestinationsNavigator) {
     var textFieldValueState by remember{
         mutableStateOf(
             TextFieldValue(
@@ -115,11 +118,12 @@ fun SearchBox() {
                     .clip(shape = RoundedCornerShape(8.dp))
             ) {
                 items(searchResults) { item ->
-                    ListItem(item, onSearchInputChange = {
+                    ListItem(item, onSelect = {
                         textFieldValueState = TextFieldValue(
                             text = it,
                             selection = TextRange(it.length)
                         )
+                        navigator.navigate(FlightInfoViewDestination(it))
                     })
                 }
             }
@@ -128,4 +132,4 @@ fun SearchBox() {
 }
 @Preview
 @Composable
-fun PreviewBox() = SearchBox()
+fun PreviewBox() = SearchBox(EmptyDestinationsNavigator)

@@ -62,12 +62,13 @@ fun FlightInfoView(
                 Column(
                     modifier = Modifier.padding(contentPadding) ,
                     horizontalAlignment = Alignment.CenterHorizontally
-                ) {Text(
-                    "Lufthansa 256",
-                    fontFamily = appFontFamily,
-                    fontSize = 32.sp,
-                    modifier = Modifier.absolutePadding(left = 10.dp)
-                )
+                ) {
+                    Text(
+                        "${flightInfo.airlineName} ${flightInfo.flightNumber}",
+                        fontFamily = appFontFamily,
+                        fontSize = 32.sp,
+                        modifier = Modifier.absolutePadding(left = 10.dp)
+                    )
                     FlightInfoCard(
                         flightInfoData = flightInfo
                     )

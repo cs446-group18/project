@@ -94,7 +94,7 @@ fun HomeView(
             Text("DelayWise!", fontFamily = appFontFamily, fontSize = 40.sp)
             Text("Enter a flight number or airport:", fontFamily = bodyFontFamily, fontSize = 15.sp)
             Spacer(modifier = Modifier.height(15.dp))
-            SearchBox()
+            SearchBox(navigator)
             Spacer(modifier = Modifier.height(15.dp))
             Text("Saved Flights", fontSize = 28.sp, fontFamily = appFontFamily)
             LazyColumn(
