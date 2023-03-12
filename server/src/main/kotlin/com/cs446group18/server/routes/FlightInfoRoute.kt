@@ -1,4 +1,4 @@
-package com.example.routes
+package com.cs446group18.server.routes
 
 import com.cs446group18.lib.models.FlightInfo
 import com.cs446group18.lib.models.FlightStatus
@@ -11,7 +11,10 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
-import java.time.*
+import java.time.Duration
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 const val API_KEY_AIRLABS = "b0134401-3dd2-469c-85cf-4974afbf338b"
