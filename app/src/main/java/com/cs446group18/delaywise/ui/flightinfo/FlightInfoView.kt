@@ -51,16 +51,16 @@ fun FlightInfoView(
             modifier = Modifier.padding(contentPadding) ,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {Text(
-                "Lufthansa 256",
+                "AC8836",
                 fontFamily = appFontFamily,
                 fontSize = 32.sp,
                 modifier = Modifier.absolutePadding(left = 10.dp)
             )
             FlightInfoCard(
                 flightInfoData = FlightInfoViewModel.FlightInfo(
-                    35,
+                    20,
                     "2h10m",
-                    "Lufthansa 256 (LU256)",
+                    "LU256",
                     "MUC",
                     "BCN",
                     "Munich",
