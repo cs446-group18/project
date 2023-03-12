@@ -8,6 +8,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
@@ -47,15 +48,20 @@ fun FlightInfoView(
             BottomBar(navigator)
         },
     ) { contentPadding ->
-        Column(modifier = Modifier.padding(contentPadding)) {
-            Text(
-                "Lufthansa 256 (LH256)",
+        Column(
+            modifier = Modifier.padding(contentPadding) ,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {Text(
+                "Lufthansa 256",
                 fontFamily = appFontFamily,
                 fontSize = 32.sp,
                 modifier = Modifier.absolutePadding(left = 10.dp)
             )
             FlightInfoCard(
                 flightInfoData = FlightInfoViewModel.FlightInfo(
+                    35,
+                    "2h10m",
+                    "Lufthansa 256 (LU256)",
                     "MUC",
                     "BCN",
                     "Munich",
@@ -65,10 +71,8 @@ fun FlightInfoView(
                     "Mon 21 Mar",
                     "Mon 21 Mar"
             ))
-            FlightGateCard(flightGateInfoData = FlightInfoViewModel.FlightGateInfo(
-                "2",
-                "K6"
-            ))
+
+
         }
     }
 }

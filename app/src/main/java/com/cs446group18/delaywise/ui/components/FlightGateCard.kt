@@ -67,7 +67,7 @@ fun FlightGateCard(flightGateInfoData: FlightInfoViewModel.FlightGateInfo) {
                                 color = Color.Black,
                             )
                         ) {
-                            append(flightGateInfoData.terminal)
+                            append(flightGateInfoData.departTerminal)
                         }
                     })
                     Column(
@@ -112,7 +112,7 @@ fun FlightGateCard(flightGateInfoData: FlightInfoViewModel.FlightGateInfo) {
                                 color = Color.Black,
                             )
                         ) {
-                            append(flightGateInfoData.gate)
+                            append(flightGateInfoData.departGate)
                         }
                     })
                     Column(
@@ -130,5 +130,7 @@ fun PreviewFlightGateCard() = FlightGateCard(
     flightGateInfoData = FlightInfoViewModel.FlightGateInfo(
         "2",
         "K6",
+        "5",
+        "A24"
     )
 )
