@@ -208,6 +208,20 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                             }
                         })
                     }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(fontSize = 16.sp, modifier = Modifier.padding(start = 5.dp), text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    color = Color.White
+                                )
+                            ) {
+                                append("    ")
+                            }
+                        })
+                    }
                 }
                 Column(
                     modifier = Modifier.padding(25.dp)
@@ -237,6 +251,20 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                                 )
                             ) {
                                 append("K6")
+                            }
+                        })
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(fontSize = 16.sp, modifier = Modifier.padding(start = 5.dp), text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    color = Color.White
+                                )
+                            ) {
+                                append("    ")
                             }
                         })
                     }
@@ -377,6 +405,20 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                         }
                     })
                 }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(fontSize = 16.sp, modifier = Modifier.padding(start = 5.dp), text = buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                color = Color.White
+                            )
+                        ) {
+                            append("    ")
+                        }
+                    })
+                }
             }
             Column(
                 modifier = Modifier.padding(25.dp)
@@ -409,10 +451,154 @@ fun FlightInfoCard(flightInfoData: FlightInfoViewModel.FlightInfo) {
                         }
                     })
                 }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(fontSize = 16.sp, modifier = Modifier.padding(start = 5.dp), text = buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                color = Color.White
+                            )
+                        ) {
+                            append("    ")
+                        }
+                    })
+                }
             }
         }
-
-
+    }
+    Card(
+        elevation = CardDefaults.cardElevation(2.dp),
+        shape = RoundedCornerShape(size = 12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(0.dp)
+            .clickable { }
+    ){
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(fontSize = 20.sp, modifier = Modifier.padding(start = 5.dp), text = buildAnnotatedString {
+                withStyle(
+                    style = SpanStyle(
+                        fontWeight = FontWeight.Medium,
+                        color = Color.Black
+                    )
+                ) {
+                    append("Historical Delays Over: ")
+                }
+            })
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Column(
+                modifier = Modifier.padding(15.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(fontSize = 16.sp, modifier = Modifier.padding(start = 5.dp), text = buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                fontWeight = FontWeight.Normal,
+                                color = Color.Gray
+                            )
+                        ) {
+                            append("43%")
+                        }
+                    })
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(fontSize = 16.sp, modifier = Modifier.padding(start = 5.dp), text = buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                fontWeight = FontWeight.Normal,
+                                color = Color.Black
+                            )
+                        ) {
+                            append("Rate of Delay")
+                        }
+                    })
+                }
+            }
+            Column(
+                modifier = Modifier.padding(10.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(fontSize = 16.sp, modifier = Modifier.padding(start = 5.dp), text = buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                fontWeight = FontWeight.Normal,
+                                color = Color.Gray
+                            )
+                        ) {
+                            append("25 min")
+                        }
+                    })
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(fontSize = 16.sp, modifier = Modifier.padding(start = 5.dp), text = buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                fontWeight = FontWeight.Normal,
+                                color = Color.Black
+                            )
+                        ) {
+                            append("Avg. Delay")
+                        }
+                    })
+                }
+            }
+            Column(
+                modifier = Modifier.padding(10.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(fontSize = 16.sp, modifier = Modifier.padding(start = 5.dp), text = buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                fontWeight = FontWeight.Normal,
+                                color = Color.Gray
+                            )
+                        ) {
+                            append("10%")
+                        }
+                    })
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(fontSize = 16.sp, modifier = Modifier.padding(start = 5.dp), text = buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                fontWeight = FontWeight.Normal,
+                                color = Color.Black
+                            )
+                        ) {
+                            append("Cancellation Rate")
+                        }
+                    })
+                }
+            }
+        }
     }
 
 
