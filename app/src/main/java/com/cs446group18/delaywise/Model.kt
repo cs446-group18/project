@@ -1,6 +1,6 @@
 package com.cs446group18.delaywise
 
-import com.cs446group18.delaywise.models.FlightInfo
+import com.cs446group18.lib.models.FlightInfo
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*

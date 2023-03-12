@@ -103,4 +103,6 @@ dependencies {
 
     implementation("io.github.raamcosta.compose-destinations:core:1.8.35-beta")
     ksp("io.github.raamcosta.compose-destinations:ksp:1.8.35-beta")
+
+    implementation(project(":lib"))
 }

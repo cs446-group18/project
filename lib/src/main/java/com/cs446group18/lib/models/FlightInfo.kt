@@ -1,4 +1,4 @@
-package com.example.models
+package com.cs446group18.lib.models
 
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable

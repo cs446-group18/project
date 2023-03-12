@@ -1,7 +1,7 @@
 package com.example.routes
 
-import com.example.models.FlightInfo
-import com.example.models.FlightStatus
+import com.cs446group18.lib.models.FlightInfo
+import com.cs446group18.lib.models.FlightStatus
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
