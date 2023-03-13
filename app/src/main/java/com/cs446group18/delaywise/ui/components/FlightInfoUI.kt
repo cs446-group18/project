@@ -68,12 +68,18 @@ fun BasicInfoCard(
         Heading(
             "$airportIata: $airportName"
         )
+        Row (modifier = Modifier.fillMaxWidth().padding(5.dp), horizontalArrangement = Arrangement.Start)
+        {
+            if (scheduledTime != null) {
+                BodyText("Date: ${scheduledTime.format(dateFormatter)}")
+            }
+        }
         Divider(thickness = 2.dp, modifier = Modifier.padding(3.dp))
         Row(modifier = Modifier
             .fillMaxWidth()
             .padding(5.dp), horizontalArrangement = Arrangement.SpaceBetween) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                BodyText("Estimated $label")
+                BodyText("$label Time")
                 if (estimatedTime != null && scheduledTime != null) {
                     var color = Color.Red // todo: make this dynamic
                     BodyText(scheduledTime!!.format(timeFormatter).toString(),
@@ -83,6 +89,8 @@ fun BasicInfoCard(
                     BodyText(estimatedTime.format(timeFormatter).toString(), color = color)
                 } else if (estimatedTime != null) {
                     BodyText(estimatedTime.format(timeFormatter).toString())
+                } else if (scheduledTime != null) {
+                    BodyText(scheduledTime.format(timeFormatter).toString())
                 } else {
                     BodyText("Error: no time data", color = Color.Gray)
                 }
