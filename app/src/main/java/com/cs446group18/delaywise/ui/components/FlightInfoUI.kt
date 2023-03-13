@@ -141,7 +141,7 @@ fun FlightInfoUI(flightInfoData: FlightInfo) {
                 .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     BodyText( flightInfoData.delay?.toString() ?: "15-30", color = Color(0xFFFFA500)) // Orange
-                    BodyText("Predicted Delay")
+                    BodyText("Projected Delay")
                 }
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     BodyText("45%")
