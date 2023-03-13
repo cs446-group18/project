@@ -1,5 +1,6 @@
 package com.cs446group18.delaywise.ui.flightinfo
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
@@ -73,7 +74,7 @@ fun FlightInfoView(
                             imageVector = Icons.Filled.Bookmark,
                             tint = Color(0xFF2096F3),
                             contentDescription = "Save Page Icon",
-                            modifier = Modifier.size(30.dp).align(Alignment.CenterVertically)
+                            modifier = Modifier.size(30.dp).align(Alignment.CenterVertically).clickable(onClick = {})
                         )
                     }
                     FlightInfoUI(

@@ -115,28 +115,31 @@ fun FlightInfoUI(flightInfoData: FlightInfo) {
         .padding(vertical = 10.dp)
         .fillMaxHeight()
         .verticalScroll(rememberScrollState())) {
+
         FullRow {
-            Heading(flightInfoData.airlineName ?: "Unknown Airline")
-            if (flightInfoData.flightIata != null) {
-                Heading(flightInfoData.flightIata.toString())
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Heading(flightInfoData.airlineName ?: "Unknown Airline")
+                if (flightInfoData.delay != null) {
+                    BodyText(
+                        "Delayed ${flightInfoData.delay} min",
+                        color = when(flightInfoData.delay) {
+                            in (Int.MIN_VALUE)..15 -> Color.Green
+                            in 15..30 -> Color(0xFFFF9900) // Yellow/Orange
+                            else -> Color.Red
+                        }
+                    )
+                } else {
+                    BodyText("On Time")
+                }
             }
-        }
-        FullRow {
-            if (flightInfoData.delay != null) {
-                BodyText(
-                    "Delayed ${flightInfoData.delay} min",
-                    color = when(flightInfoData.delay) {
-                        in (Int.MIN_VALUE)..15 -> Color.Green
-                        in 15..30 -> Color(0xFFFF9900) // Yellow/Orange
-                        else -> Color.Red
-                    }
-                )
-            } else {
-                BodyText("On Time")
-            }
-            val flightDuration = flightInfoData.flightDuration
-            if (flightDuration != null) {
-                BodyText("Duration: ${flightDuration.toDuration(DurationUnit.MINUTES)}")
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                if (flightInfoData.flightIata != null) {
+                    Heading(flightInfoData.flightIata.toString())
+                }
+                val flightDuration = flightInfoData.flightDuration
+                if (flightDuration != null) {
+                    BodyText("Duration: ${flightDuration.toDuration(DurationUnit.MINUTES)}")
+                }
             }
         }
         Spacer(modifier = Modifier.padding(10.dp))
