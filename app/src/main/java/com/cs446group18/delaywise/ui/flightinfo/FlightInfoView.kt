@@ -1,15 +1,19 @@
 package com.cs446group18.delaywise.ui.flightinfo
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.absolutePadding
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.MonitorHeart
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
@@ -58,12 +62,20 @@ fun FlightInfoView(
                     modifier = Modifier.padding(contentPadding) ,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        "${flightInfo.airlineName} ${flightInfo.flightNumber}",
-                        fontFamily = headingFont,
-                        fontSize = 32.sp,
-                        modifier = Modifier.absolutePadding(left = 10.dp)
-                    )
+                    Row(horizontalArrangement = Arrangement.spacedBy(5.dp,Alignment.CenterHorizontally)) {
+                        Text(
+                            "${flightInfo.airlineName} ${flightInfo.flightNumber}",
+                            fontFamily = headingFont,
+                            fontSize = 32.sp,
+                            modifier = Modifier.absolutePadding(left = 10.dp)
+                        )
+                        Icon(
+                            imageVector = Icons.Filled.Bookmark,
+                            tint = Color(0xFF2096F3),
+                            contentDescription = "Save Page Icon",
+                            modifier = Modifier.size(30.dp).align(Alignment.CenterVertically)
+                        )
+                    }
                     FlightInfoUI(
                         flightInfoData = flightInfo
                     )
