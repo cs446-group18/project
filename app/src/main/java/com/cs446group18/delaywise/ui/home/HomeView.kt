@@ -21,30 +21,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cs446group18.delaywise.R
 import com.cs446group18.delaywise.ui.components.*
+import com.cs446group18.delaywise.ui.styles.headingFont
+import com.cs446group18.delaywise.ui.styles.bodyFont
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 
-
-private val appFontFamily = FontFamily(
-    fonts = listOf(
-        Font(
-            resId = R.font.montserrat_extrabold,
-            weight = FontWeight.W900,
-            style = FontStyle.Normal
-        ),
-    )
-)
-private val bodyFontFamily = FontFamily(
-    fonts = listOf(
-        Font(
-            resId = R.font.montserrat_regular,
-            weight = FontWeight.W400,
-            style = FontStyle.Normal
-        ),
-    )
-)
 
 private val savedFlightsList = mutableListOf(
     HomeViewModel.Flight("AC8836", "AC", "Likely 39m Delay", DelayType.LIKELY, "YYZ(Toronto)", "RDU(Raleigh)", "Scheduled 2:05pm; Mon 13 March, 2023"),
@@ -87,13 +70,13 @@ fun HomeView(
                 .padding(contentPadding.calculateEndPadding(layoutDirection = LayoutDirection.Ltr))
 
         ) {
-            Text("Welcome to", fontFamily = appFontFamily, fontSize = 28.sp)
-            Text("DelayWise!", fontFamily = appFontFamily, fontSize = 40.sp)
-            Text("Enter a flight number or airport:", fontFamily = bodyFontFamily, fontSize = 15.sp)
+            Text("Welcome to", fontFamily = headingFont, fontSize = 28.sp)
+            Text("DelayWise!", fontFamily = headingFont, fontSize = 40.sp)
+            Text("Enter a flight number or airport:", fontFamily = bodyFont, fontSize = 15.sp)
             Spacer(modifier = Modifier.height(15.dp))
             SearchBox(navigator)
             Spacer(modifier = Modifier.height(15.dp))
-            Text("Saved Flights", fontSize = 28.sp, fontFamily = appFontFamily)
+            Text("Saved Flights", fontSize = 28.sp, fontFamily = headingFont)
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
