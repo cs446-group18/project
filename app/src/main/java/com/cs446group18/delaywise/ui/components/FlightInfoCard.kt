@@ -34,6 +34,7 @@ fun FlightInfoCard(flightInfoData: FlightInfo) {
             .padding(3.dp)
             .clickable { }
     ) {
+
         Card(
             elevation = CardDefaults.cardElevation(0.dp),
             shape = RoundedCornerShape(size = 12.dp),
@@ -48,39 +49,134 @@ fun FlightInfoCard(flightInfoData: FlightInfo) {
                 horizontalArrangement = Arrangement.Center
             ) {
                 Column(
-                    modifier = Modifier.padding( start = 25.dp, end = 15.dp,  bottom = 5.dp)
+                    modifier = Modifier.padding( start = 25.dp, bottom = 5.dp)
                 ) {
-                    Text(
-                        fontSize = 18.sp,
-                        modifier = Modifier.padding(end = 5.dp),
-                        text = buildAnnotatedString {
-                            withStyle(
-                                style = SpanStyle(
-                                    fontWeight = FontWeight.Normal,
-                                    color = Color.Black,
-                                )
-                            ) {
-                                append("Delayed: ${flightInfoData.delay ?: 0} min")
-                            }
-                        })
+                    Text(fontSize = 16.sp, modifier = Modifier.padding(end = 5.dp), text = buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                fontWeight = FontWeight.Normal,
+                                color = Color.Red,
+                            )
+                        ) {
+                            append(" Expected Delayed: ${flightInfoData.delay ?: 0} min")
+                        }
+                    })
                 }
                 Column(
-                    modifier = Modifier.padding(start = 45.dp , bottom = 5.dp)
+                    modifier = Modifier.padding(start = 25.dp , bottom = 5.dp)
                 ) {
-                    Text(
-                        fontSize = 18.sp,
-                        modifier = Modifier.padding(end = 5.dp),
-                        text = buildAnnotatedString {
+                    Text(fontSize = 16.sp, modifier = Modifier.padding(end = 5.dp), text = buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                fontWeight = FontWeight.Normal,
+                                color = Color.Black,
+                            )
+                        ) {
+                            append("Duration: " + flightInfoData.flightDuration)
+                        }
+                    })
+                }
+            }
+        }
+
+        Card(
+            elevation = CardDefaults.cardElevation(4.dp),
+            shape = RoundedCornerShape(size = 12.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(0.dp)
+                .clickable { }
+        ){
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(fontSize = 18.sp, modifier = Modifier.padding(top = 5.dp, start = 15.dp), text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.Medium,
+                            color = Color.Black,
+                        )
+                    ) {
+                        append("Flight Prediction By Amadeus: ")
+                    }
+                })
+
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Column(
+                    modifier = Modifier.padding(15.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(fontSize = 16.sp, modifier = Modifier.padding(start = 5.dp), text = buildAnnotatedString {
                             withStyle(
                                 style = SpanStyle(
                                     fontWeight = FontWeight.Normal,
-                                    color = Color.Black,
+                                    color = Color.Black
                                 )
                             ) {
-                                append("Duration: ${flightInfoData.flightDuration} minutes")
+                                append("10-15 min")
                             }
                         })
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(fontSize = 16.sp, modifier = Modifier.padding(start = 5.dp), text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    fontWeight = FontWeight.Normal,
+                                    color = Color.Gray
+                                )
+                            ) {
+                                append("Predicted")
+                            }
+                        })
+                    }
                 }
+                Column(
+                    modifier = Modifier.padding(10.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(fontSize = 16.sp, modifier = Modifier.padding(start = 5.dp), text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    fontWeight = FontWeight.Normal,
+                                    color = Color.Black
+                                )
+                            ) {
+                                append("45%")
+                            }
+                        })
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(fontSize = 16.sp, modifier = Modifier.padding(start = 5.dp), text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    fontWeight = FontWeight.Normal,
+                                    color = Color.Gray
+                                )
+                            ) {
+                                append("Likelihood")
+                            }
+                        })
+                    }
+                }
+
             }
         }
         Card(
@@ -123,21 +219,18 @@ fun FlightInfoCard(flightInfoData: FlightInfo) {
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Text(
-                            fontSize = 16.sp,
-                            modifier = Modifier.padding(end = 5.dp),
-                            text = buildAnnotatedString {
-                                withStyle(
-                                    style = SpanStyle(
-                                        color = Color.Gray
-                                    )
-                                ) {
-                                    val scheduled = flightInfoData.depScheduled
-                                    if (scheduled != null) {
-                                        append(scheduled.format(DateTimeFormatter.ISO_LOCAL_TIME) ?: "")
-                                    }
+                        Text(fontSize = 16.sp, modifier = Modifier.padding(end = 5.dp), text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    color = Color.Black
+                                )
+                            ) {
+                                val scheduled = flightInfoData.depScheduled
+                                if (scheduled != null) {
+                                    append(scheduled.format(DateTimeFormatter.ISO_LOCAL_TIME) ?: "")
                                 }
-                            })
+                            }
+                        })
                     }
                 }
 
@@ -154,11 +247,36 @@ fun FlightInfoCard(flightInfoData: FlightInfo) {
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Text(
-                            fontSize = 16.sp,
-                            modifier = Modifier.padding(end = 5.dp),
-                            text = buildAnnotatedString {
-                                withStyle(
+                        Text(fontSize = 16.sp, modifier = Modifier.padding(end = 5.dp), text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    color = Color.Black
+                                )
+                            ) {
+                                append("Estimated Departure:")
+                            }
+                        })
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(fontSize = 16.sp,modifier = Modifier.padding(start = 10.dp), text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    color = Color.Red
+                                )
+                            ) {
+                                append("12:50")
+                            }
+                        })
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(fontSize = 16.sp,modifier = Modifier.padding(start = 10.dp), text = buildAnnotatedString {
+                            withStyle(
                                     style = SpanStyle(
                                         color = Color.Black
                                     )
@@ -346,21 +464,18 @@ fun FlightInfoCard(flightInfoData: FlightInfo) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Text(
-                        fontSize = 16.sp,
-                        modifier = Modifier.padding(end = 5.dp),
-                        text = buildAnnotatedString {
-                            withStyle(
-                                style = SpanStyle(
-                                    color = Color.Gray
-                                )
-                            ) {
-                                val scheduled = flightInfoData.depScheduled
-                                if (scheduled != null) {
-                                    append(scheduled.format(DateTimeFormatter.ISO_LOCAL_TIME))
-                                }
+                    Text(fontSize = 16.sp, modifier = Modifier.padding(end = 5.dp), text = buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                color = Color.Black
+                            )
+                        ) {
+                            val scheduled = flightInfoData.arrScheduled
+                            if (scheduled != null) {
+                                append(scheduled.format(DateTimeFormatter.ISO_LOCAL_TIME))
                             }
-                        })
+                        }
+                    })
                 }
             }
 
@@ -408,10 +523,11 @@ fun FlightInfoCard(flightInfoData: FlightInfo) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Text(fontSize = 16.sp,modifier = Modifier.padding(start = 10.dp), text = buildAnnotatedString {
+                    Text(fontSize = 16.sp, modifier = Modifier.padding(start = 10.dp), text = buildAnnotatedString {
                         withStyle(
                             style = SpanStyle(
                                 color = Color.Gray
+
 
                             )
                         ) {
@@ -546,6 +662,16 @@ fun FlightInfoCard(flightInfoData: FlightInfo) {
                     append("Historical Delays Over: ")
                 }
             })
+            Text(fontSize = 20.sp, modifier = Modifier.padding(top = 5.dp, start = 65.dp), text = buildAnnotatedString {
+                withStyle(
+                    style = SpanStyle(
+                        fontWeight = FontWeight.Normal,
+                        color = Color.Black,
+                    )
+                ) {
+                    append("7 days")
+                }
+            })
         }
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -562,7 +688,7 @@ fun FlightInfoCard(flightInfoData: FlightInfo) {
                         withStyle(
                             style = SpanStyle(
                                 fontWeight = FontWeight.Normal,
-                                color = Color.Gray
+                                color = Color.Black
                             )
                         ) {
                             append("43%")
@@ -577,7 +703,7 @@ fun FlightInfoCard(flightInfoData: FlightInfo) {
                         withStyle(
                             style = SpanStyle(
                                 fontWeight = FontWeight.Normal,
-                                color = Color.Black
+                                color = Color.Gray
                             )
                         ) {
                             append("Rate of Delay")
@@ -596,7 +722,7 @@ fun FlightInfoCard(flightInfoData: FlightInfo) {
                         withStyle(
                             style = SpanStyle(
                                 fontWeight = FontWeight.Normal,
-                                color = Color.Gray
+                                color = Color.Black
                             )
                         ) {
                             append("25 min")
@@ -611,7 +737,7 @@ fun FlightInfoCard(flightInfoData: FlightInfo) {
                         withStyle(
                             style = SpanStyle(
                                 fontWeight = FontWeight.Normal,
-                                color = Color.Black
+                                color = Color.Gray
                             )
                         ) {
                             append("Avg. Delay")
@@ -630,7 +756,7 @@ fun FlightInfoCard(flightInfoData: FlightInfo) {
                         withStyle(
                             style = SpanStyle(
                                 fontWeight = FontWeight.Normal,
-                                color = Color.Gray
+                                color = Color.Black
                             )
                         ) {
                             append("10%")
@@ -645,7 +771,7 @@ fun FlightInfoCard(flightInfoData: FlightInfo) {
                         withStyle(
                             style = SpanStyle(
                                 fontWeight = FontWeight.Normal,
-                                color = Color.Black
+                                color = Color.Gray
                             )
                         ) {
                             append("Cancellation Rate")
