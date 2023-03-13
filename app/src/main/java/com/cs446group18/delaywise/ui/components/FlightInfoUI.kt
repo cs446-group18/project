@@ -32,7 +32,6 @@ fun FlightInfoCard(flightInfoData: FlightInfo) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(3.dp)
-            .clickable { }
     ) {
 
         Card(
@@ -42,7 +41,6 @@ fun FlightInfoCard(flightInfoData: FlightInfo) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(3.dp)
-                .clickable { }
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -86,7 +84,6 @@ fun FlightInfoCard(flightInfoData: FlightInfo) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(0.dp)
-                .clickable { }
         ){
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -186,7 +183,6 @@ fun FlightInfoCard(flightInfoData: FlightInfo) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(0.dp)
-                .clickable { }
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -431,7 +427,6 @@ fun FlightInfoCard(flightInfoData: FlightInfo) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(0.dp)
-            .clickable { }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -646,7 +641,6 @@ fun FlightInfoCard(flightInfoData: FlightInfo) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(0.dp)
-            .clickable { }
     ){
         Row(
             verticalAlignment = Alignment.CenterVertically,
