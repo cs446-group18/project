@@ -17,25 +17,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.cs446group18.delaywise.R
 import com.cs446group18.delaywise.ui.components.*
+import com.cs446group18.delaywise.ui.components.BottomBar
+import com.cs446group18.delaywise.ui.components.FlightInfoUI
+import com.cs446group18.delaywise.ui.components.TopBar
+import com.cs446group18.delaywise.ui.styles.headingFont
 import com.cs446group18.delaywise.util.UiState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
-import kotlinx.coroutines.delay
 
-private val appFontFamily = FontFamily(
-    fonts = listOf(
-        Font(
-            resId = R.font.montserrat_extrabold,
-            weight = FontWeight.W900,
-            style = FontStyle.Normal
-        ),
-    )
-)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination
@@ -68,11 +60,11 @@ fun FlightInfoView(
                 ) {
                     Text(
                         "${flightInfo.airlineName} ${flightInfo.flightNumber}",
-                        fontFamily = appFontFamily,
+                        fontFamily = headingFont,
                         fontSize = 32.sp,
                         modifier = Modifier.absolutePadding(left = 10.dp)
                     )
-                    FlightInfoCard(
+                    FlightInfoUI(
                         flightInfoData = flightInfo
                     )
                 }
