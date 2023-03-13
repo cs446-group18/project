@@ -58,7 +58,7 @@ fun ListItem(item: ListItem, onSelect: (String) -> Unit) {
         }
     }
 }
-val mockData = listOf(ListItem("AC8838"), ListItem("AC8839"), ListItem("AF4031"), ListItem("DL4980"), ListItem("stuff1"),ListItem("stuff2"),ListItem("stuff3"),ListItem("stuff4"),ListItem("stuff5"),ListItem("stuff6"),ListItem("stuff7"),ListItem("stuff8"),ListItem("stuff9"),ListItem("stuff10"))
+val mockData = listOf(ListItem("AC8836"), ListItem("AC914"),ListItem("AC918"),ListItem("AC1088"), ListItem("AC8839"), ListItem("AC834"), ListItem("LH1810"), ListItem("AC883"))
 suspend fun mockApi(searchText: TextFieldValue): List<ListItem> {
     delay(500L) // synthetic delay
 

@@ -47,7 +47,7 @@ private val bodyFontFamily = FontFamily(
 )
 
 private val savedFlightsList = mutableListOf(
-    HomeViewModel.Flight("AC8836", "AC", "Likely 30m Delay", DelayType.LIKELY, "RDU(Raleigh)", "YYZ(Toronto)", "Scheduled 2:05pm; Mon 13 March, 2023"),
+    HomeViewModel.Flight("AC8836", "AC", "Likely 39m Delay", DelayType.LIKELY, "YYZ(Toronto)", "RDU(Raleigh)", "Scheduled 2:05pm; Mon 13 March, 2023"),
     HomeViewModel.Flight("AC8839", "AC", "Delayed", DelayType.DELAYED, "RDU(Raleigh)", "YYZ(Toronto)", "Delayed to 5pm; Wed 15 March, 2023"),
     HomeViewModel.Flight("AC834", "AC","Likely 15m Delay", DelayType.LIKELY, "YYZ(Toronto)", "MUC(Munich)", "Scheduled 8:30pm; Wed 15 March, 2023"),
     HomeViewModel.Flight("LH1810", "LH","On-Time", DelayType.ONTIME, "MUC(Munich)", "BCN(Barcelona)", "Scheduled 9am; Mon 16 March, 2023"),

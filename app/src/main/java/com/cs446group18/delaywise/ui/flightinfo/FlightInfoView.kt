@@ -17,15 +17,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cs446group18.delaywise.R
-import com.cs446group18.delaywise.ui.components.BottomBar
-import com.cs446group18.delaywise.ui.components.FlightInfoCard
-import com.cs446group18.delaywise.ui.components.TopBar
+import com.cs446group18.delaywise.ui.components.*
 import com.cs446group18.delaywise.util.UiState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
+import kotlinx.coroutines.delay
 
 private val appFontFamily = FontFamily(
     fonts = listOf(
@@ -53,10 +53,13 @@ fun FlightInfoView(
             BottomBar(navigator)
         },
     ) { contentPadding ->
-        when (val state = flightInfoViewModel.flightState.collectAsState(UiState.Empty()).value) {
-            is UiState.Empty -> Text("empty")
-            is UiState.Loading -> Text("loading")
-            is UiState.Error -> Text("error: " + state.message)
+        when (val state = flightInfoViewModel.flightState.collectAsState(UiState.Loading()).value) {
+            is UiState.Loading -> {
+                LoadingCircle()
+            }
+            is UiState.Error -> {
+                ErrorMessage(state.message)
+            }
             is UiState.Loaded -> {
                 val flightInfo = state.data
                 Column(
