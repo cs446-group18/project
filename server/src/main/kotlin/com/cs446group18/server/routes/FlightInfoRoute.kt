@@ -11,10 +11,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
-import java.time.Duration
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
+import java.time.*
 import java.time.format.DateTimeFormatter
 
 const val API_KEY_AIRLABS = "b0134401-3dd2-469c-85cf-4974afbf338b"
@@ -23,6 +20,12 @@ const val API_KEY_AERO = "Yyj2JugSpnL9ZUITA7QSTg4fkstUqsUK"
 
 const val BASE_URL_AERO = "https://aeroapi.flightaware.com/aeroapi"
 
+fun convertUtcToLocal(dateTimeString: String): LocalDateTime {
+    val formatter = DateTimeFormatter.ISO_DATE_TIME
+    val utcDateTime = LocalDateTime.parse(dateTimeString, formatter)
+    val localZoneId = ZoneId.systemDefault()
+    return utcDateTime.atZone(ZoneId.of("UTC")).withZoneSameInstant(localZoneId).toLocalDateTime()
+}
 
 fun Route.flightInfo() {
     get("/oldFlightInfo/{flight_iata}") {    // TODO: add date parameter
@@ -105,8 +108,50 @@ fun Route.flightInfo() {
         }
         var responseObject: JsonObject = Json.decodeFromString(JsonObject.serializer(), httpResponse.body())
 
+
+        // things we want to return
+        //1. today's flight information (matter of searching)
+        val today = LocalDate.now()
+
+        var todaysFlight: JsonElement? = null
+
+        val formatter = DateTimeFormatter.ISO_DATE_TIME
+
+        val flightArray: JsonArray = responseObject["flights"] as JsonArray
+
+        for (flightElement: JsonElement in flightArray){
+            val flightObject = flightElement as JsonObject
+            val scheduledOut = parseElement(flightObject["scheduled_out"])
+
+            val scheduledOutDate = LocalDateTime.parse(scheduledOut, formatter).toLocalDate()
+            if (scheduledOutDate.equals(today)) { // Compare with today's date
+                todaysFlight = flightElement
+                break
+            }
+        }
+
+        // Use todaysFlight here...
+        if (todaysFlight != null) {
+            // Do something with todaysFlight...
+            println("today's flight ${todaysFlight.toString()}")
+        }
+        else {
+            // There is no flight scheduled for today
+        }
+
+        //2. delay information for today's flight
+
+
+        //3. historical delay informaiton (searching through and average), range of 10 days in the past
+
+
+        //need to return today's flight, check todays date against response. keep in mind response is in UTC time, need to convert
+
+        //map on the results to the data class
+
         val encodeDefaultJson = Json { encodeDefaults = true; isLenient = true}
         val responseJson = encodeDefaultJson.encodeToString(responseObject)
+
         call.respondText(responseJson, ContentType.Application.Json)
     }
 
