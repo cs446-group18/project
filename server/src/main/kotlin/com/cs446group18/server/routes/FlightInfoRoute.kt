@@ -19,8 +19,13 @@ import java.time.format.DateTimeFormatter
 
 const val API_KEY_AIRLABS = "b0134401-3dd2-469c-85cf-4974afbf338b"
 
+const val API_KEY_AERO = "Yyj2JugSpnL9ZUITA7QSTg4fkstUqsUK"
+
+const val BASE_URL_AERO = "https://aeroapi.flightaware.com/aeroapi"
+
+
 fun Route.flightInfo() {
-    get("/flightInfo/{flight_iata}") {    // TODO: add date parameter
+    get("/oldFlightInfo/{flight_iata}") {    // TODO: add date parameter
         // val flightDate = call.parameters["date"]
         val flightIata = call.parameters["flight_iata"]
         val client = HttpClient()
@@ -85,6 +90,23 @@ fun Route.flightInfo() {
 
         val encodeDefaultJson = Json { encodeDefaults = true; isLenient = true}
         val responseJson = encodeDefaultJson.encodeToString(flightInfo)
+        call.respondText(responseJson, ContentType.Application.Json)
+    }
+
+    //route to aero api, calling aero api /flights, returns information about a single flight route for the past 12 days, including today and tomorrow
+    get("/flightInfo/{flight_iata}"){
+        val flightIata = call.parameters["flight_iata"]
+        val client = HttpClient()
+
+        var httpResponse = client.get("$BASE_URL_AERO/flights/$flightIata"){
+            headers {
+                append("x-apikey", API_KEY_AERO)
+            }
+        }
+        var responseObject: JsonObject = Json.decodeFromString(JsonObject.serializer(), httpResponse.body())
+
+        val encodeDefaultJson = Json { encodeDefaults = true; isLenient = true}
+        val responseJson = encodeDefaultJson.encodeToString(responseObject)
         call.respondText(responseJson, ContentType.Application.Json)
     }
 
