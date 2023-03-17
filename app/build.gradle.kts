@@ -111,6 +111,21 @@ dependencies {
     kapt("com.google.dagger:hilt-compiler:2.44")
 
     implementation(project(":lib"))
+
+    // Includes the core logic for charts and other elements.
+    implementation("com.patrykandpatrick.vico:core:1.6.4")
+
+    // For Jetpack Compose.
+    implementation("com.patrykandpatrick.vico:compose:1.6.4")
+
+    // For the view system.
+    implementation("com.patrykandpatrick.vico:views:1.6.4")
+
+    // For `compose`. Creates a `ChartStyle` based on an M2 Material Theme.
+    implementation("com.patrykandpatrick.vico:compose-m2:1.6.4")
+
+    // For `compose`. Creates a `ChartStyle` based on an M3 Material Theme.
+    implementation("com.patrykandpatrick.vico:compose-m3:1.6.4")
 }
 
 kapt {
