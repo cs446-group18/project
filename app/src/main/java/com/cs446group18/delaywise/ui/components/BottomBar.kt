@@ -3,8 +3,8 @@ package com.cs446group18.delaywise.ui.components
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.FlightTakeoff
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.cs446group18.delaywise.ui.destinations.HomeViewDestination
 import com.cs446group18.delaywise.ui.destinations.SavedFlightsViewDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
@@ -67,7 +68,7 @@ fun BottomBar(
         }
         FloatingActionButton(
             elevation = FloatingActionButtonDefaults.elevation(10.dp),
-            onClick = { /* do something */ },
+            onClick = { navigator.navigate(HomeViewDestination) },
             containerColor = Color(0xFF007AFF),
             modifier = Modifier
                 .scale(1.2f)
@@ -80,9 +81,9 @@ fun BottomBar(
                 },
         ) {
             Icon(
-                Icons.Filled.Add,
+                Icons.Filled.Search,
                 tint = Color.White,
-                contentDescription = "Add Flight",
+                contentDescription = "Back to Search Page",
                 modifier = Modifier.scale(1.4f),
             )
         }
