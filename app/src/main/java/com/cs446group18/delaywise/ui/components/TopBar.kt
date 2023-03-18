@@ -24,19 +24,20 @@ fun TopBar(navigator: DestinationsNavigator) {
     CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(Color(0x00000000)),
         title = {
-            IconButton(onClick = {
-                scope.launch {
-                    navigator.navigate(HomeViewDestination)
-                }
-            }) {
-                Icon(
-                    imageVector = Icons.Filled.Home,
-                    tint = Color(0xFF1B33B4),
-                    contentDescription = "Home Button",
-                    modifier = Modifier.size(35.dp)
-                )
-            }
-        }, navigationIcon = {
+//            IconButton(onClick = {
+//                scope.launch {
+//                    navigator.navigate(HomeViewDestination)
+//                }
+//            }) {
+//                Icon(
+//                    imageVector = Icons.Filled.Home,
+//                    tint = Color(0xFF1B33B4),
+//                    contentDescription = "Home Button",
+//                    modifier = Modifier.size(35.dp)
+//                )
+//            }
+         },
+        navigationIcon = {
             IconButton(onClick = {
                 scope.launch {
                     navigator.popBackStack()
@@ -48,14 +49,14 @@ fun TopBar(navigator: DestinationsNavigator) {
                 )
             }
         },
-        actions = {
-            IconButton(onClick = { /* doSomething() */ }) {
-                Icon(
-                    imageVector = Icons.Filled.Settings,
-                    contentDescription = "Settings"
-                )
-            }
-        }
+//        actions = {
+//            IconButton(onClick = { /* doSomething() */ }) {
+//                Icon(
+//                    imageVector = Icons.Filled.Settings,
+//                    contentDescription = "Settings"
+//                )
+//            }
+//        }
     )
 }
 
