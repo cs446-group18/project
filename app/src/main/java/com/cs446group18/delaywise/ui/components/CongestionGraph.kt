@@ -1,6 +1,5 @@
 package com.cs446group18.delaywise.ui.components
 
-import android.graphics.Typeface
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -9,10 +8,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.patrykandpatrick.vico.compose.axis.horizontal.bottomAxis
-import com.patrykandpatrick.vico.compose.axis.horizontal.topAxis
-import com.patrykandpatrick.vico.compose.axis.vertical.endAxis
 import com.patrykandpatrick.vico.compose.axis.vertical.startAxis
 import com.patrykandpatrick.vico.compose.chart.Chart
 import com.patrykandpatrick.vico.compose.chart.line.lineChart
@@ -26,30 +22,27 @@ import com.patrykandpatrick.vico.core.DefaultColors
 import com.patrykandpatrick.vico.core.DefaultDimens
 import com.patrykandpatrick.vico.core.axis.AxisPosition
 import com.patrykandpatrick.vico.core.axis.formatter.AxisValueFormatter
-import com.patrykandpatrick.vico.core.axis.formatter.DecimalFormatAxisValueFormatter
-import com.patrykandpatrick.vico.core.axis.formatter.DefaultAxisValueFormatter
-import com.patrykandpatrick.vico.core.axis.formatter.PercentageFormatAxisValueFormatter
 import com.patrykandpatrick.vico.core.axis.horizontal.HorizontalAxis
 import com.patrykandpatrick.vico.core.axis.vertical.VerticalAxis
 import com.patrykandpatrick.vico.core.chart.line.LineChart
 import com.patrykandpatrick.vico.core.component.shape.LineComponent
 import com.patrykandpatrick.vico.core.component.shape.Shapes
 import com.patrykandpatrick.vico.core.component.shape.shader.DynamicShaders
-import com.patrykandpatrick.vico.core.dimensions.Dimensions
 import com.patrykandpatrick.vico.core.dimensions.MutableDimensions
-import com.patrykandpatrick.vico.core.entry.entriesOf
 import com.patrykandpatrick.vico.core.entry.entryModelOf
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import java.util.*
 import kotlin.random.Random
 
+
 private val rightNow = Calendar.getInstance()
 private val currentHourIn24Format: Int = rightNow.get(Calendar.HOUR_OF_DAY)
 private val times = mutableListOf<String>()
 fun append_times() {
     for (i in 6 downTo 0 step 1) {
-        times.add((currentHourIn24Format - i).toString())
+        val curr = currentHourIn24Format - i
+        times.add((if (curr % 12 === 0) "12" else (curr % 12)).toString() + if (curr >= 12) "PM" else "AM")
     }
 }
 
@@ -104,7 +97,7 @@ fun m3ChartStyle(
 fun CongestionGraph(navigator: DestinationsNavigator) {
     append_times()
     val scope = rememberCoroutineScope()
-    val randList = List(48) { Random.nextInt(0, 180) }
+    val randList = List(7) { Random.nextInt(0, 180) }
     var chartEntryModel = entryModelOf(*randList.toTypedArray())
     val bottomAxisValueFormatter =
         AxisValueFormatter<AxisPosition.Horizontal.Bottom> { x, _ -> times[x.toInt() % times.size] }
