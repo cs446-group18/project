@@ -29,6 +29,7 @@ import com.patrykandpatrick.vico.core.axis.formatter.AxisValueFormatter
 import com.patrykandpatrick.vico.core.axis.formatter.DecimalFormatAxisValueFormatter
 import com.patrykandpatrick.vico.core.axis.formatter.DefaultAxisValueFormatter
 import com.patrykandpatrick.vico.core.axis.formatter.PercentageFormatAxisValueFormatter
+import com.patrykandpatrick.vico.core.axis.horizontal.HorizontalAxis
 import com.patrykandpatrick.vico.core.axis.vertical.VerticalAxis
 import com.patrykandpatrick.vico.core.chart.line.LineChart
 import com.patrykandpatrick.vico.core.component.shape.LineComponent
@@ -40,7 +41,17 @@ import com.patrykandpatrick.vico.core.entry.entriesOf
 import com.patrykandpatrick.vico.core.entry.entryModelOf
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
+import java.util.*
 import kotlin.random.Random
+
+private val rightNow = Calendar.getInstance()
+private val currentHourIn24Format: Int = rightNow.get(Calendar.HOUR_OF_DAY)
+private val times = mutableListOf<String>()
+fun append_times() {
+    for (i in 6 downTo 0 step 1) {
+        times.add((currentHourIn24Format - i).toString())
+    }
+}
 
 @Composable
 fun m3ChartStyle(
@@ -91,13 +102,17 @@ fun m3ChartStyle(
 
 @Composable
 fun CongestionGraph(navigator: DestinationsNavigator) {
+    append_times()
     val scope = rememberCoroutineScope()
     val randList = List(48) { Random.nextInt(0, 180) }
     var chartEntryModel = entryModelOf(*randList.toTypedArray())
-
+    val bottomAxisValueFormatter =
+        AxisValueFormatter<AxisPosition.Horizontal.Bottom> { x, _ -> times[x.toInt() % times.size] }
     ProvideChartStyle(m3ChartStyle()) {
         Chart(
-            chart = lineChart(),
+            chart = lineChart(
+                pointPosition = LineChart.PointPosition.Start
+            ),
             model = chartEntryModel,
             startAxis = startAxis(
                 horizontalLabelPosition = VerticalAxis.HorizontalLabelPosition.Inside,
@@ -117,7 +132,9 @@ fun CongestionGraph(navigator: DestinationsNavigator) {
                     background = shapeComponent(Shapes.pillShape, Color.LightGray),
                 ),
                 title = "Hour",
-                guideline = null
+                guideline = null,
+                tickPosition = HorizontalAxis.TickPosition.Center(0, 1),
+                valueFormatter = bottomAxisValueFormatter
             ),
         )
     }
