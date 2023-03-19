@@ -35,12 +35,14 @@ enum class FlightStatus {
 data class FlightInfo(
     // Flight information
     val flightIata: String?,                    // flight IATA code; airline IATA + flight number (e.g. AC8835)
+    val flightNumber: String?,                  // flight number (e.g. 8838, note this is not always only numbers hence String type)
     var flightDuration: Int? = null,            // flight duration in minutes (e.g. 120 for 2 hours)
     var flightStatus: FlightStatus? = null,     // status from FlightStatus enum class above
-    val flightNumber: String?,                  // flight number (e.g. 8838, note this is not always only numbers hence String type)
+    var delay: Int? = null,                     // active delay in minutes
+
+    // Airline information
     val airlineIata: String?,                   // airline IATA code (e.g. AC for Air Canada)
     var airlineName: String? = null,            // airline name (e.g. "Air Canada")
-    var delay: Int? = null,                     // active delay in minutes
 
     // Departure airport information
     val depAirportIata: String?,                // IATA code of departure airport (e.g. YYZ for Toronto Pearson)
