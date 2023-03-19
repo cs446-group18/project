@@ -8,10 +8,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.patrykandpatrick.vico.compose.axis.axisLabelComponent
 import com.patrykandpatrick.vico.compose.axis.horizontal.bottomAxis
 import com.patrykandpatrick.vico.compose.axis.vertical.startAxis
 import com.patrykandpatrick.vico.compose.chart.Chart
 import com.patrykandpatrick.vico.compose.chart.line.lineChart
+import com.patrykandpatrick.vico.compose.component.shape.roundedCornerShape
 import com.patrykandpatrick.vico.compose.component.shape.shader.fromBrush
 import com.patrykandpatrick.vico.compose.component.shapeComponent
 import com.patrykandpatrick.vico.compose.component.textComponent
@@ -40,7 +43,7 @@ private val rightNow = Calendar.getInstance()
 private val currentHourIn24Format: Int = rightNow.get(Calendar.HOUR_OF_DAY)
 private val times = mutableListOf<String>()
 fun append_times() {
-    for (i in 6 downTo 0 step 1) {
+    for (i in 8 downTo 0 step 1) {
         val curr = currentHourIn24Format - i
         times.add((if (curr % 12 === 0) "12" else (curr % 12)).toString() + if (curr >= 12) "PM" else "AM")
     }
@@ -52,7 +55,7 @@ fun m3ChartStyle(
     axisGuidelineColor: Color = MaterialTheme.colorScheme.outline,
     axisLineColor: Color = MaterialTheme.colorScheme.outline,
     entityColors: List<Color> = listOf(
-        MaterialTheme.colorScheme.primary,
+        Color(0xff8fdaff),
         MaterialTheme.colorScheme.secondary,
         MaterialTheme.colorScheme.tertiary,
     ),
@@ -97,7 +100,7 @@ fun m3ChartStyle(
 fun CongestionGraph(navigator: DestinationsNavigator) {
     append_times()
     val scope = rememberCoroutineScope()
-    val randList = List(7) { Random.nextInt(0, 180) }
+    val randList = List(9) { Random.nextInt(0, 180) }
     var chartEntryModel = entryModelOf(*randList.toTypedArray())
     val bottomAxisValueFormatter =
         AxisValueFormatter<AxisPosition.Horizontal.Bottom> { x, _ -> times[x.toInt() % times.size] }
@@ -109,22 +112,11 @@ fun CongestionGraph(navigator: DestinationsNavigator) {
             model = chartEntryModel,
             startAxis = startAxis(
                 horizontalLabelPosition = VerticalAxis.HorizontalLabelPosition.Inside,
-                titleComponent = textComponent(
-                    padding = MutableDimensions(4F, 2F),
-                    color = Color.DarkGray,
-                    background = shapeComponent(Shapes.pillShape, Color.LightGray),
-                ),
+                label = rememberStartAxisLabel(),
                 guideline = null,
-                title = "Delay (Min)",
                 maxLabelCount = 1
             ),
             bottomAxis = bottomAxis(
-                titleComponent = textComponent(
-                    padding = MutableDimensions(4F, 2F),
-                    color = Color.DarkGray,
-                    background = shapeComponent(Shapes.pillShape, Color.LightGray),
-                ),
-                title = "Hour",
                 guideline = null,
                 tickPosition = HorizontalAxis.TickPosition.Center(0, 1),
                 valueFormatter = bottomAxisValueFormatter
@@ -132,6 +124,16 @@ fun CongestionGraph(navigator: DestinationsNavigator) {
         )
     }
 }
+
+@Composable
+private fun rememberStartAxisLabel() = axisLabelComponent(
+    color = Color.Black,
+    verticalPadding = 2.dp,
+    horizontalPadding = 8.dp,
+    verticalMargin = 4.dp,
+    horizontalMargin = 4.dp,
+    background = shapeComponent(Shapes.roundedCornerShape(4.dp), Color(0xfffab94d)),
+)
 
 @Preview
 @Composable
