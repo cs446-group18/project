@@ -101,6 +101,9 @@ fun Route.flightInfo() {
         val flightIata = call.parameters["flight_iata"]
         val client = HttpClient()
 
+        // TODO: search schedule for flights that are not today
+
+        // Fetch information from flight schedule, retrieves flights from tomorrow dating back 12 days into the past)
         var httpResponse = client.get("$BASE_URL_AERO/flights/$flightIata"){
             headers {
                 append("x-apikey", API_KEY_AERO)
@@ -108,23 +111,17 @@ fun Route.flightInfo() {
         }
         var responseObject: JsonObject = Json.decodeFromString(JsonObject.serializer(), httpResponse.body())
 
-
-        // things we want to return
-        //1. today's flight information (matter of searching)
-        val today = LocalDate.now()
-
         var todaysFlight: JsonElement? = null
 
         val formatter = DateTimeFormatter.ISO_DATE_TIME
 
         val flightArray: JsonArray = responseObject["flights"] as JsonArray
-
         for (flightElement: JsonElement in flightArray){
             val flightObject = flightElement as JsonObject
-            val scheduledOut = parseElement(flightObject["scheduled_out"])
 
-            val scheduledOutDate = LocalDateTime.parse(scheduledOut, formatter).toLocalDate()
-            if (scheduledOutDate.equals(today)) { // Compare with today's date
+            val scheduledOutDate = LocalDateTime.parse(parseElement(flightObject["scheduled_out"]), formatter).toLocalDate()
+            // TODO: if there is no flight today, fetch tomorrow's flight by default (or the next flight available, e.g. some routes run only on weekends)
+            if (scheduledOutDate.equals(LocalDate.now())) { // Compare with today's date
                 todaysFlight = flightElement
                 break
             }
