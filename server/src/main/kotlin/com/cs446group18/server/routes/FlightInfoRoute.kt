@@ -11,77 +11,157 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
-import java.time.Duration
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
+import java.time.*
 import java.time.format.DateTimeFormatter
 
 const val API_KEY_AIRLABS = "b0134401-3dd2-469c-85cf-4974afbf338b"
 
+const val API_KEY_AERO = "Yyj2JugSpnL9ZUITA7QSTg4fkstUqsUK"
+
+const val BASE_URL_AERO = "https://aeroapi.flightaware.com/aeroapi"
+
+fun convertUtcToLocal(dateTimeString: String): LocalDateTime {
+    val formatter = DateTimeFormatter.ISO_DATE_TIME
+    val utcDateTime = LocalDateTime.parse(dateTimeString, formatter)
+    val localZoneId = ZoneId.systemDefault()
+    return utcDateTime.atZone(ZoneId.of("UTC")).withZoneSameInstant(localZoneId).toLocalDateTime()
+}
+
 fun Route.flightInfo() {
-    get("/flightInfo/{flight_iata}") {    // TODO: add date parameter
-        // val flightDate = call.parameters["date"]
+    //route to aero api, calling aero api /flights, returns information about a single flight route for the past 12 days, including today and tomorrow
+    get("/flightInfo/{flight_iata}"){
         val flightIata = call.parameters["flight_iata"]
         val client = HttpClient()
+        var selectedFlight: JsonObject? = null
 
-        // Make API call to AirLabs Route DB for route information
-        var httpResponse = client.get("https://airlabs.co/api/v9/routes?api_key=$API_KEY_AIRLABS&flight_iata=$flightIata")
+        // Fetch information from flight database, retrieves flights from today, tomorrow and 12 days into the past)
+        var httpResponse = client.get("$BASE_URL_AERO/flights/$flightIata"){
+            headers {
+                append("x-apikey", API_KEY_AERO)
+            }
+        }
         var responseObject: JsonObject = Json.decodeFromString(JsonObject.serializer(), httpResponse.body())
 
-        //Check if iata_code is valid
-        val resp :JsonArray = responseObject["response"] as JsonArray
-        if (resp.isNullOrEmpty()) {
-            call.respond(HttpStatusCode.BadRequest, "Iata Code is Invalid")
+        // Parse through array of returned flights to find today's flight
+        val flightArray: JsonArray = responseObject["flights"] as JsonArray
+        for (flightElement: JsonElement in flightArray){
+            val flightObject = flightElement as JsonObject
+
+            // Convert scheduled departure date in UTC to local date based on timezone of departure airport
+            val scheduledDepartureUTC: LocalDateTime? = parseDateTime(parseElement(flightObject["scheduled_out"]))    // scheduled departure in UTC
+            val departureTimezone: String? = parseElement((flightObject["origin"] as JsonObject)["timezone"])
+            val scheduledOutDate = convertUTCtoLocal(scheduledDepartureUTC, departureTimezone)?.toLocalDate()
+
+            // Check if scheduled departure date is today
+            if (scheduledOutDate!! == LocalDate.now()) { // Compare with today's date
+                selectedFlight = flightObject
+                break
+            }
+            // TODO: if there is no flight today, fetch tomorrow's flight by default (or the next flight available, e.g. some routes run only on weekends)
         }
 
-        val routeObject: JsonObject = resp.first() as JsonObject
+        // TODO: search schedule for flights that are not today
 
-        // Retrieve flight info fields from route Json object to create data class
-        var flightInfo = FlightInfo(
-            flightIata = flightIata!!,
-            flightNumber = parseElement(routeObject["flight_number"]),
-            flightDuration = parseElement(routeObject["duration"])?.toInt(),
-            airlineIata = parseElement(routeObject["airline_iata"]),
-            depAirportIata = parseElement(routeObject["dep_iata"]),
-            depTerminal = parseElement((routeObject["dep_terminals"] as JsonArray).first()),
-            depScheduled = getTime(parseElement(routeObject["dep_time"])),
-            arrAirportIata = parseElement(routeObject["arr_iata"]),
-            arrTerminal = parseElement((routeObject["arr_terminals"] as JsonArray).first()),
-            arrScheduled = getTime(parseElement(routeObject["arr_time"])),
-        )
+        var flightInfo: FlightInfo? = null
+        // Retrieve information for selected flight and map onto dataclass
+        if (selectedFlight != null) {
+            // Retrieve departure and arrival airport information from flight object; this info is nested in another object
+            val departureInfo: JsonObject = selectedFlight["origin"] as JsonObject
+            val arrivalInfo: JsonObject = selectedFlight["destination"] as JsonObject
 
-        val operatingDays: List<String> = (routeObject["days"] as JsonArray).map{it.toString().trim('"')}       // days of week this flight operates, used to generate schedules
+            // Fetch departure and arrival times and convert them into local time
+            val schDepUTC: LocalDateTime? = parseDateTime(parseElement(selectedFlight["scheduled_out"]))    // scheduled departure in UTC
+            val schArrUTC: LocalDateTime? = parseDateTime(parseElement(selectedFlight["scheduled_in"]))     // scheduled arrival in UTC
+            val estDepUTC: LocalDateTime? = parseDateTime(parseElement(selectedFlight["estimated_out"]))    // estimated departure in UTC
+            val estArrUTC: LocalDateTime? = parseDateTime(parseElement(selectedFlight["estimated_in"]))     // estimated arrival in UTC
+            val actDepUTC: LocalDateTime? = parseDateTime(parseElement(selectedFlight["actual_out"]))       // actual departure in UTC
+            val actArrUTC: LocalDateTime? = parseDateTime(parseElement(selectedFlight["actual_in"]))        // actual arrival in UTC
 
-        // If the date of the flight is today, retrieve delay information for the flight
-        // TODO: insert conditional statement here to check date of flight
-        httpResponse = client.get("https://airlabs.co/api/v9/flight?api_key=$API_KEY_AIRLABS&flight_iata=$flightIata")
-        responseObject = Json.decodeFromString(JsonObject.serializer(), httpResponse.body())
-        val infoObject: JsonObject = responseObject["response"] as JsonObject
+            val schDepLocal: LocalDateTime? = convertUTCtoLocal(schDepUTC, parseElement(departureInfo["timezone"]))
+            val schArrLocal: LocalDateTime? = convertUTCtoLocal(schArrUTC, parseElement(arrivalInfo["timezone"]))
+            val estDepLocal: LocalDateTime? = convertUTCtoLocal(estDepUTC, parseElement(departureInfo["timezone"]))
+            val estArrLocal: LocalDateTime? = convertUTCtoLocal(estArrUTC, parseElement(arrivalInfo["timezone"]))
+            val actDepLocal: LocalDateTime? = convertUTCtoLocal(actDepUTC, parseElement(departureInfo["timezone"]))
+            val actArrLocal: LocalDateTime? = convertUTCtoLocal(actArrUTC, parseElement(arrivalInfo["timezone"]))
 
-        flightInfo.depGate = parseElement(infoObject["dep_gate"])
-        flightInfo.depEstimated = getDateTime(parseElement(infoObject["dep_estimated"]))
-        flightInfo.depActual = getDateTime(parseElement(infoObject["dep_actual"]))
-        flightInfo.arrGate = parseElement(infoObject["arr_gate"])
-        flightInfo.arrEstimated = getDateTime(parseElement(infoObject["arr_estimated"]))
-        flightInfo.arrActual = getDateTime(parseElement(infoObject["arr_actual"]))
-        flightInfo.flightStatus = when (parseElement(infoObject["status"])) {
-            "scheduled" -> FlightStatus.SCHEDULED
-            "en-route" -> FlightStatus.EN_ROUTE
-            "landed" -> FlightStatus.LANDED
-            "canceled" -> FlightStatus.CANCELLED
-            else -> FlightStatus.UNKNOWN
+            // Calculate flight duration, delay and status
+            val flightDuration: Int = Duration.between(schDepUTC, schArrUTC).toMinutes().toInt()
+            val flightProgress: Int? = parseElement(selectedFlight["progress_percent"])?.toInt()
+            var delay: Int = 0
+
+            var flightStatus: FlightStatus = FlightStatus.SCHEDULED
+            if (parseElement(arrivalInfo["cancelled"]) == "true") flightStatus = FlightStatus.CANCELLED
+            else if (parseElement(arrivalInfo["diverted"]) == "true") flightStatus = FlightStatus.DIVERTED
+
+            if (flightProgress != null) {
+                // Calculate delay: go by departure until the plane is in the air, then go by delay in arrival.
+                delay = if (actArrLocal != null) Duration.between(schArrUTC, actArrUTC).toMinutes().toInt()
+                else if (flightProgress in 1..99) Duration.between(schArrUTC, estArrUTC).toMinutes().toInt()
+                else if (actDepLocal != null) Duration.between(schDepUTC, actDepUTC).toMinutes().toInt()
+                else Duration.between(schDepUTC, estDepUTC).toMinutes().toInt()
+
+                // Calculate status: flights are considered delayed only if delay is longer than 15 minutes
+                if (flightProgress == 0 && (delay == null || delay > 15)) flightStatus = FlightStatus.DELAYED
+                else if (flightProgress == 100) flightStatus = FlightStatus.LANDED
+                else if (flightProgress in 1..99) flightStatus = FlightStatus.EN_ROUTE
+            }
+
+            // Fetch airline information (name is not returned in flight object)
+            val airlineIata = parseElement(selectedFlight["flight_number"])?.let {
+                flightIata?.dropLast(it.length)
+            } ?: flightIata?.take(2)
+            httpResponse = client.get("$BASE_URL_AERO/operators/$airlineIata"){
+                headers {
+                    append("x-apikey", API_KEY_AERO)
+                }
+            }
+            val airlineObject: JsonObject = Json.decodeFromString(JsonObject.serializer(), httpResponse.body())
+
+            // Map onto FlightInfo dataclass
+            flightInfo = FlightInfo(
+                // Flight information
+                flightIata = flightIata!!,
+                flightNumber = parseElement(selectedFlight["flight_number"]),
+                flightDuration = flightDuration,
+                flightStatus = flightStatus,
+                delay = delay,
+
+                // Airline information
+                airlineIata = airlineIata,
+                airlineName = if (parseElement(airlineObject["shortname"]) != null) parseElement(airlineObject["shortname"])
+                    else parseElement(airlineObject["name"]),
+
+                // Departure airport information
+                depAirportIata = parseElement(departureInfo["code_iata"]),
+                depAirportName = cleanAirportName(parseElement(departureInfo["name"])),
+                depTerminal = parseElement(selectedFlight["terminal_origin"]),
+                depScheduled = schDepLocal,
+                depEstimated = estDepLocal,
+                depActual = actDepLocal,
+                depGate = parseElement(selectedFlight["gate_origin"]),
+                depCity = parseElement(departureInfo["city"]),
+                // depCountry is not provided in flight info data, TODO: add if necessary from calling airports endpoints
+
+                // Arrival airport information
+                arrAirportIata = parseElement(arrivalInfo["code_iata"]),
+                arrAirportName = cleanAirportName(parseElement(arrivalInfo["name"])),
+                arrTerminal = parseElement(selectedFlight["terminal_destination"]),
+                arrScheduled = schArrLocal,
+                arrEstimated = estArrLocal,
+                arrActual = actArrLocal,
+                arrGate = parseElement(selectedFlight["gate_destination"]),
+                arrCity = parseElement(arrivalInfo["city"]),
+                // depCountry is not provided in flight info data, TODO: add if necessary from calling airports endpoints
+
+                // TODO: Historical delay information
+
+                // TODO: Amadeus delay prediction
+
+                // TODO: Add list of flights scheduled on other days in next ~2 weeks or so for users to select
+
+                // TODO: Related flights?
+            )
         }
-        if (flightInfo.depEstimated != null && Duration.between(flightInfo.depScheduled, flightInfo.depEstimated).toMinutes() >= 15.0 && flightInfo.flightStatus == FlightStatus.SCHEDULED) flightInfo.flightStatus = FlightStatus.DELAYED
-
-        flightInfo.depAirportName = parseElement(infoObject["dep_name"])
-        flightInfo.depCity = parseElement(infoObject["dep_city"])
-        flightInfo.depCountry = parseElement(infoObject["dep_country"])
-        flightInfo.arrAirportName = parseElement(infoObject["arr_name"])
-        flightInfo.arrCity = parseElement(infoObject["arr_city"])
-        flightInfo.arrCountry = parseElement(infoObject["arr_country"])
-        flightInfo.airlineName = parseElement(infoObject["airline_name"])
-        flightInfo.delay = parseElement(infoObject["delayed"])?.toInt()
 
         val encodeDefaultJson = Json { encodeDefaults = true; isLenient = true}
         val responseJson = encodeDefaultJson.encodeToString(flightInfo)
@@ -93,23 +173,30 @@ fun Route.flightInfo() {
     }
 }
 
+// Parses a JsonElement to trim double quote delimiters and properly store null values.
 fun parseElement(element: JsonElement?): String? {
     if (element is JsonNull) return null
     val strElement: String = element.toString().trim('"')
     return if (strElement == "null" || strElement.isNullOrEmpty()) null else strElement
 }
 
-// Function taking in a string with format '"HH:MM"' and converts it into a LocalDateTime for flightInfo
-fun getTime(timeString: String?): LocalDateTime? {
-    if (timeString.isNullOrEmpty()) return null
-    val time = LocalTime.parse(timeString, DateTimeFormatter.ofPattern("HH:mm"))
-    return LocalDateTime.of(LocalDate.now(), time)
+// Converts a string representing a time with format "yyyy-MM-dd'T'HH:mm:ss'Z'" into a LocalDateTime object.
+fun parseDateTime(dateTimeStr: String?): LocalDateTime? {
+    if (dateTimeStr.isNullOrEmpty() || dateTimeStr == "null") return null
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+    return LocalDateTime.parse(dateTimeStr, formatter)
 }
 
+// Converts a LocalDateTime in UTC to equivalent time in a given timezone (TZ database format).
+fun convertUTCtoLocal(timeInUTC: LocalDateTime?, timezone: String?): LocalDateTime? {
+    if (timezone.isNullOrEmpty() || timeInUTC == null) return null
+    return timeInUTC.atZone(ZoneId.of("UTC")).withZoneSameInstant(ZoneId.of(timezone)).toLocalDateTime()
+}
 
-// Function taking in a string with format '"yyyy-MM-dd HH:mm"' and converts it into a LocalDateTime for flightInfo, used specifically for
-fun getDateTime(dateTimeString: String?): LocalDateTime? {
-    if (dateTimeString.isNullOrEmpty() || dateTimeString == "null") return null
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
-    return LocalDateTime.parse(dateTimeString, formatter)
+// Cleans an airport name to remove "Int'l", "Intl", "International", and "Airport" in its name.
+fun cleanAirportName(airportName: String?): String? {
+    if (airportName == null) return null
+    return airportName
+        .replace(Regex("""\b(Int'l|Intl|International|Airport)\b"""), "")
+        .trim()
 }
