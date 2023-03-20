@@ -167,10 +167,6 @@ fun Route.flightInfo() {
         val responseJson = encodeDefaultJson.encodeToString(flightInfo)
         call.respondText(responseJson, ContentType.Application.Json)
     }
-
-    get("/") {
-        call.respond(200)
-    }
 }
 
 // Parses a JsonElement to trim double quote delimiters and properly store null values.
