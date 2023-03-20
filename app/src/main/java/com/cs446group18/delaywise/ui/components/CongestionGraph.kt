@@ -1,9 +1,7 @@
 package com.cs446group18.delaywise.ui.components
 
-import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -17,7 +15,6 @@ import com.patrykandpatrick.vico.compose.chart.line.lineChart
 import com.patrykandpatrick.vico.compose.component.shape.roundedCornerShape
 import com.patrykandpatrick.vico.compose.component.shape.shader.fromBrush
 import com.patrykandpatrick.vico.compose.component.shapeComponent
-import com.patrykandpatrick.vico.compose.component.textComponent
 import com.patrykandpatrick.vico.compose.style.ChartStyle
 import com.patrykandpatrick.vico.compose.style.ProvideChartStyle
 import com.patrykandpatrick.vico.core.DefaultAlpha
@@ -31,23 +28,10 @@ import com.patrykandpatrick.vico.core.chart.line.LineChart
 import com.patrykandpatrick.vico.core.component.shape.LineComponent
 import com.patrykandpatrick.vico.core.component.shape.Shapes
 import com.patrykandpatrick.vico.core.component.shape.shader.DynamicShaders
-import com.patrykandpatrick.vico.core.dimensions.MutableDimensions
 import com.patrykandpatrick.vico.core.entry.entryModelOf
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
-import java.util.*
-import kotlin.random.Random
 
-
-private val rightNow = Calendar.getInstance()
-private val currentHourIn24Format: Int = rightNow.get(Calendar.HOUR_OF_DAY)
-private val times = mutableListOf<String>()
-fun append_times() {
-    for (i in 8 downTo 0 step 1) {
-        val curr = currentHourIn24Format - i
-        times.add((if (curr % 12 === 0) "12" else (curr % 12)).toString() + if (curr >= 12) "PM" else "AM")
-    }
-}
 
 @Composable
 fun m3ChartStyle(
@@ -97,13 +81,10 @@ fun m3ChartStyle(
 }
 
 @Composable
-fun CongestionGraph(navigator: DestinationsNavigator) {
-    append_times()
-    val scope = rememberCoroutineScope()
-    val randList = List(9) { Random.nextInt(0, 180) }
-    var chartEntryModel = entryModelOf(*randList.toTypedArray())
+fun CongestionGraph(navigator: DestinationsNavigator, keys: List<String>, values: List<Int>) {
+    var chartEntryModel = entryModelOf(*values.toTypedArray())
     val bottomAxisValueFormatter =
-        AxisValueFormatter<AxisPosition.Horizontal.Bottom> { x, _ -> times[x.toInt() % times.size] }
+        AxisValueFormatter<AxisPosition.Horizontal.Bottom> { x, _ -> keys[x.toInt()] }
     ProvideChartStyle(m3ChartStyle()) {
         Chart(
             chart = lineChart(
@@ -138,5 +119,7 @@ private fun rememberStartAxisLabel() = axisLabelComponent(
 @Preview
 @Composable
 fun PreviewCongestionGraph() = CongestionGraph(
-    navigator = EmptyDestinationsNavigator
+    navigator = EmptyDestinationsNavigator,
+    mutableListOf<String>(),
+    mutableListOf<Int>()
 )

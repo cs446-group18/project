@@ -29,7 +29,7 @@ private val appFontFamily = FontFamily(
 )
 
 @Composable
-fun LabeledCongestionGraph(navigator: DestinationsNavigator) {
+fun LabeledCongestionGraph(navigator: DestinationsNavigator, keys: List<String>, values: List<Int>) {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -57,7 +57,7 @@ fun LabeledCongestionGraph(navigator: DestinationsNavigator) {
                     .vertical()
                     .padding(4.dp)
             )
-            CongestionGraph(navigator = navigator)
+            CongestionGraph(navigator = navigator, keys, values)
         }
     }
 }
@@ -76,5 +76,7 @@ fun Modifier.vertical() =
 @Preview
 @Composable
 fun PreviewLabeledCongestionGraph() = LabeledCongestionGraph(
-    navigator = EmptyDestinationsNavigator
+    navigator = EmptyDestinationsNavigator,
+    mutableListOf<String>(),
+    mutableListOf<Int>()
 )
