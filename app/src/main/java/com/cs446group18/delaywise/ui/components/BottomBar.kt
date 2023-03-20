@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.cs446group18.delaywise.ui.destinations.AirportInfoViewDestination
 import com.cs446group18.delaywise.ui.destinations.SavedFlightsViewDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
@@ -55,7 +56,7 @@ fun BottomBar(
                     )
                 }
                 IconButton(onClick = {
-                    scope.launch { /*navigator.navigate(SavedFlightsViewDestination)*/ }
+                    scope.launch { navigator.navigate(AirportInfoViewDestination) }
                 }) {
                     Icon(
                         Icons.Filled.Tune,
