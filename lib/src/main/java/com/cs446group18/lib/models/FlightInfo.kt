@@ -29,6 +29,7 @@ enum class FlightStatus {
     CANCELLED,
     EN_ROUTE,
     DELAYED,
+    DIVERTED,
     UNKNOWN
 }
 @Serializable
