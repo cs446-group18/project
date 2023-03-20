@@ -128,7 +128,8 @@ fun Route.flightInfo() {
 
                 // Airline information
                 airlineIata = airlineIata,
-                airlineName = parseElement(airlineObject["name"]),
+                airlineName = if (parseElement(airlineObject["shortname"]) != null) parseElement(airlineObject["shortname"])
+                    else parseElement(airlineObject["name"]),
 
                 // Departure airport information
                 depAirportIata = parseElement(departureInfo["code_iata"]),
