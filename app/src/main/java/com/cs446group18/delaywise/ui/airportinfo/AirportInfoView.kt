@@ -3,12 +3,11 @@ package com.cs446group18.delaywise.ui.airportinfo
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.cs446group18.delaywise.ui.components.BottomBar
-import com.cs446group18.delaywise.ui.components.LabeledCongestionGraph
-import com.cs446group18.delaywise.ui.components.TopBar
+import com.cs446group18.delaywise.ui.components.*
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
@@ -32,12 +31,28 @@ fun AirportInfoView(
         },
     ) { contentPadding ->
         Column(modifier = Modifier.padding(contentPadding)) {
-            LabeledCongestionGraph(navigator, fakeApi(), List(9) { Random.nextInt(0, 180) })
+            LabeledCongestionGraph(navigator,
+                fakeApi(), List(9) { Random.nextInt(0, 180) })
+            LabeledFlightDelayGraph(
+                navigator,
+                mutableListOf<String>(
+                    "03-21",
+                    "03-22",
+                    "03-23",
+                    "03-24",
+                    "03-25",
+                    "03-26",
+                    "03-27",
+                    "03-28",
+                    "03-29",
+                ),
+                mutableListOf<Int>(1, 2, 3, 2, 2, 1, 1, 2, 7)
+            )
         }
     }
 }
 
-fun fakeApi() : List<String>{
+fun fakeApi(): List<String> {
     val rightNow = Calendar.getInstance()
     val currentHourIn24Format: Int = rightNow.get(Calendar.HOUR_OF_DAY)
     val times = mutableListOf<String>()

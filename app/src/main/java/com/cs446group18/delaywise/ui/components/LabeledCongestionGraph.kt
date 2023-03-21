@@ -32,7 +32,7 @@ private val appFontFamily = FontFamily(
 @Composable
 fun LabeledCongestionGraph(navigator: DestinationsNavigator, keys: List<String>, values: List<Int>) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.height(260.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {

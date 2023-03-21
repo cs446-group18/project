@@ -32,7 +32,7 @@ private val appFontFamily = FontFamily(
 @Composable
 fun LabeledFlightDelayGraph(navigator: DestinationsNavigator, keys: List<String>, values: List<Int>) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.height(260.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -66,6 +66,6 @@ fun LabeledFlightDelayGraph(navigator: DestinationsNavigator, keys: List<String>
 @Composable
 fun PreviewLabeledFlightDelayGraph() = LabeledFlightDelayGraph(
     navigator = EmptyDestinationsNavigator,
-    mutableListOf<String>("9am", "10am"),
-    mutableListOf<Int>(1,2)
+    mutableListOf<String>("03-21", "03-22", "03-23", "03-24", "03-25", "03-26", "03-27", "03-28", "03-29", "03-30"),
+    mutableListOf<Int>(1,2, 3, 2, 2, 1, 1, 2, 3,7)
 )
