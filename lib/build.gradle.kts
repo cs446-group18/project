@@ -11,4 +11,9 @@ java {
 
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+    implementation("io.ktor:ktor-client-core:2.2.3")
+    implementation("io.ktor:ktor-client-cio:2.2.3")
+    implementation("io.ktor:ktor-client-okhttp:2.2.3")
+    implementation("io.ktor:ktor-client-logging:2.2.3")
 }

@@ -65,7 +65,7 @@ fun FlightInfoView(
                 ) {
                     Row(horizontalArrangement = Arrangement.spacedBy(5.dp,Alignment.CenterHorizontally)) {
                         Text(
-                            "${flightInfo.airlineName} ${flightInfo.flightNumber}",
+                            "${flightInfo.getAirlineName()} ${flightInfo.flight_number}",
                             fontFamily = headingFont,
                             fontSize = 32.sp,
                             modifier = Modifier.absolutePadding(left = 10.dp)
