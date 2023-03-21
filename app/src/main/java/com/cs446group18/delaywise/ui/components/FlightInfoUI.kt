@@ -13,6 +13,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.cs446group18.delaywise.getAirlineName
 import com.cs446group18.delaywise.ui.styles.BodyText
 import com.cs446group18.delaywise.ui.styles.Heading
 import com.cs446group18.delaywise.util.formatAsDate
@@ -21,7 +22,6 @@ import com.cs446group18.delaywise.util.formatInHoursMinutes
 import com.cs446group18.lib.models.Airport
 import com.cs446group18.lib.models.FlightInfo
 import kotlinx.datetime.*
-import java.time.format.DateTimeFormatter
 import kotlin.time.Duration
 
 @Composable
@@ -222,8 +222,8 @@ fun PreviewFlightInfoCard() = FlightInfoUI(
             name = "San Francisco Int'l",
             city = "San Francisco",
         ),
-        departure_delay = 0,
-        arrival_delay = 0,
+        departure_delay_raw = 20,
+        arrival_delay_raw = 3,
         scheduled_out = Instant.parse("2023-03-18T20:30:00Z")!!,
         estimated_out = Instant.parse("2023-03-18T20:30:00Z")!!,
         actual_out = null,

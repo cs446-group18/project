@@ -23,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cs446group18.delaywise.getAirlineName
 import com.cs446group18.delaywise.ui.components.*
 import com.cs446group18.delaywise.ui.components.BottomBar
 import com.cs446group18.delaywise.ui.components.FlightInfoUI
@@ -65,7 +66,7 @@ fun FlightInfoView(
                 ) {
                     Row(horizontalArrangement = Arrangement.spacedBy(5.dp,Alignment.CenterHorizontally)) {
                         Text(
-                            "${flightInfo.getAirlineName()} ${flightInfo.flight_number}",
+                            "${flightInfo.getAirlineName() ?: flightInfo.operator_iata} ${flightInfo.flight_number}",
                             fontFamily = headingFont,
                             fontSize = 32.sp,
                             modifier = Modifier.absolutePadding(left = 10.dp)

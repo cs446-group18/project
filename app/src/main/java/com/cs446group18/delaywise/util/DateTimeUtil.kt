@@ -19,7 +19,6 @@ fun Instant.formatAsTime(timeZone: TimeZone = TimeZone.currentSystemDefault()) :
 }
 
 fun Duration.formatInHoursMinutes(): String {
-    println("formatting: " + this.toString())
     val minutes = this.inWholeMinutes
     if (minutes >= 60) {
         return "${minutes/60} hours, ${minutes%60} mins"

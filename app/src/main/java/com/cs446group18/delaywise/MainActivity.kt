@@ -9,6 +9,10 @@ import com.ramcosta.composedestinations.DestinationsNavHost
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val airlineCodes = assets.open("airline_codes.csv").bufferedReader().use { it.readText() }.trimIndent()
+        val airportCodes = assets.open("airport_codes.csv").bufferedReader().use { it.readText() }.trimIndent()
+        ClientModel.setAirlines(airlineCodes)
+        ClientModel.setAirports(airportCodes)
         setContent {
             DestinationsNavHost(navGraph = NavGraphs.root)
         }

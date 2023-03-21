@@ -1,6 +1,7 @@
 package com.cs446group18.lib.models
 
 import kotlinx.datetime.Instant
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
@@ -26,8 +27,10 @@ data class FlightInfo(
     val flight_number: String, // e.g. 8838
     val status: String,
 
-    private val departure_delay: Int, // use getDepartureDelay() instead
-    private val arrival_delay: Int, // use getArrivalDelay() instead
+    @SerialName("departure_delay")
+    val departure_delay_raw: Int,
+    @SerialName("arrival_delay")
+    val arrival_delay_raw: Int,
 
     val scheduled_out: Instant,
     val estimated_out: Instant,
@@ -46,15 +49,8 @@ data class FlightInfo(
     fun getDuration(): Duration {
         return scheduled_in - scheduled_out
     }
-    fun getAirlineName(): String? {
-        return null // TODO: look up in csv
-    }
-    fun getDepartureDelay(): Duration {
-        return departure_delay.toDuration(DurationUnit.MINUTES)
-    }
-    fun getArrivalDelay(): Duration {
-        return arrival_delay.toDuration(DurationUnit.MINUTES)
-    }
+    fun getDepartureDelay(): Duration = departure_delay_raw.toDuration(DurationUnit.MINUTES)
+    fun getArrivalDelay(): Duration = arrival_delay_raw.toDuration(DurationUnit.MINUTES)
 }
 
 @Serializable

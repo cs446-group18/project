@@ -8,12 +8,16 @@ interface Fetcher {
     suspend fun makeAeroApiCall(url: String): HttpResponse
 }
 
-data class Model(
+abstract class Model(
     private val fetcher: Fetcher
 ) {
     suspend fun getFlightRaw(flightICAO: String) : FlightInfoResponse {
         val response = fetcher.makeAeroApiCall("/flights/${flightICAO}")
-        // TODO: error check and cache response
-        return Json { ignoreUnknownKeys = true }.decodeFromString(response.bodyAsText())
+        // TODO: check errors and cache response
+        val decoded = Json { ignoreUnknownKeys = true }.decodeFromString<FlightInfoResponse>(response.bodyAsText())
+        if(decoded.flights.isEmpty()) {
+            throw Exception("no flights found with code $flightICAO")
+        }
+        return decoded
     }
 }
