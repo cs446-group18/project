@@ -55,7 +55,7 @@ fun LabeledFlightDelayGraph(navigator: DestinationsNavigator, keys: List<String>
                 modifier = Modifier
                     .rotate(-90f)
                     .vertical()
-                    .padding(4.dp, 4.dp, 28.dp, 4.dp)
+                    .padding(4.dp, 4.dp, 13.dp, 4.dp)
             )
             FlightDelayGraph(navigator = navigator, keys, values)
         }
