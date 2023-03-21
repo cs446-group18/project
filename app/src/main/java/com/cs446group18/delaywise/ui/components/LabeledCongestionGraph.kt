@@ -11,6 +11,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,19 +45,18 @@ fun LabeledCongestionGraph(navigator: DestinationsNavigator, keys: List<String>,
         )
         Row(
             modifier = Modifier
-                .weight(1f)
-                .height(IntrinsicSize.Min),
+                .weight(1f),
             verticalAlignment = Alignment.Top
         ) {
-            Text(
-                "Minutes Delayed",
-                fontFamily = appFontFamily,
-                fontSize = 15.sp,
-                modifier = Modifier
-                    .rotate(-90f)
-                    .vertical()
-                    .padding(4.dp)
-            )
+                Text(
+                    "Minutes Delayed",
+                    fontFamily = appFontFamily,
+                    fontSize = 15.sp,
+                    modifier = Modifier
+                        .rotate(-90f)
+                        .vertical()
+                        .padding(4.dp, 4.dp, 28.dp, 4.dp)
+                )
             CongestionGraph(navigator = navigator, keys, values)
         }
     }
@@ -77,6 +77,6 @@ fun Modifier.vertical() =
 @Composable
 fun PreviewLabeledCongestionGraph() = LabeledCongestionGraph(
     navigator = EmptyDestinationsNavigator,
-    mutableListOf<String>(),
-    mutableListOf<Int>()
+    List<String>(1){"9am"},
+    List<Int>(1){15}
 )
