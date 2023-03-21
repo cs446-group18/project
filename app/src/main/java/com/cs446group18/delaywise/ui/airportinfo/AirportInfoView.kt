@@ -21,7 +21,7 @@ import kotlin.random.Random
 @Composable
 fun AirportInfoView(
     navigator: DestinationsNavigator,
-    keys: List<String>, values: List<Int>
+    airportCode: String
 ) {
     Scaffold(
         topBar = {
@@ -32,12 +32,12 @@ fun AirportInfoView(
         },
     ) { contentPadding ->
         Column(modifier = Modifier.padding(contentPadding)) {
-            LabeledCongestionGraph(navigator, keys, values)
+            LabeledCongestionGraph(navigator, fakeApi(), List(9) { Random.nextInt(0, 180) })
         }
     }
 }
 
-fun fakeApi() {
+fun fakeApi() : List<String>{
     val rightNow = Calendar.getInstance()
     val currentHourIn24Format: Int = rightNow.get(Calendar.HOUR_OF_DAY)
     val times = mutableListOf<String>()
@@ -45,11 +45,10 @@ fun fakeApi() {
         val curr = currentHourIn24Format - i
         times.add((if (curr % 12 === 0) "12" else (curr % 12)).toString() + if (curr >= 12) "PM" else "AM")
     }
-
-    val randList = List(9) { Random.nextInt(0, 180) }
+    return times
 }
 
 
 @Preview
 @Composable
-fun Preview() = AirportInfoView(EmptyDestinationsNavigator, mutableListOf<String>(), mutableListOf<Int>())
+fun Preview() = AirportInfoView(EmptyDestinationsNavigator, "YYZ")
