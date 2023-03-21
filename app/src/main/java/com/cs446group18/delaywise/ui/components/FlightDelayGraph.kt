@@ -99,7 +99,8 @@ fun FlightDelayGraph(navigator: DestinationsNavigator, keys: List<String>, value
             bottomAxis = bottomAxis(
                 guideline = null,
                 tickPosition = HorizontalAxis.TickPosition.Center(0, 1),
-                valueFormatter = bottomAxisValueFormatter
+                valueFormatter = bottomAxisValueFormatter,
+                labelRotationDegrees = -60f
             ),
         )
     }
@@ -119,6 +120,6 @@ private fun rememberStartAxisLabel() = axisLabelComponent(
 @Composable
 fun PreviewFlightDelayGraph() = FlightDelayGraph(
     navigator = EmptyDestinationsNavigator,
-    mutableListOf<String>(),
-    mutableListOf<Int>()
+    mutableListOf<String>("03-21", "03-22", "03-23", "03-24", "03-25", "03-26", "03-27", "03-28", "03-29", "03-30"),
+    mutableListOf<Int>(1,2, 3, 2, 2, 1, 1, 2, 3,7)
 )
