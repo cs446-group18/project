@@ -8,7 +8,9 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
-import java.time.LocalDate
+import java.time.*
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 //Wen's api key
 const val API_KEY_AERO_2 = "lY2EJ3AcgGkFcpjJ5CgKWYrZDGy211A5"
@@ -20,19 +22,20 @@ fun Route.airportInfo() {
         println("airportCode is $airportCode")
         var client = HttpClient()
 
-        val end = LocalDate.now()
-        val start = LocalDate.now().minusDays(1)
-
+        val now = LocalDateTime.now().truncatedTo(ChronoUnit.HOURS) // current time rounded down to the closest hour
+        val eightHoursAgo = now.minusHours(8) // time 8 hours ago from current time
+        println("startTime is $eightHoursAgo")
+        println("endTime is $now")
 
         var httpResponse = client.get("$BASE_URL_AERO/airports/$airportCode/flights"){
             headers {
                 append("x-apikey", API_KEY_AERO_2)
-                parameter("start", start.toString())
-                parameter("end", end.toString())
+                parameter("start", eightHoursAgo)
+                parameter("end", now)
             }
         }
         var responseObject: JsonObject = Json.decodeFromString(JsonObject.serializer(), httpResponse.body())
-
+        println(responseObject.toString())
         client.close()
         call.respond(responseObject)
     }
