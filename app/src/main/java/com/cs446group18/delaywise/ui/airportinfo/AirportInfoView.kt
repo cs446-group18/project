@@ -33,21 +33,6 @@ fun AirportInfoView(
         Column(modifier = Modifier.padding(contentPadding)) {
             LabeledCongestionGraph(navigator,
                 fakeApi(), List(9) { Random.nextInt(0, 180) })
-            LabeledFlightDelayGraph(
-                navigator,
-                mutableListOf<String>(
-                    "03-21",
-                    "03-22",
-                    "03-23",
-                    "03-24",
-                    "03-25",
-                    "03-26",
-                    "03-27",
-                    "03-28",
-                    "03-29",
-                ),
-                mutableListOf<Int>(1, 2, 3, 2, 2, 1, 1, 2, 7)
-            )
         }
     }
 }

@@ -82,7 +82,7 @@ fun m4ChartStyle(
 }
 
 @Composable
-fun FlightDelayGraph(navigator: DestinationsNavigator, keys: List<String>, values: List<Int>) {
+fun FlightDelayGraph(keys: List<String>, values: List<Int>) {
     var chartEntryModel = entryModelOf(*values.toTypedArray())
     val bottomAxisValueFormatter =
         AxisValueFormatter<AxisPosition.Horizontal.Bottom> { x, _ -> keys[x.toInt()] }
@@ -119,7 +119,6 @@ private fun rememberStartAxisLabel() = axisLabelComponent(
 @Preview
 @Composable
 fun PreviewFlightDelayGraph() = FlightDelayGraph(
-    navigator = EmptyDestinationsNavigator,
     mutableListOf<String>("03-21", "03-22", "03-23", "03-24", "03-25", "03-26", "03-27", "03-28", "03-29", "03-30"),
     mutableListOf<Int>(1,2, 3, 2, 2, 1, 1, 2, 3,7)
 )
