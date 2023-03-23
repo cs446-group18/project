@@ -11,6 +11,7 @@ import com.patrykandpatrick.vico.compose.axis.axisLabelComponent
 import com.patrykandpatrick.vico.compose.axis.horizontal.bottomAxis
 import com.patrykandpatrick.vico.compose.axis.vertical.startAxis
 import com.patrykandpatrick.vico.compose.chart.Chart
+import com.patrykandpatrick.vico.compose.chart.column.columnChart
 import com.patrykandpatrick.vico.compose.chart.line.lineChart
 import com.patrykandpatrick.vico.compose.component.shape.roundedCornerShape
 import com.patrykandpatrick.vico.compose.component.shape.shader.fromBrush
@@ -34,7 +35,7 @@ import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 
 
 @Composable
-fun m3ChartStyle(
+fun m4ChartStyle(
     axisLabelColor: Color = MaterialTheme.colorScheme.onBackground,
     axisGuidelineColor: Color = MaterialTheme.colorScheme.outline,
     axisLineColor: Color = MaterialTheme.colorScheme.outline,
@@ -81,15 +82,13 @@ fun m3ChartStyle(
 }
 
 @Composable
-fun CongestionGraph(navigator: DestinationsNavigator, keys: List<String>, values: List<Int>) {
+fun FlightDelayGraph(keys: List<String>, values: List<Int>) {
     var chartEntryModel = entryModelOf(*values.toTypedArray())
     val bottomAxisValueFormatter =
         AxisValueFormatter<AxisPosition.Horizontal.Bottom> { x, _ -> keys[x.toInt()] }
     ProvideChartStyle(m3ChartStyle()) {
         Chart(
-            chart = lineChart(
-                pointPosition = LineChart.PointPosition.Start
-            ),
+            chart = columnChart(),
             model = chartEntryModel,
             startAxis = startAxis(
                 horizontalLabelPosition = VerticalAxis.HorizontalLabelPosition.Inside,
@@ -100,7 +99,8 @@ fun CongestionGraph(navigator: DestinationsNavigator, keys: List<String>, values
             bottomAxis = bottomAxis(
                 guideline = null,
                 tickPosition = HorizontalAxis.TickPosition.Center(0, 1),
-                valueFormatter = bottomAxisValueFormatter
+                valueFormatter = bottomAxisValueFormatter,
+                labelRotationDegrees = -60f
             ),
         )
     }
@@ -118,8 +118,7 @@ private fun rememberStartAxisLabel() = axisLabelComponent(
 
 @Preview
 @Composable
-fun PreviewCongestionGraph() = CongestionGraph(
-    navigator = EmptyDestinationsNavigator,
-    mutableListOf<String>(),
-    mutableListOf<Int>()
+fun PreviewFlightDelayGraph() = FlightDelayGraph(
+    mutableListOf<String>("03-21", "03-22", "03-23", "03-24", "03-25", "03-26", "03-27", "03-28", "03-29", "03-30"),
+    mutableListOf<Int>(1,2, 3, 2, 2, 1, 1, 2, 3,7)
 )
