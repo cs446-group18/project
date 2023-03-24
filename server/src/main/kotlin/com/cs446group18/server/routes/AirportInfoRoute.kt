@@ -17,46 +17,33 @@ const val API_KEY_AERO_2 = "lY2EJ3AcgGkFcpjJ5CgKWYrZDGy211A5"
 const val HOURS_AGO = 4
 
 fun Route.airportInfo() {
-    get("/airport/{airport_code}") {
-        println("hit /airport/{airport_code}")
+    get("/airportDelay/{airport_code}") {
+
         var airportCode = call.parameters["airport_code"]
-        println("airportCode is $airportCode")
         var client = HttpClient()
 
         val now = LocalDateTime.now().truncatedTo(ChronoUnit.HOURS) // current time rounded down to the closest hour
         val startTime = now.minusHours(HOURS_AGO.toLong()) // time $HOURS_AGO hours ago from current time
-        println("start is ${startTime.toString()}")
-        println("now is ${now.toString()}")
-
-
 
         var httpResponse = client.get("$BASE_URL_AERO/airports/$airportCode/flights/departures"){
             headers {
                 append("x-apikey", API_KEY_AERO_2)
                 parameter("start", startTime)
                 parameter("end", now)
-                parameter("max_pages", 8)
+                parameter("max_pages", 5)
             }
         }
         var responseObject: JsonObject = Json.decodeFromString(JsonObject.serializer(), httpResponse.body())
 
         //go through each response object in depature and calculate the average delay of each flight. dont count early flights as delay
-        //we can read the depature_delay and average it out
-
         val delaysByHour = IntArray(HOURS_AGO) // to keep track of total delay for each hour in the last 8 hours
         val flightsByHour = IntArray(HOURS_AGO) // to keep track of number of flights for each hour in the last 8 hours
-
         val departures = responseObject["departures"]?.jsonArray
-
 
         if (departures != null) {
             for (departure in departures) {
-//                println(departure.toString())
-
                 val scheduledOutStr = departure.jsonObject["scheduled_out"]?.jsonPrimitive?.content
                 val actualOutStr = departure.jsonObject["actual_out"]?.jsonPrimitive?.content
-//                println("scheduledOutStr is ${scheduledOutStr.toString()}")
-//                println("actualOutStr is ${actualOutStr.toString()}")
                 if (scheduledOutStr != "null" && actualOutStr != "null") {
                     val scheduledOut = LocalDateTime.parse(scheduledOutStr, DateTimeFormatter.ISO_DATE_TIME)
                     val actualOut = LocalDateTime.parse(actualOutStr, DateTimeFormatter.ISO_DATE_TIME)
@@ -67,7 +54,6 @@ fun Route.airportInfo() {
                     } else {
                         Duration.between(scheduledOut, actualOut).toMinutes().toInt()
                     }
-                    println("scheduledOutStr is ${scheduledOutStr.toString()} delay is $delay mins")
                     val hourIndex = (Duration.between(startTime, actualOut).toHours() % HOURS_AGO).toInt()
                     flightsByHour[hourIndex]++
                     if (delay > 0) {
@@ -84,15 +70,11 @@ fun Route.airportInfo() {
         for (i in 0 until HOURS_AGO) {
             val hourStart = startTime.plusHours(i.toLong())
             val hourEnd = startTime.plusHours((i + 1).toLong())
-
             val dateRange = "${hourStart.format(DateTimeFormatter.ISO_LOCAL_TIME)}-${hourEnd.format(DateTimeFormatter.ISO_LOCAL_TIME)}"
-
-            println("for time ${dateRange} delay is mins delaysByHour[$i] is ${delaysByHour[i]} flightsByHour[$i] is ${flightsByHour[i]}")
-
+            //Uncomment for debugging
+            //println("for time ${dateRange} delay is mins delaysByHour[$i] is ${delaysByHour[i]} flightsByHour[$i] is ${flightsByHour[i]}")
             val hourDelay = if (flightsByHour[i] > 0) delaysByHour[i] / flightsByHour[i] else 0
             avgDelaysByHour[i] = hourDelay
-
-            println("$dateRange: $hourDelay minutes")
         }
 
         for (d in avgDelaysByHour){
@@ -100,6 +82,6 @@ fun Route.airportInfo() {
         }
 
         client.close()
-        call.respond(responseObject)
+        call.respond(avgDelaysByHour)
     }
 }
