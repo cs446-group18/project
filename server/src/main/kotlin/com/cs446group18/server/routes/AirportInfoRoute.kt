@@ -48,7 +48,6 @@ fun Route.airportInfo() {
                     val scheduledOut = LocalDateTime.parse(scheduledOutStr, DateTimeFormatter.ISO_DATE_TIME)
                     val actualOut = LocalDateTime.parse(actualOutStr, DateTimeFormatter.ISO_DATE_TIME)
                     val delayString = (departure as JsonObject)["departure_delay"]?.jsonPrimitive?.content
-                    println(" delayString is $delayString seconds")
                     val delay = if (delayString != "null") {
                         delayString!!.toInt() / 60 // convert seconds to minutes
                     } else {
@@ -72,7 +71,7 @@ fun Route.airportInfo() {
             val hourEnd = startTime.plusHours((i + 1).toLong())
             val dateRange = "${hourStart.format(DateTimeFormatter.ISO_LOCAL_TIME)}-${hourEnd.format(DateTimeFormatter.ISO_LOCAL_TIME)}"
             //Uncomment for debugging
-            //println("for time ${dateRange} delay is mins delaysByHour[$i] is ${delaysByHour[i]} flightsByHour[$i] is ${flightsByHour[i]}")
+            // println("for time ${dateRange} delay is mins delaysByHour[$i] is ${delaysByHour[i]} flightsByHour[$i] is ${flightsByHour[i]}")
             val hourDelay = if (flightsByHour[i] > 0) delaysByHour[i] / flightsByHour[i] else 0
             avgDelaysByHour[i] = hourDelay
         }
