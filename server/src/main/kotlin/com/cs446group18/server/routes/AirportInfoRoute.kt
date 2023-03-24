@@ -14,7 +14,7 @@ import java.time.temporal.ChronoUnit
 //Wen's api key
 const val API_KEY_AERO_2 = "lY2EJ3AcgGkFcpjJ5CgKWYrZDGy211A5"
 
-const val HOURS_AGO = 2
+const val HOURS_AGO = 4
 
 fun Route.airportInfo() {
     get("/airport/{airport_code}") {
@@ -28,12 +28,14 @@ fun Route.airportInfo() {
         println("start is ${startTime.toString()}")
         println("now is ${now.toString()}")
 
+
+
         var httpResponse = client.get("$BASE_URL_AERO/airports/$airportCode/flights/departures"){
             headers {
                 append("x-apikey", API_KEY_AERO_2)
-                parameter("airline", "ACA") //TESTING ONLY REMOVE FOR PROD, reduce size of inputs
                 parameter("start", startTime)
                 parameter("end", now)
+                parameter("max_pages", 8)
             }
         }
         var responseObject: JsonObject = Json.decodeFromString(JsonObject.serializer(), httpResponse.body())
@@ -49,8 +51,8 @@ fun Route.airportInfo() {
 
         if (departures != null) {
             for (departure in departures) {
-                println(departure.toString())
-                //it fails because these 2 can be null, how to prevent error?
+//                println(departure.toString())
+
                 val scheduledOutStr = departure.jsonObject["scheduled_out"]?.jsonPrimitive?.content
                 val actualOutStr = departure.jsonObject["actual_out"]?.jsonPrimitive?.content
 //                println("scheduledOutStr is ${scheduledOutStr.toString()}")
@@ -59,7 +61,7 @@ fun Route.airportInfo() {
                     val scheduledOut = LocalDateTime.parse(scheduledOutStr, DateTimeFormatter.ISO_DATE_TIME)
                     val actualOut = LocalDateTime.parse(actualOutStr, DateTimeFormatter.ISO_DATE_TIME)
                     val delayString = (departure as JsonObject)["departure_delay"]?.jsonPrimitive?.content
-//                    println(" delayString is $delayString seconds")
+                    println(" delayString is $delayString seconds")
                     val delay = if (delayString != "null") {
                         delayString!!.toInt() / 60 // convert seconds to minutes
                     } else {
@@ -76,14 +78,26 @@ fun Route.airportInfo() {
                 }
             }
         }
-        println("printing results")
+
+        val avgDelaysByHour = IntArray(HOURS_AGO)
+
         for (i in 0 until HOURS_AGO) {
             val hourStart = startTime.plusHours(i.toLong())
             val hourEnd = startTime.plusHours((i + 1).toLong())
+
+            val dateRange = "${hourStart.format(DateTimeFormatter.ISO_LOCAL_TIME)}-${hourEnd.format(DateTimeFormatter.ISO_LOCAL_TIME)}"
+
+            println("for time ${dateRange} delay is mins delaysByHour[$i] is ${delaysByHour[i]} flightsByHour[$i] is ${flightsByHour[i]}")
+
             val hourDelay = if (flightsByHour[i] > 0) delaysByHour[i] / flightsByHour[i] else 0
-            println("${hourStart.format(DateTimeFormatter.ISO_LOCAL_TIME)}-${hourEnd.format(DateTimeFormatter.ISO_LOCAL_TIME)}: $hourDelay minutes")
+            avgDelaysByHour[i] = hourDelay
+
+            println("$dateRange: $hourDelay minutes")
         }
 
+        for (d in avgDelaysByHour){
+            println(d)
+        }
 
         client.close()
         call.respond(responseObject)
