@@ -21,7 +21,7 @@ class FlightInfoViewModel(private val flightIata: String) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             _flightState.emit(UiState.Loading())
             try {
-                val flight = ClientModel.getFlight(flightIata)
+                val flight = ClientModel.getInstance().getFlight(flightIata)
                 delay(1000) //Todo: remove delay
                 _flightState.emit(
                     UiState.Loaded(flight)

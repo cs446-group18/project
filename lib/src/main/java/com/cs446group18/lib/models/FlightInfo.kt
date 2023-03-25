@@ -56,7 +56,7 @@ data class FlightInfo(
 @Serializable
 data class FlightInfoResponse(
     val flights: List<FlightInfo>,
-)
+) : Cacheable()
 
 data class AmadeusDelayPrediction(
     var delayRate7: Int? = null,                // percentage of flights delayed in past 7 days (e.g. 14 for 14%)
