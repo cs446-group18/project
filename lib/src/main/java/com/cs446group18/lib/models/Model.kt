@@ -6,7 +6,8 @@ import io.ktor.http.*
 import kotlinx.datetime.*
 import kotlinx.serialization.MissingFieldException
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.*
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -26,6 +27,29 @@ fun truncateToHours(instant: Instant) : Instant {
     val seconds = time.second.toDuration(DurationUnit.SECONDS)
     val minutes = time.minute.toDuration(DurationUnit.MINUTES)
     return instant - minutes - seconds - nanoSeconds
+}
+
+fun doesJsonContainStrings(root: JsonElement, keys: List<String>): Boolean {
+    for(key in keys) {
+        val fieldIsString = root.jsonObject[key]?.jsonPrimitive?.isString
+        if (fieldIsString == null || !fieldIsString) return false
+    }
+    return true
+}
+
+fun filterBadFlights(responseObj: JsonObject): String {
+    val departures = responseObj["departures"]?.jsonArray
+    departures ?: throw Exception("no flights found")
+    val filteredDepartures = departures.filter { it ->
+        doesJsonContainStrings(it, listOf(
+            "ident_iata",
+            "scheduled_out",
+            "scheduled_in",
+        ))
+    }
+    val newResponseObj = responseObj.toMutableMap()
+    newResponseObj["departures"] = JsonArray(filteredDepartures)
+    return Json.encodeToString(JsonObject(newResponseObj))
 }
 
 open class Model(
@@ -58,17 +82,20 @@ open class Model(
             parameter("end", intervalEnd.toLocalDateTime(TimeZone.UTC))
             parameter("max_pages", 5)
         }
+        val responseObj = Json.decodeFromString(JsonObject.serializer(), response.bodyAsText())
+
         var wrapper: AirportDelayWrapper
-        try {
+        if(responseObj["departures"] != null) {
+            val filteredBody = filterBadFlights(responseObj)
             val decoded = Json {
                 ignoreUnknownKeys = true
-            }.decodeFromString<AirportDelayResponse>(response.bodyAsText())
+            }.decodeFromString<AirportDelayResponse>(filteredBody)
             wrapper = AirportDelayWrapper(
                 response = decoded,
                 intervalStart = intervalStart,
                 intervalEnd = intervalEnd,
             )
-        } catch(exception: MissingFieldException) {
+        } else {
             wrapper = Json {
                 ignoreUnknownKeys = true
             }.decodeFromString(response.bodyAsText())

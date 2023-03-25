@@ -23,7 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.cs446group18.delaywise.getAirlineName
+import com.cs446group18.delaywise.model.getAirlineName
 import com.cs446group18.delaywise.ui.components.*
 import com.cs446group18.delaywise.ui.components.BottomBar
 import com.cs446group18.delaywise.ui.components.FlightInfoUI

@@ -13,7 +13,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.cs446group18.delaywise.getAirlineName
+import com.cs446group18.delaywise.model.getAirlineName
 import com.cs446group18.delaywise.ui.styles.BodyText
 import com.cs446group18.delaywise.ui.styles.Heading
 import com.cs446group18.delaywise.util.formatAsDate

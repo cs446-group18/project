@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cs446group18.delaywise.ClientModel
+import com.cs446group18.delaywise.model.ClientModel
 import com.cs446group18.delaywise.util.UiState
 import com.cs446group18.lib.models.FlightInfo
 import kotlinx.coroutines.Dispatchers

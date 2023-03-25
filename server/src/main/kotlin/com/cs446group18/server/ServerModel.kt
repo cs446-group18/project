@@ -36,6 +36,7 @@ class ServerFetcher : Fetcher {
 
 @OptIn(InternalCoroutinesApi::class)
 class ServerCache<T>(val maxCacheTime: Duration) : Cache<T> {
+    // NOTE: could replace this with redis, or a specialized Cache type in stdlib/3rd-party lib
     private val map = HashMap<String, Pair<T, Instant>>()
     init {
         Thread {
@@ -44,9 +45,10 @@ class ServerCache<T>(val maxCacheTime: Duration) : Cache<T> {
                 // tradeoff: we lock the entire map (rather locking one entry at a time)
                 //     which could lead to pauses in the API, but it saves on memory
                 synchronized(map) {
+                    // evict expired entries
                     val toRemove = ArrayList<String>()
                     for ((key, value) in map.entries) {
-                        if (value.second <= Clock.System.now() - 3.toDuration(DurationUnit.MINUTES)) {
+                        if (value.second <= Clock.System.now() - 10.toDuration(DurationUnit.MINUTES)) {
                             toRemove.add(key)
                         }
                     }
