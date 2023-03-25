@@ -3,9 +3,12 @@ package com.cs446group18.lib.models
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.time.format.DateTimeFormatter
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
+
+const val HOURS_IN_AIRPORT_DELAY_GRAPH = 4
 
 @Serializable
 data class Airport(
@@ -43,20 +46,54 @@ data class FlightInfo(
     val destination: Airport,
     val gate_origin: String?,
     val gate_destination: String?,
-    val terminal_origin: String,
-    val terminal_destination: String,
+    val terminal_origin: String?,
+    val terminal_destination: String?,
 ) {
     fun getDuration(): Duration {
         return scheduled_in - scheduled_out
     }
-    fun getDepartureDelay(): Duration = departure_delay_raw.toDuration(DurationUnit.MINUTES)
-    fun getArrivalDelay(): Duration = arrival_delay_raw.toDuration(DurationUnit.MINUTES)
+
+    // TODO: default to (actual_out - scheduled_out)?
+    fun getDepartureDelay(): Duration = departure_delay_raw.toDuration(DurationUnit.SECONDS)
+    fun getArrivalDelay(): Duration = arrival_delay_raw.toDuration(DurationUnit.SECONDS)
 }
 
 @Serializable
 data class FlightInfoResponse(
     val flights: List<FlightInfo>,
-) : Cacheable()
+) : Cacheable
+
+@Serializable
+data class AirportDelayResponse(
+    val departures: List<FlightInfo>,
+)
+
+@Serializable
+data class AirportDelayWrapper(
+    val response: AirportDelayResponse,
+    val intervalStart: Instant,
+    val intervalEnd: Instant,
+) : Cacheable {
+    fun getAverageDelays() : IntArray {
+        val flightsByHour = IntArray(HOURS_IN_AIRPORT_DELAY_GRAPH)
+        val delaysByHour = IntArray(HOURS_IN_AIRPORT_DELAY_GRAPH)
+        for(flight in response.departures) {
+            val delay = flight.getDepartureDelay().inWholeMinutes.toInt()
+            flight.actual_out ?: continue
+            val hourIndex =
+                ((intervalStart - flight.actual_out).absoluteValue.inWholeHours % HOURS_IN_AIRPORT_DELAY_GRAPH).toInt()
+            flightsByHour[hourIndex]++
+            if (delay > 0) {
+                delaysByHour[hourIndex] += delay
+            }
+        }
+        val res = IntArray(HOURS_IN_AIRPORT_DELAY_GRAPH)
+        for (i in 0 until HOURS_IN_AIRPORT_DELAY_GRAPH) {
+            res[i] = if (flightsByHour[i] > 0) delaysByHour[i] / flightsByHour[i] else 0
+        }
+        return res
+    }
+}
 
 data class AmadeusDelayPrediction(
     var delayRate7: Int? = null,                // percentage of flights delayed in past 7 days (e.g. 14 for 14%)

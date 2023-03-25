@@ -11,6 +11,7 @@ import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.internal.synchronized
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -19,11 +20,12 @@ const val API_KEY_AERO = "Yyj2JugSpnL9ZUITA7QSTg4fkstUqsUK"
 val client = HttpClient()
 
 class ServerFetcher : Fetcher {
-    override suspend fun makeAeroApiCall(url: String): HttpResponse {
+    override suspend fun makeAeroApiCall(url: String, block: HttpRequestBuilder.() -> Unit): HttpResponse {
         val response = client.get("https://aeroapi.flightaware.com/aeroapi$url") {
             headers {
                 append("x-apikey", API_KEY_AERO)
             }
+            block()
         }
         if(response.status != HttpStatusCode.OK) {
             throw Exception("returned invalid status code ${response.status}")
@@ -33,7 +35,7 @@ class ServerFetcher : Fetcher {
 }
 
 @OptIn(InternalCoroutinesApi::class)
-class ServerCache<T> : Cache<T> {
+class ServerCache<T>(val maxCacheTime: Duration) : Cache<T> {
     private val map = HashMap<String, Pair<T, Instant>>()
     init {
         Thread {
@@ -58,15 +60,19 @@ class ServerCache<T> : Cache<T> {
             map[id] = Pair(item, Clock.System.now())
         }
     }
-    override suspend fun lookup(id: String): Pair<T?, Instant?> {
-        return when (val item = map[id]) {
-            null -> Pair(null, null)
-            else -> item
+    override suspend fun lookup(id: String): T? {
+        val pair = map[id]
+        pair ?: return null
+        val (value, cachedAt) = pair
+        if(cachedAt <= Clock.System.now() - maxCacheTime) {
+            return null
         }
+        return value
     }
 }
 
 val ServerModel = Model(
     fetcher = ServerFetcher(),
-    flightInfoCache = ServerCache(),
+    flightInfoCache = ServerCache(maxCacheTime = 1.toDuration(DurationUnit.MINUTES)),
+    airportDelayCache = ServerCache(maxCacheTime = 5.toDuration(DurationUnit.MINUTES)),
 )

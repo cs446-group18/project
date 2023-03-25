@@ -28,6 +28,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.reflect.KClass
+import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -37,9 +38,9 @@ val client = HttpClient(CIO) {
 }
 
 data class ClientFetcher(
-    val apiKey: String? = null
+    val apiKey: String? = null,
 ) : Fetcher {
-    override suspend fun makeAeroApiCall(url: String): HttpResponse {
+    override suspend fun makeAeroApiCall(url: String, block: HttpRequestBuilder.() -> Unit): HttpResponse {
         val baseUrl = when(apiKey) {
             null -> "http://10.0.2.2:8082"
             else -> "https://aeroapi.flightaware.com/aeroapi"
@@ -50,6 +51,7 @@ data class ClientFetcher(
                     append("x-apikey", apiKey)
                 }
             }
+            block(this)
         }
         if(response.status != HttpStatusCode.OK) {
             throw Exception("returned invalid status code ${response.status}")
@@ -90,11 +92,6 @@ data class FlightInfoEntity (
     override var updatedAt: Long = System.currentTimeMillis()
 ) : ClientCacheEntity
 
-interface ClientCacheDao<T : ClientCacheEntity> {
-    suspend fun insert(entity: T)
-    fun getItem(id: String): T?
-}
-
 @Dao
 interface FlightInfoDao : ClientCacheDao<FlightInfoEntity> {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -103,9 +100,34 @@ interface FlightInfoDao : ClientCacheDao<FlightInfoEntity> {
     override fun getItem(id: String): FlightInfoEntity?
 }
 
-@Database(entities = [FlightInfoEntity::class], version = 2, exportSchema = false)
+@Entity(tableName = "airport_delay")
+data class AirportDelayEntity (
+    @PrimaryKey
+    override val id: String,
+    override val json: String,
+    override var updatedAt: Long = System.currentTimeMillis()
+) : ClientCacheEntity
+
+@Dao
+interface AirportDelayDao : ClientCacheDao<AirportDelayEntity> {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    override suspend fun insert(entity: AirportDelayEntity)
+    @Query("SELECT * from airport_delay WHERE id = :id")
+    override fun getItem(id: String): AirportDelayEntity?
+}
+
+@Database(entities = [
+    FlightInfoEntity::class,
+    AirportDelayEntity::class,
+], version = 3, exportSchema = false)
 abstract class DelayWiseLocalDatabase : RoomDatabase() {
     abstract fun flightInfoDao(): FlightInfoDao
+    abstract fun airportDelayDao(): AirportDelayDao
+}
+
+interface ClientCacheDao<T : ClientCacheEntity> {
+    suspend fun insert(entity: T)
+    fun getItem(id: String): T?
 }
 
 class ClientCache<S : ClientCacheEntity, T: Cacheable>(
@@ -113,16 +135,18 @@ class ClientCache<S : ClientCacheEntity, T: Cacheable>(
     private val createEntity: (String, String) -> S,
     private val encode: (T) -> String,
     private val decode: (String) -> T,
+    private val maxCacheTime: Duration,
 ) : Cache<T> {
     override suspend fun insert(id: String, item: T) {
         val entity: S = createEntity(id, encode(item))
         dao.insert(entity)
     }
-    override suspend fun lookup(id: String): Pair<T?, Instant?> {
-        return when(val item = dao.getItem(id)) {
-            null -> Pair(null, null)
-            else ->  Pair(decode(item.json), Instant.fromEpochMilliseconds(item.updatedAt))
+    override suspend fun lookup(id: String): T? {
+        val item = dao.getItem(id)
+        if(item == null || Instant.fromEpochMilliseconds(item.updatedAt) < Clock.System.now() - maxCacheTime) {
+            return null
         }
+        return decode(item.json)
     }
 }
 
@@ -138,11 +162,13 @@ inline fun <reified T : IataMapping>loadMapping(context: Context, filename: Stri
 class ClientModel(
     fetcher : ClientFetcher,
     flightInfoCache : ClientCache<FlightInfoEntity, FlightInfoResponse>,
+    airportDelayCache : ClientCache<AirportDelayEntity, AirportDelayWrapper>,
     val airlinesByIata : Map<String, Airline>,
     val airportsByIata : Map<String, Airport>,
 ) : Model(
     fetcher = fetcher,
     flightInfoCache = flightInfoCache,
+    airportDelayCache = airportDelayCache,
 ) {
 
     companion object {
@@ -160,7 +186,18 @@ class ClientModel(
             INSTANCE = ClientModel(
                 fetcher = ClientFetcher(),
                 flightInfoCache = ClientCache(
-                    db.flightInfoDao(), ::FlightInfoEntity, { Json.encodeToString(it) }, { Json.decodeFromString(it) }
+                    dao = db.flightInfoDao(),
+                    createEntity = ::FlightInfoEntity,
+                    encode = { Json.encodeToString(it) },
+                    decode = { Json.decodeFromString(it) },
+                    maxCacheTime = 3.toDuration(DurationUnit.MINUTES)
+                ),
+                airportDelayCache = ClientCache(
+                    dao = db.airportDelayDao(),
+                    createEntity = ::AirportDelayEntity,
+                    encode = { Json.encodeToString(it) },
+                    decode = { Json.decodeFromString(it) },
+                    maxCacheTime = 30.toDuration(DurationUnit.MINUTES)
                 ),
                 airlinesByIata = loadMapping(context, "airline_codes.csv"),
                 airportsByIata = loadMapping(context, "airport_codes.csv"),
