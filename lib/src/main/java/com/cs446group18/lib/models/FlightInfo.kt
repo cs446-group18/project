@@ -39,7 +39,7 @@ data class FlightInfo(
     val flightNumber: String?,                  // flight number (e.g. 8838, note this is not always only numbers hence String type)
     var flightDuration: Int? = null,            // flight duration in minutes (e.g. 120 for 2 hours)
     var flightStatus: FlightStatus? = null,     // status from FlightStatus enum class above
-    var delay: Int? = null,                     // active delay in minutes
+    var delay: Int = 0,                     // active delay in minutes
 
     // Airline information
     val airlineIata: String?,                   // airline IATA code (e.g. AC for Air Canada)
@@ -47,8 +47,8 @@ data class FlightInfo(
 
     // Departure airport information
     val depAirportIata: String?,                // IATA code of departure airport (e.g. YYZ for Toronto Pearson)
-    var depAirportName: String? = null,         // name of departure airport (e.g. "Toronto Pearson International Airport")
-    var depTerminal: String?,                   // terminal in departure airport (e.g. "1" for Terminal 1 in YYZ)
+    var depAirportName: String?,                // name of departure airport (e.g. "Toronto Pearson International Airport")
+    var depTerminal: String? = null,            // terminal in departure airport (e.g. "1" for Terminal 1 in YYZ)
     var depGate: String? = null,                // gate in departure airport (e.g. "F64" in YYZ)
     @Serializable(with = LocalDateTimeSerializer::class)
     @Contextual val depScheduled: LocalDateTime?,           // original scheduled departure time in local timezone (e.g. 18:35)
@@ -61,8 +61,8 @@ data class FlightInfo(
 
     // Arrival airport information
     val arrAirportIata: String?,                // IATA code of arrival airport (e.g. RDU for Raleigh-Durham)
-    var arrAirportName: String? = null,         // name of arrival airport (e.g. "Raleigh-Durham International Airport")
-    var arrTerminal: String?,                   // terminal in arrival airport (e.g. "2" for Terminal 2 in RDU)
+    var arrAirportName: String?,                // name of arrival airport (e.g. "Raleigh-Durham International Airport")
+    var arrTerminal: String? = null,            // terminal in arrival airport (e.g. "2" for Terminal 2 in RDU)
     var arrGate: String? = null,                // gate in arrival airport (e.g. "C12" in RDU)
     @Serializable(with = LocalDateTimeSerializer::class)
     @Contextual val arrScheduled: LocalDateTime?,           // original arrival departure time (e.g. 20:22)
