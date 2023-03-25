@@ -3,9 +3,11 @@ package com.cs446group18.server.routes
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 import java.time.*
 import java.time.format.DateTimeFormatter
@@ -81,6 +83,7 @@ fun Route.airportInfo() {
         }
 
         client.close()
-        call.respond(avgDelaysByHour)
+        val json = Json.encodeToString(avgDelaysByHour)
+        call.respondText(json, ContentType.Application.Json)
     }
 }

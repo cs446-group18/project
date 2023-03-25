@@ -9,6 +9,8 @@ import io.ktor.client.plugins.logging.*
 import io.ktor.client.statement.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json.Default.decodeFromJsonElement
+import kotlinx.serialization.json.Json.Default.decodeFromString
 
 val client = HttpClient(CIO) {
     install(Logging)
@@ -26,8 +28,9 @@ object Model {
         val response = client.get("http://10.0.2.2:8082/airportDelay/${airport}")
         val delays = mutableListOf<Int>()
         val textResponse = response.bodyAsText()
-        for (item in textResponse) {
-            delays.add(item.toInt())
+        val parsedJson = Json { ignoreUnknownKeys = true }.decodeFromString<IntArray>(textResponse)
+        for (item in parsedJson) {
+            delays.add(item)
         }
         return delays
     }
