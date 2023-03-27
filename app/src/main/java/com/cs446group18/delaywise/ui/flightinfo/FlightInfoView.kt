@@ -1,20 +1,16 @@
 package com.cs446group18.delaywise.ui.flightinfo
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bookmark
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.MonitorHeart
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
@@ -63,6 +59,7 @@ fun FlightInfoView(
                     modifier = Modifier.padding(contentPadding) ,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    val dates = listOf("04/29", "04/30", "05/1")
                     Row(horizontalArrangement = Arrangement.spacedBy(5.dp,Alignment.CenterHorizontally)) {
                         Text(
                             "${flightInfo.airlineName} ${flightInfo.flightNumber}",
@@ -74,13 +71,61 @@ fun FlightInfoView(
                             imageVector = Icons.Filled.Bookmark,
                             tint = Color(0xFF2096F3),
                             contentDescription = "Save Page Icon",
-                            modifier = Modifier.size(30.dp).align(Alignment.CenterVertically).clickable(onClick = {})
+                            modifier = Modifier
+                                .size(30.dp)
+                                .align(Alignment.CenterVertically)
+                                .clickable(onClick = {})
                         )
+                        DateSelector(dates = dates)
                     }
                     FlightInfoUI(
                         flightInfoData = flightInfo
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun DateSelector(dates : List<String>) {
+    val contextForToast = LocalContext.current.applicationContext
+
+    // state of the menu
+    var expanded by remember {
+        mutableStateOf(false)
+    }
+
+    Box(
+        contentAlignment = Alignment.Center
+    ) {
+        // clock icon
+        IconButton(onClick = {
+            expanded = true
+        }) {
+            Icon(
+                imageVector = Icons.Default.Schedule,
+                contentDescription = "Open Options"
+            )
+        }
+
+        // drop down menu
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = {
+                expanded = false
+            }
+        ) {
+            // adding items
+            dates.forEach {itemValue ->
+                DropdownMenuItem(
+                    onClick = {
+                        Toast.makeText(contextForToast, itemValue, Toast.LENGTH_SHORT)
+                            .show()
+                        expanded = false
+                    },
+                    text = { Text(text = itemValue) }
+                )
             }
         }
     }
