@@ -6,12 +6,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MonitorHeart
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
@@ -63,6 +59,7 @@ fun FlightInfoView(
                     modifier = Modifier.padding(contentPadding) ,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    val dates = listOf("04/29", "04/30", "05/1")
                     Row(horizontalArrangement = Arrangement.spacedBy(5.dp,Alignment.CenterHorizontally)) {
                         Text(
                             "${flightInfo.airlineName} ${flightInfo.flightNumber}",
@@ -74,13 +71,57 @@ fun FlightInfoView(
                             imageVector = Icons.Filled.Bookmark,
                             tint = Color(0xFF2096F3),
                             contentDescription = "Save Page Icon",
-                            modifier = Modifier.size(30.dp).align(Alignment.CenterVertically).clickable(onClick = {})
+                            modifier = Modifier
+                                .size(30.dp)
+                                .align(Alignment.CenterVertically)
+                                .clickable(onClick = {})
                         )
+                        DateSelector(dates = dates)
                     }
                     FlightInfoUI(
                         flightInfoData = flightInfo
                     )
                 }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DateSelector(dates : List<String>) {
+    var expanded by remember {mutableStateOf(false)}
+    var selectedOptionText by remember {mutableStateOf(dates[0])}
+    ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = {expanded = !expanded}) {
+        OutlinedTextField(
+            modifier = Modifier
+                .menuAnchor()
+                .fillMaxWidth(0.15f),
+            readOnly = true,
+            value = selectedOptionText,
+            onValueChange = { },
+            label = { Text("Date") },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(
+                    expanded = expanded
+                )
+            },
+            colors = ExposedDropdownMenuDefaults.textFieldColors()
+        )
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = {
+                expanded = false
+            }
+        ) {
+            dates.forEach { selectionOption ->
+                DropdownMenuItem(
+                    onClick = {
+                        selectedOptionText = selectionOption
+                        expanded = false
+                    },
+                    text = { Text(selectionOption) }
+                )
             }
         }
     }
