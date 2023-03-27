@@ -13,15 +13,16 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.cs446group18.delaywise.model.getAirlineName
 import com.cs446group18.delaywise.ui.styles.BodyText
 import com.cs446group18.delaywise.ui.styles.Heading
+import com.cs446group18.delaywise.util.formatAsDate
+import com.cs446group18.delaywise.util.formatAsTime
+import com.cs446group18.delaywise.util.formatInHoursMinutes
+import com.cs446group18.lib.models.Airport
 import com.cs446group18.lib.models.FlightInfo
-import com.cs446group18.lib.models.FlightStatus
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
+import kotlinx.datetime.*
+import kotlin.time.Duration
 
 @Composable
 fun FullRow(content: @Composable() () -> Unit) {
@@ -51,28 +52,22 @@ fun FullCard(content: @Composable() () -> Unit) {
     }
 }
 
-val dateFormatter = DateTimeFormatter.ofPattern("dd MMM, yyyy")
-val timeFormatter = DateTimeFormatter.ofPattern("hh:mm a")
-
 @Composable
 fun BasicInfoCard(
     label: String,
-    airportIata: String?,
-    airportName: String?,
-    estimatedTime: LocalDateTime?,
-    scheduledTime: LocalDateTime?,
-    terminal: String?,
+    airport: Airport,
+    estimatedTime: Instant,
+    scheduledTime: Instant,
+    terminal: String,
     gate: String?,
 ) {
     FullCard {
         Heading(
-            "$airportIata: $airportName"
+            "${airport.code_iata}: ${airport.cleanName()}"
         )
         Row (modifier = Modifier.fillMaxWidth().padding(5.dp), horizontalArrangement = Arrangement.Start)
         {
-            if (scheduledTime != null) {
-                BodyText("Date: ${scheduledTime.format(dateFormatter)}")
-            }
+            BodyText("Date: ${scheduledTime.formatAsDate()}")
         }
         Divider(thickness = 2.dp, modifier = Modifier.padding(3.dp))
         Row(modifier = Modifier
@@ -80,19 +75,15 @@ fun BasicInfoCard(
             .padding(5.dp), horizontalArrangement = Arrangement.SpaceBetween) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 BodyText("$label Time")
-                if (estimatedTime != null && scheduledTime != null) {
+                if(estimatedTime != scheduledTime) {
                     var color = Color.Red // todo: make this dynamic
-                    BodyText(scheduledTime!!.format(timeFormatter).toString(),
+                    BodyText(scheduledTime.formatAsTime(),
                         color = Color.LightGray,
                         style = TextStyle(textDecoration = TextDecoration.LineThrough),
                     )
-                    BodyText(estimatedTime.format(timeFormatter).toString(), color = color)
-                } else if (estimatedTime != null) {
-                    BodyText(estimatedTime.format(timeFormatter).toString())
-                } else if (scheduledTime != null) {
-                    BodyText(scheduledTime.format(timeFormatter).toString())
+                    BodyText(estimatedTime.formatAsTime(), color = color)
                 } else {
-                    BodyText("Error: no time data", color = Color.Gray)
+                    BodyText(estimatedTime.formatAsTime())
                 }
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -118,28 +109,22 @@ fun FlightInfoUI(flightInfoData: FlightInfo) {
 
         FullRow {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Heading(flightInfoData.airlineName ?: "Unknown Airline")
-                if (flightInfoData.delay != null) {
-                    BodyText(
-                        "Delayed ${flightInfoData.delay} min",
-                        color = when(flightInfoData.delay) {
-                            in (Int.MIN_VALUE)..15 -> Color.Green
-                            in 15..30 -> Color(0xFFFF9900) // Yellow/Orange
-                            else -> Color.Red
-                        }
-                    )
-                } else {
-                    BodyText("On Time")
-                }
+                Heading(flightInfoData.getAirlineName() ?: "Unknown Airline")
+                BodyText(
+                    when(flightInfoData.getDepartureDelay()) {
+                        Duration.ZERO -> "On Time"
+                        else -> "Delayed ${flightInfoData.getDepartureDelay().formatInHoursMinutes()}"
+                    },
+                    color = when(flightInfoData.getDepartureDelay().inWholeMinutes) {
+                        in (Int.MIN_VALUE)..15 -> Color.Green
+                        in 15..30 -> Color(0xFFFF9900) // Yellow/Orange
+                        else -> Color.Red
+                    }
+                )
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                if (flightInfoData.flightIata != null) {
-                    Heading(flightInfoData.flightIata.toString())
-                }
-                val flightDuration = flightInfoData.flightDuration
-                if (flightDuration != null) {
-                    BodyText("Duration: ${flightDuration.toDuration(DurationUnit.MINUTES)}")
-                }
+                Heading(flightInfoData.ident_iata)
+                BodyText("Duration: ${flightInfoData.getDuration().formatInHoursMinutes()}")
             }
         }
         Spacer(modifier = Modifier.padding(10.dp))
@@ -151,7 +136,8 @@ fun FlightInfoUI(flightInfoData: FlightInfo) {
                 .fillMaxWidth()
                 .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    BodyText( (flightInfoData.delay?.toString() ?: "15-30") + " min", color = Color(0xFFFFA500)) // Orange
+                    // TODO: get real data from amadeus or historical data
+                    BodyText( "15-30 min", color = Color(0xFFFFA500)) // Orange
                     BodyText("Projected Delay")
                 }
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -162,21 +148,19 @@ fun FlightInfoUI(flightInfoData: FlightInfo) {
         }
         BasicInfoCard(
             label = "Departure",
-            airportIata = flightInfoData.depAirportIata,
-            airportName = flightInfoData.depAirportName,
-            estimatedTime = flightInfoData.depEstimated,
-            scheduledTime = flightInfoData.depScheduled,
-            terminal = flightInfoData.depTerminal,
-            gate = flightInfoData.depGate
+            airport = flightInfoData.origin,
+            estimatedTime = flightInfoData.estimated_out ?: flightInfoData.scheduled_out,
+            scheduledTime = flightInfoData.actual_out ?: flightInfoData.scheduled_out,
+            terminal = flightInfoData.terminal_origin ?: "unknown terminal",
+            gate = flightInfoData.gate_origin,
         )
         BasicInfoCard(
             label = "Arrival",
-            airportIata = flightInfoData.arrAirportIata,
-            airportName = flightInfoData.arrAirportName,
-            estimatedTime = flightInfoData.arrEstimated,
-            scheduledTime = flightInfoData.arrScheduled,
-            terminal = flightInfoData.arrTerminal,
-            gate = flightInfoData.arrGate
+            airport = flightInfoData.destination,
+            estimatedTime = flightInfoData.estimated_in ?: flightInfoData.scheduled_in,
+            scheduledTime = flightInfoData.actual_in ?: flightInfoData.scheduled_in,
+            terminal = flightInfoData.terminal_destination ?: "unknown terminal", // TODO: fix
+            gate = flightInfoData.gate_destination,
         )
         FullCard {
             Row {
@@ -223,28 +207,33 @@ fun FlightInfoUI(flightInfoData: FlightInfo) {
 @Composable
 fun PreviewFlightInfoCard() = FlightInfoUI(
     flightInfoData = FlightInfo(
-        flightIata = "AC8838",
-        flightDuration = 107,
-        flightStatus = FlightStatus.DELAYED,
-        flightNumber = "8838",
-        airlineIata = "AC",
-        airlineName = "Air Canada",
-        depAirportIata = "YYZ",
-        depAirportName = "Toronto Pearson International Airport",
-        depTerminal = "1",
-        depGate = "F88",
-        depCity = "Toronto",
-        depCountry = "CA",
-        arrAirportIata = "RDU",
-        arrAirportName = "Raleigh-Durham International Airport",
-        arrTerminal = "2",
-        arrCity = "Raleigh/Durham",
-        arrCountry = "US",
-        delay = 35,
-        depScheduled = LocalDateTime.now(),
-        depEstimated = LocalDateTime.now().plusMinutes(5), // late 5 mins
-        arrScheduled = LocalDateTime.now().plusHours(1),
-        arrEstimated = LocalDateTime.now().plusHours(1).minusMinutes(5), // early 5 mins
-        arrGate = null,
+        ident_iata = "AC741",
+        operator_iata = "AC",
+        flight_number = "741",
+        origin = Airport(
+            code_iata = "YYZ",
+            timezone = "America/Toronto",
+            name = "Toronto Pearson Int'l",
+            city = "Toronto",
+        ),
+        destination = Airport(
+            code_iata = "SFO",
+            timezone = "America/Los_Angeles",
+            name = "San Francisco Int'l",
+            city = "San Francisco",
+        ),
+        departure_delay_raw = 20,
+        arrival_delay_raw = 3,
+        scheduled_out = Instant.parse("2023-03-18T20:30:00Z")!!,
+        estimated_out = Instant.parse("2023-03-18T20:30:00Z")!!,
+        actual_out = null,
+        scheduled_in = Instant.parse("2023-03-19T02:25:00Z")!!,
+        estimated_in = Instant.parse("2023-03-19T02:25:00Z")!!,
+        actual_in = null,
+        status = "Scheduled",
+        gate_origin = "F53",
+        gate_destination = null,
+        terminal_origin = "1",
+        terminal_destination = "2",
     )
 )

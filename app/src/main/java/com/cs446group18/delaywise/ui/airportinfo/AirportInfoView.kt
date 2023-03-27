@@ -3,7 +3,6 @@ package com.cs446group18.delaywise.ui.airportinfo
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
@@ -15,7 +14,6 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import java.util.*
-import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination
@@ -25,6 +23,7 @@ fun AirportInfoView(
     airportCode: String,
     airportInfoViewModel: AirportInfoViewModel = viewModel { AirportInfoViewModel(airportCode) }
 ) {
+
     Scaffold(
         topBar = {
             TopBar(navigator)

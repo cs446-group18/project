@@ -1,8 +1,10 @@
 package com.cs446group18.delaywise.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -15,9 +17,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cs446group18.delaywise.model.ClientModel
 import com.cs446group18.delaywise.R
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 private val appFontFamily = FontFamily(
     fonts = listOf(
@@ -31,6 +36,7 @@ private val appFontFamily = FontFamily(
 
 @Composable
 fun LabeledCongestionGraph(navigator: DestinationsNavigator, keys: List<String>, values: List<Int>) {
+    val scope = rememberCoroutineScope()
     Column(
         modifier = Modifier.height(260.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -42,6 +48,20 @@ fun LabeledCongestionGraph(navigator: DestinationsNavigator, keys: List<String>,
             fontSize = 20.sp,
             modifier = Modifier
                 .padding(4.dp)
+                .clickable {
+                    // TODO: put this in a view model, and connect data to graph
+                    scope.launch(Dispatchers.IO) {
+                        try {
+                            val airportDelay = ClientModel
+                                .getInstance()
+                                .getAirportDelay("YYZ")
+                                .getAverageDelays()
+                            println("airportDelay: ${airportDelay.toList()}")
+                        } catch (error: Exception) {
+                            println("error: $error")
+                        }
+                    }
+                }
         )
         Row(
             modifier = Modifier

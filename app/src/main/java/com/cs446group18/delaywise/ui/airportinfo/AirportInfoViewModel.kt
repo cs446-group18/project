@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cs446group18.delaywise.Model
+import com.cs446group18.delaywise.model.ClientModel
 import com.cs446group18.delaywise.util.UiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -20,7 +20,7 @@ class AirportInfoViewModel(private val airport: String) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             _airportDelay.emit(UiState.Loading())
             try {
-                val flight = Model.getAirportDelay(airport)
+                val flight = ClientModel.getInstance().getAirportDelay(airport).getAverageDelays()
 
                 delay(1000) //Todo: remove delay
                 _airportDelay.emit(

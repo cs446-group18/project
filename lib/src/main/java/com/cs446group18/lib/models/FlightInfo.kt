@@ -1,91 +1,143 @@
 package com.cs446group18.lib.models
 
-import kotlinx.serialization.Contextual
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.time.LocalDateTime
-import kotlinx.serialization.*
-import kotlinx.serialization.encoding.*
-import kotlinx.serialization.descriptors.*
-import java.time.format.DateTimeFormatter
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
-@Serializer(forClass = LocalDateTime::class)
-object LocalDateTimeSerializer : KSerializer<LocalDateTime> {
-    private var formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+const val HOURS_IN_AIRPORT_DELAY_GRAPH = 4
+sealed interface Cacheable
 
-    override var descriptor: SerialDescriptor = PrimitiveSerialDescriptor("LocalDateTime", PrimitiveKind.STRING)
+@Serializable
+data class ScheduledFlight(
+    val ident_iata: String, // e.g. AC8835
+    val actual_ident_iata: String,
+    val scheduled_in: Instant,
+    val scheduled_out: Instant,
+    val origin_iata: String,
+    val destination_iata: String,
+) {
+    fun toFlightInfo(template: FlightInfo) = FlightInfo(
+        ident_iata = ident_iata,
+        flight_number = destructureFlightCode(ident_iata).component2(),
+        status = "Scheduled",
+        departure_delay_raw = 0,
+        arrival_delay_raw = 0,
+        scheduled_out = scheduled_out,
+        estimated_out = scheduled_out,
+        actual_out = null,
+        scheduled_in = scheduled_in,
+        estimated_in = scheduled_in,
+        actual_in = null,
+        operator_iata = destructureFlightCode(ident_iata).component1(),
+        origin = template.origin,
+        destination = template.destination,
+        gate_origin = null,
+        gate_destination = null,
+        terminal_origin = null,
+        terminal_destination = null,
+    )
+}
 
-    override fun serialize(encoder: Encoder, value: LocalDateTime) {
-        encoder.encodeString(value.format(formatter))
-    }
+data class ScheduledFlightsResponse(
+    val scheduled: List<ScheduledFlight>
+): Cacheable
 
-    override fun deserialize(decoder: Decoder): LocalDateTime {
-        return LocalDateTime.parse(decoder.decodeString(), formatter)
+@Serializable
+data class Airport(
+    val code_iata: String,
+    val name: String,
+    val city: String,
+    val timezone: String,
+) : Cacheable {
+    fun cleanName(): String {
+        return name
+            .replace(Regex("""\b(Int'l|Intl|International|Airport)\b"""), "")
+            .trim()
     }
 }
 
-enum class FlightStatus {
-    SCHEDULED,
-    LANDED,
-    CANCELLED,
-    EN_ROUTE,
-    DELAYED,
-    DIVERTED,
-    UNKNOWN
-}
 @Serializable
 data class FlightInfo(
-    // Flight information
-    val flightIata: String?,                    // flight IATA code; airline IATA + flight number (e.g. AC8835)
-    val flightNumber: String?,                  // flight number (e.g. 8838, note this is not always only numbers hence String type)
-    var flightDuration: Int? = null,            // flight duration in minutes (e.g. 120 for 2 hours)
-    var flightStatus: FlightStatus? = null,     // status from FlightStatus enum class above
-    var delay: Int = 0,                     // active delay in minutes
+    val ident_iata: String, // e.g. AC8835
+    val flight_number: String, // e.g. 8838
+    val status: String,
 
-    // Airline information
-    val airlineIata: String?,                   // airline IATA code (e.g. AC for Air Canada)
-    var airlineName: String? = null,            // airline name (e.g. "Air Canada")
+    @SerialName("departure_delay")
+    val departure_delay_raw: Int,
+    @SerialName("arrival_delay")
+    val arrival_delay_raw: Int,
 
-    // Departure airport information
-    val depAirportIata: String?,                // IATA code of departure airport (e.g. YYZ for Toronto Pearson)
-    var depAirportName: String?,                // name of departure airport (e.g. "Toronto Pearson International Airport")
-    var depTerminal: String? = null,            // terminal in departure airport (e.g. "1" for Terminal 1 in YYZ)
-    var depGate: String? = null,                // gate in departure airport (e.g. "F64" in YYZ)
-    @Serializable(with = LocalDateTimeSerializer::class)
-    @Contextual val depScheduled: LocalDateTime?,           // original scheduled departure time in local timezone (e.g. 18:35)
-    @Serializable(with = LocalDateTimeSerializer::class)
-    @Contextual var depEstimated: LocalDateTime? = null,    // estimated departure time accounting for delays (e.g. 19:05)
-    @Serializable(with = LocalDateTimeSerializer::class)
-    @Contextual var depActual: LocalDateTime? = null,       // actual departure time if plane has taken off (e.g. 19:12)
-    var depCity: String? = null,                // city of departure (e.g. "Toronto")
-    var depCountry: String? = null,             // country of departure (e.g. "Canada")
+    val scheduled_out: Instant,
+    val estimated_out: Instant?,
+    val actual_out: Instant?,
+    val scheduled_in: Instant,
+    val estimated_in: Instant?,
+    val actual_in: Instant?,
+    val operator_iata: String, // e.g. AC
+    val origin: Airport,
+    val destination: Airport,
+    val gate_origin: String?,
+    val gate_destination: String?,
+    val terminal_origin: String?,
+    val terminal_destination: String?,
+) {
+    fun getDepartureDate() = scheduled_out.toLocalDateTime(TimeZone.of(origin.timezone)).date
+    fun getDuration(): Duration {
+        return scheduled_in - scheduled_out
+    }
 
-    // Arrival airport information
-    val arrAirportIata: String?,                // IATA code of arrival airport (e.g. RDU for Raleigh-Durham)
-    var arrAirportName: String?,                // name of arrival airport (e.g. "Raleigh-Durham International Airport")
-    var arrTerminal: String? = null,            // terminal in arrival airport (e.g. "2" for Terminal 2 in RDU)
-    var arrGate: String? = null,                // gate in arrival airport (e.g. "C12" in RDU)
-    @Serializable(with = LocalDateTimeSerializer::class)
-    @Contextual val arrScheduled: LocalDateTime?,           // original arrival departure time (e.g. 20:22)
-    @Serializable(with = LocalDateTimeSerializer::class)
-    @Contextual var arrEstimated: LocalDateTime? = null,    // estimated arrival time accounting for delays (e.g. 20:43)
-    @Serializable(with = LocalDateTimeSerializer::class)
-    @Contextual var arrActual: LocalDateTime? = null,       // actual arrival time if plane has taken off (e.g. 20:46)
-    var arrCity: String? = null,                // city of arrival (e.g. "Raleigh-Durham")
-    var arrCountry: String? = null,             // country of arrival (e.g. "USA")
+    // TODO: default to (actual_out - scheduled_out)?
+    fun getDepartureDelay(): Duration = departure_delay_raw.toDuration(DurationUnit.SECONDS)
+    fun getArrivalDelay(): Duration = arrival_delay_raw.toDuration(DurationUnit.SECONDS)
+}
 
-    // Historical delay information
+@Serializable
+data class FlightInfoResponse(
+    val flights: List<FlightInfo>,
+) : Cacheable
+
+@Serializable
+data class AirportDelayResponse(
+    val departures: List<FlightInfo>,
+) : Cacheable
+
+@Serializable
+data class AirportDelayWrapper(
+    val response: AirportDelayResponse,
+    val intervalStart: Instant,
+    val intervalEnd: Instant,
+) {
+    fun getAverageDelays() : List<Int> {
+        val flightsByHour = IntArray(HOURS_IN_AIRPORT_DELAY_GRAPH)
+        val delaysByHour = IntArray(HOURS_IN_AIRPORT_DELAY_GRAPH)
+        for(flight in response.departures) {
+            val delay = flight.getDepartureDelay().inWholeMinutes.toInt()
+            flight.actual_out ?: continue
+            val hourIndex =
+                ((intervalStart - flight.actual_out).absoluteValue.inWholeHours % HOURS_IN_AIRPORT_DELAY_GRAPH).toInt()
+            flightsByHour[hourIndex]++
+            if (delay > 0) {
+                delaysByHour[hourIndex] += delay
+            }
+        }
+        val res = IntArray(HOURS_IN_AIRPORT_DELAY_GRAPH)
+        for (i in 0 until HOURS_IN_AIRPORT_DELAY_GRAPH) {
+            res[i] = if (flightsByHour[i] > 0) delaysByHour[i] / flightsByHour[i] else 0
+        }
+        return res.toList()
+    }
+}
+
+data class AmadeusDelayPrediction(
     var delayRate7: Int? = null,                // percentage of flights delayed in past 7 days (e.g. 14 for 14%)
     var delayRate14: Int? = null,               // percentage of flights delayed in past 14 days (e.g. 12 for 12%)
     var delayRate30: Int? = null,               // percentage of flights delayed in past 30 days (e.g. 10 for 10%)
     var avgDelay7: Int? = null,                 // the average length of all delays in past 7 days in minutes (e.g. 30)
     var avgDelay14: Int? = null,                // the average length of all delays in past 14 days in minutes (e.g. 24)
     var avgDelay30: Int? = null,                // the average length of all delays in past 30 days in minutes (e.g. 19)
-    // may add a dropdown to show these delayed flights in past 7 days and exact delay time
-
-    // TODO: Delay predictions for scheduled flights
-    // var predicted_delay: String?        // predicted range of delay using Amadeus
-    // other parameters may be necessary such as percentage likelihood for this range
-
-    // TODO: Related flights
-    // we can provide a list of other flights operating this route on this day so users can see alternatives
 )
