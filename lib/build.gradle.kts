@@ -16,4 +16,5 @@ dependencies {
     implementation("io.ktor:ktor-client-cio:2.2.3")
     implementation("io.ktor:ktor-client-okhttp:2.2.3")
     implementation("io.ktor:ktor-client-logging:2.2.3")
+    implementation("com.googlecode.concurrentlinkedhashmap:concurrentlinkedhashmap-lru:1.4.2")
 }

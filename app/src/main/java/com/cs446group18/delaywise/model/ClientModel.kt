@@ -63,7 +63,7 @@ abstract class DelayWiseLocalDatabase : RoomDatabase() {
 class ClientModel(
     fetcher: ClientFetcher,
     flightInfoCache: ClientCache<FlightInfoEntity, FlightInfoResponse>,
-    airportDelayCache: ClientCache<AirportDelayEntity, AirportDelayWrapper>,
+    airportDelayCache: ClientCache<AirportDelayEntity, AirportDelayResponse>,
     val airlinesByIata: Map<String, Airline>,
     val airportsByIata: Map<String, Airport>,
 ) : Model(
@@ -122,6 +122,16 @@ class ClientModel(
             (it.scheduled_out - Clock.System.now()).absoluteValue
         }
         return activeInstance
+    }
+
+    suspend fun getAirportDelay(airportCode: String): AirportDelayWrapper {
+        val intervalEnd = truncateToHours(Clock.System.now())
+        val intervalStart = intervalEnd - HOURS_IN_AIRPORT_DELAY_GRAPH.toDuration(DurationUnit.HOURS)
+        return AirportDelayWrapper(
+            response = getAirportDelayRaw(airportCode),
+            intervalStart = intervalStart,
+            intervalEnd = intervalEnd,
+        )
     }
 }
 

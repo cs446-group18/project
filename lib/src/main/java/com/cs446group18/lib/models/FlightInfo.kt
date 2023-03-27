@@ -9,6 +9,7 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 const val HOURS_IN_AIRPORT_DELAY_GRAPH = 4
+sealed interface Cacheable
 
 @Serializable
 data class Airport(
@@ -66,14 +67,14 @@ data class FlightInfoResponse(
 @Serializable
 data class AirportDelayResponse(
     val departures: List<FlightInfo>,
-)
+) : Cacheable
 
 @Serializable
 data class AirportDelayWrapper(
     val response: AirportDelayResponse,
     val intervalStart: Instant,
     val intervalEnd: Instant,
-) : Cacheable {
+) {
     fun getAverageDelays() : IntArray {
         val flightsByHour = IntArray(HOURS_IN_AIRPORT_DELAY_GRAPH)
         val delaysByHour = IntArray(HOURS_IN_AIRPORT_DELAY_GRAPH)

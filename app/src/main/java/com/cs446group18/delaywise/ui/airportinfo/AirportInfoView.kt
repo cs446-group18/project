@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.cs446group18.delaywise.ui.components.*
+import com.cs446group18.delaywise.ui.destinations.AirportInfoViewDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
@@ -22,6 +23,7 @@ fun AirportInfoView(
     navigator: DestinationsNavigator,
     airportCode: String
 ) {
+
     Scaffold(
         topBar = {
             TopBar(navigator)
