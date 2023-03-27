@@ -2,10 +2,7 @@ package com.cs446group18.lib.models
 
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
@@ -37,6 +34,8 @@ open class Model(
     private val fetcher: Fetcher,
     private val flightInfoCache: Cache<FlightInfoResponse>,
     private val airportDelayCache: Cache<AirportDelayResponse>,
+    private val scheduledFlightCache: Cache<ScheduledFlightsResponse>,
+    private val airportCache: Cache<Airport>,
 ) {
     suspend fun getFlightRaw(flightCode: String) : FlightInfoResponse {
         val cached = flightInfoCache.lookup(flightCode)
@@ -47,6 +46,33 @@ open class Model(
         if(decoded.flights.isEmpty()) {
             throw NoFlightsFoundException("No flights found with code $flightCode")
         }
+        return decoded
+    }
+    suspend fun getScheduledFlights(flightCode: String) : ScheduledFlightsResponse {
+        val cached = scheduledFlightCache.lookup(flightCode)
+        if(cached != null) return cached
+        val (airlineIata, flightNumber) = destructureFlightCode(flightCode)
+
+        val startInterval = Clock.System.todayIn(TimeZone.currentSystemDefault())
+        val endInterval = startInterval + DatePeriod(days=15)
+        val response = fetcher.makeAeroApiCall("/schedules/$startInterval/$endInterval") {
+            parameter("airline", airlineIata)
+            parameter("flight_number", flightNumber)
+        }
+        val decoded = json.decodeFromString<ScheduledFlightsResponse>(response.bodyAsText())
+        scheduledFlightCache.insert(flightCode, decoded)
+        if(decoded.scheduled.isEmpty()) {
+            throw NoFlightsFoundException("No flights found with code $flightCode")
+        }
+        return decoded
+    }
+    suspend fun getAirport(airportCode: String) : Airport {
+        val cached = airportCache.lookup(airportCode)
+        if(cached != null) return cached
+
+        val response = fetcher.makeAeroApiCall("/airports/$airportCode")
+        val decoded = json.decodeFromString<Airport>(response.bodyAsText())
+        airportCache.insert(airportCode, decoded)
         return decoded
     }
     suspend fun getAirportDelayRaw(airportCode: String,
@@ -97,4 +123,10 @@ fun doesJsonContainStrings(root: JsonElement, keys: List<String>): Boolean {
         if (fieldIsString == null || !fieldIsString) return false
     }
     return true
+}
+
+fun destructureFlightCode(flightCode: String): MatchResult.Destructured {
+    val match = """^(.*?)(\d+)$""".toRegex().matchEntire(flightCode)
+    match ?: throw Exception("could not extract airline code from $flightCode")
+    return match.destructured
 }

@@ -1,9 +1,10 @@
 package com.cs446group18.lib.models
 
 import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.time.format.DateTimeFormatter
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -12,12 +13,47 @@ const val HOURS_IN_AIRPORT_DELAY_GRAPH = 4
 sealed interface Cacheable
 
 @Serializable
-data class Airport(
-    var code_iata: String,
-    var name: String,
-    var city: String,
-    var timezone: String,
+data class ScheduledFlight(
+    val ident_iata: String, // e.g. AC8835
+    val actual_ident_iata: String,
+    val scheduled_in: Instant,
+    val scheduled_out: Instant,
+    val origin_iata: String,
+    val destination_iata: String,
 ) {
+    fun toFlightInfo(template: FlightInfo) = FlightInfo(
+        ident_iata = ident_iata,
+        flight_number = destructureFlightCode(ident_iata).component2(),
+        status = "Scheduled",
+        departure_delay_raw = 0,
+        arrival_delay_raw = 0,
+        scheduled_out = scheduled_out,
+        estimated_out = scheduled_out,
+        actual_out = null,
+        scheduled_in = scheduled_in,
+        estimated_in = scheduled_in,
+        actual_in = null,
+        operator_iata = destructureFlightCode(ident_iata).component1(),
+        origin = template.origin,
+        destination = template.destination,
+        gate_origin = null,
+        gate_destination = null,
+        terminal_origin = null,
+        terminal_destination = null,
+    )
+}
+
+data class ScheduledFlightsResponse(
+    val scheduled: List<ScheduledFlight>
+): Cacheable
+
+@Serializable
+data class Airport(
+    val code_iata: String,
+    val name: String,
+    val city: String,
+    val timezone: String,
+) : Cacheable {
     fun cleanName(): String {
         return name
             .replace(Regex("""\b(Int'l|Intl|International|Airport)\b"""), "")
@@ -37,10 +73,10 @@ data class FlightInfo(
     val arrival_delay_raw: Int,
 
     val scheduled_out: Instant,
-    val estimated_out: Instant,
+    val estimated_out: Instant?,
     val actual_out: Instant?,
     val scheduled_in: Instant,
-    val estimated_in: Instant,
+    val estimated_in: Instant?,
     val actual_in: Instant?,
     val operator_iata: String, // e.g. AC
     val origin: Airport,
@@ -50,6 +86,7 @@ data class FlightInfo(
     val terminal_origin: String?,
     val terminal_destination: String?,
 ) {
+    fun getDepartureDate() = scheduled_out.toLocalDateTime(TimeZone.of(origin.timezone)).date
     fun getDuration(): Duration {
         return scheduled_in - scheduled_out
     }
@@ -75,7 +112,7 @@ data class AirportDelayWrapper(
     val intervalStart: Instant,
     val intervalEnd: Instant,
 ) {
-    fun getAverageDelays() : IntArray {
+    fun getAverageDelays() : List<Int> {
         val flightsByHour = IntArray(HOURS_IN_AIRPORT_DELAY_GRAPH)
         val delaysByHour = IntArray(HOURS_IN_AIRPORT_DELAY_GRAPH)
         for(flight in response.departures) {
@@ -92,7 +129,7 @@ data class AirportDelayWrapper(
         for (i in 0 until HOURS_IN_AIRPORT_DELAY_GRAPH) {
             res[i] = if (flightsByHour[i] > 0) delaysByHour[i] / flightsByHour[i] else 0
         }
-        return res
+        return res.toList()
     }
 }
 

@@ -149,7 +149,7 @@ fun FlightInfoUI(flightInfoData: FlightInfo) {
         BasicInfoCard(
             label = "Departure",
             airport = flightInfoData.origin,
-            estimatedTime = flightInfoData.estimated_out,
+            estimatedTime = flightInfoData.estimated_out ?: flightInfoData.scheduled_out,
             scheduledTime = flightInfoData.actual_out ?: flightInfoData.scheduled_out,
             terminal = flightInfoData.terminal_origin ?: "unknown terminal",
             gate = flightInfoData.gate_origin,
@@ -157,7 +157,7 @@ fun FlightInfoUI(flightInfoData: FlightInfo) {
         BasicInfoCard(
             label = "Arrival",
             airport = flightInfoData.destination,
-            estimatedTime = flightInfoData.estimated_in,
+            estimatedTime = flightInfoData.estimated_in ?: flightInfoData.scheduled_in,
             scheduledTime = flightInfoData.actual_in ?: flightInfoData.scheduled_in,
             terminal = flightInfoData.terminal_destination ?: "unknown terminal", // TODO: fix
             gate = flightInfoData.gate_destination,

@@ -11,6 +11,9 @@ import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.internal.synchronized
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -77,4 +80,6 @@ val ServerModel = Model(
     fetcher = ServerFetcher(),
     flightInfoCache = ServerCache(maxCacheTime = 1.toDuration(DurationUnit.MINUTES)),
     airportDelayCache = ServerCache(maxCacheTime = 5.toDuration(DurationUnit.MINUTES)),
+    scheduledFlightCache = ServerCache(maxCacheTime = 3.toDuration(DurationUnit.HOURS)),
+    airportCache = ServerCache(maxCacheTime = 15.toDuration(DurationUnit.DAYS)),
 )

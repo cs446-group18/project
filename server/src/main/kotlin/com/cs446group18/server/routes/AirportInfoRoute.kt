@@ -16,4 +16,11 @@ fun Route.airportInfo() {
         val strResponse = Json.encodeToString(response)
         call.respondText(strResponse, ContentType.Application.Json)
     }
+    get("airports/{airport_code}") {
+        var airportCode = call.parameters["airport_code"]
+        airportCode ?: throw Exception("airport_code not provided")
+        val response = ServerModel.getAirport(airportCode)
+        val strResponse = Json.encodeToString(response)
+        call.respondText(strResponse, ContentType.Application.Json)
+    }
 }
