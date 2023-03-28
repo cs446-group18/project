@@ -88,4 +88,12 @@ class FlightInfoViewModel(private val flightIata: String) : ViewModel() {
         val arrivalTerminal: String,
         val arrivalGate: String,
     )
+    data class WeatherData(
+        val date: String,
+        val weather: String,
+    )
+    private val _text = MutableLiveData<String>().apply {
+        value = "This is gallery Fragment"
+    }
+    val text: LiveData<String> = _text
 }
