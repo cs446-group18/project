@@ -54,22 +54,21 @@ fun WeatherCard(weatherData: FlightInfoViewModel.WeatherData, navigator: Destina
         modifier = Modifier
             .padding(3.dp)
     ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Row(
             modifier = Modifier.padding(all = 5.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.SpaceBetween
         ) { BodyText(weatherData.date) }
-        Row(
-            modifier = Modifier.padding(all = 5.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
                 modifier = Modifier.size(40.dp),
                 painter = painterResource(weatherAsset!!),
+                alignment = Alignment.Center,
                 contentDescription = null
             )
-         }
+        }
+    }
     }
 }
 @Preview
