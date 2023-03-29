@@ -48,6 +48,19 @@ data class ScheduledFlightsResponse(
 ): Cacheable
 
 @Serializable
+data class Weather(
+    val airport_code: String,
+    val cloud_friendly: String,
+    val wind_friendly: String,
+    val temp_air: Int, //degrees celcius
+)
+
+@Serializable
+data class WeatherResponse(
+    val observations: List<Weather>
+) : Cacheable
+
+@Serializable
 data class Airport(
     val code_iata: String,
     val name: String,
