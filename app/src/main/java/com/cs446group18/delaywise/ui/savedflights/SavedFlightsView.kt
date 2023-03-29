@@ -80,7 +80,7 @@ fun SavedFlightsView(
                     Column(modifier = Modifier.padding(contentPadding).verticalScroll(rememberScrollState())
                     ) {
                         Text(
-                            "Saved Flights",
+                            "Saved Flights/Airports",
                             fontFamily = appFontFamily,
                             fontSize = 40.sp,
                             modifier = Modifier.absolutePadding(left = 20.dp)
@@ -96,7 +96,7 @@ fun SavedFlightsView(
                                     painter = painterResource(R.drawable.no_flight),
                                     contentDescription = null
                                 )
-                                Text("No saved flights... yet!",
+                                Text("Nothing saved yet!",
                                     fontFamily = bodyFont,
                                     fontSize = 24.sp,
                                     textAlign = TextAlign.Center)

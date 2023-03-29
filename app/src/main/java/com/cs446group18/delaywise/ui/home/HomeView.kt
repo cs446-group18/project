@@ -88,7 +88,7 @@ fun HomeView(
             Spacer(modifier = Modifier.height(15.dp))
             SearchBox(navigator)
             Spacer(modifier = Modifier.height(15.dp))
-            Text("Saved Flights", fontSize = 28.sp, fontFamily = headingFont)
+            Text("Saved Flights/Airports", fontSize = 28.sp, fontFamily = headingFont)
             when (val state = HomeViewModel.homeSavedFlightState.collectAsState(UiState.Loading()).value) {
                 is UiState.Loading -> {
                     LoadingCircle()
@@ -102,7 +102,7 @@ fun HomeView(
                         Box (
                             contentAlignment = Alignment.Center,
                             modifier = Modifier.fillMaxSize()){
-                            Text("No saved flights...yet!",
+                            Text("Nothing saved yet!",
                                 modifier = Modifier.background(Color(0x99F6F2FA), RectangleShape),
                                 fontFamily = bodyFont,
                                 fontSize = 24.sp,
