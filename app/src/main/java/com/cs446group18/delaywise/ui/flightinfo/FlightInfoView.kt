@@ -1,6 +1,9 @@
 package com.cs446group18.delaywise.ui.flightinfo
 
+import android.annotation.SuppressLint
 import android.widget.Toast
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -68,14 +71,9 @@ fun FlightInfoView(
                             fontSize = 32.sp,
                             modifier = Modifier.absolutePadding(left = 10.dp)
                         )
-                        Icon(
-                            imageVector = Icons.Filled.Bookmark,
-                            tint = Color(0xFF2096F3),
-                            contentDescription = "Save Page Icon",
-                            modifier = Modifier
-                                .size(30.dp)
+                        displaySaveToggleButton(
+                            passedModifier = Modifier
                                 .align(Alignment.CenterVertically)
-                                .clickable(onClick = {})
                         )
                         DateSelector(dates = dates)
                     }
@@ -129,6 +127,65 @@ fun DateSelector(dates : List<String>) {
                 )
             }
         }
+    }
+}
+
+//Below code referenced from: https://www.geeksforgeeks.org/icon-toggle-button-in-android-using-jetpack-compose/
+@SuppressLint("UnusedTransitionTargetStateParameter")
+@Composable
+fun displaySaveToggleButton(passedModifier: Modifier) {
+    val savedState= remember {mutableStateOf(false)}
+    IconToggleButton(
+        checked = savedState.value,
+        onCheckedChange = {
+            savedState.value = !savedState.value
+            if (savedState.value) {
+
+            }
+            else {
+
+            }
+        },
+        modifier = passedModifier
+    ) {
+        val transition = updateTransition(savedState.value, "isSaved: {$savedState.value}")
+
+        // on below line we are creating a variable for
+        // color of our icon
+        val tint by transition.animateColor(label = "iconColor") { isSaved ->
+            // if toggle button is checked we are setting color as red.
+            // in else condition we are setting color as black
+            if (isSaved) Color.Red else Color.DarkGray
+        }
+
+        // om below line we are specifying transition
+        val size by transition.animateDp(
+            transitionSpec = {
+                // on below line we are specifying transition
+                if (false isTransitioningTo true) {
+                    // on below line we are specifying key frames
+                    keyframes {
+                        // on below line we are specifying animation duration
+                        durationMillis = 250
+                        // on below line we are specifying animations.
+                        30.dp at 0 with LinearOutSlowInEasing // for 0-15 ms
+                        35.dp at 15 with FastOutLinearInEasing // for 15-75 ms
+                        40.dp at 75 // ms
+                        35.dp at 150 // ms
+                    }
+                } else {
+                    spring(stiffness = Spring.StiffnessVeryLow)
+                }
+            },
+            label = "size"
+        ) { 30.dp }
+
+        Icon(
+            imageVector = if (savedState.value) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+            contentDescription = "Icon",
+            tint = tint,
+            modifier = Modifier.size(size)
+        )
     }
 }
 

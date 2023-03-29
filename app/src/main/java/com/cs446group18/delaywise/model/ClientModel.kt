@@ -56,6 +56,7 @@ data class ClientFetcher(
         AirportDelayEntity::class,
         ScheduledFlightEntity::class,
         AirportEntity::class,
+        SavedFlightEntity::class,
         WeatherInfoEntity::class,
     ], version = 5, exportSchema = false
 )
@@ -65,12 +66,14 @@ abstract class DelayWiseLocalDatabase : RoomDatabase() {
     abstract fun scheduledFlightDao(): ScheduledFlightDao
     abstract fun airportDao(): AirportDao
     abstract fun weatherDao(): WeatherInfoDao
+    abstract fun savedFlightDao(): SavedFlightDao
 }
 
 class ClientModel(
     val model : Model,
     val airlinesByIata: Map<String, Airline>,
     val airportsByIata: Map<String, Airport>,
+    val savedFlightDao: SavedFlightDao
 ) {
     companion object {
         @Volatile
@@ -161,6 +164,7 @@ object ClientModelFactory {
             ),
             airlinesByIata = loadMapping(context, "airline_codes.csv"),
             airportsByIata = loadMapping(context, "airport_codes.csv"),
+            savedFlightDao = db.savedFlightDao()
         )
     }
 }

@@ -24,13 +24,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cs446group18.delaywise.R
+import com.cs446group18.delaywise.model.SavedFlightEntity
 import com.cs446group18.delaywise.ui.destinations.FlightInfoViewDestination
 import com.cs446group18.delaywise.ui.destinations.SavedFlightsViewDestination
 import com.cs446group18.delaywise.ui.flightinfo.FlightInfoViewModel
 import com.cs446group18.delaywise.ui.home.HomeViewModel
+import com.cs446group18.lib.models.FlightInfo
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 
 
 enum class DelayType {
@@ -48,12 +51,11 @@ private val airlineMap = mapOf(
     "LH" to R.drawable.lufthansa,
     "AC" to R.drawable.aircanada
 )
-
 @Composable
-fun SavedFlightCard(flightData: HomeViewModel.Flight,  navigator: DestinationsNavigator) {
+fun SavedFlightCard(flightInfo: FlightInfo, navigator: DestinationsNavigator) {
     val scope = rememberCoroutineScope()
     val airlineAsset =
-        if (airlineMap.containsKey(flightData.airline)) airlineMap[flightData.airline] else airlineMap["default"];
+        if (airlineMap.containsKey(flightInfo.operator_iata)) airlineMap[flightInfo.operator_iata] else airlineMap["default"];
     Card(
         elevation = CardDefaults.cardElevation(15.dp),
         shape = RoundedCornerShape(size = 12.dp),
@@ -62,7 +64,7 @@ fun SavedFlightCard(flightData: HomeViewModel.Flight,  navigator: DestinationsNa
             .fillMaxWidth()
             .padding(3.dp)
             .clickable {
-                scope.launch { navigator.navigate(FlightInfoViewDestination(flightData.flightNumber)) }
+                scope.launch { navigator.navigate(FlightInfoViewDestination(flightInfo.flight_number)) }
             }
     ) {
         Row(
@@ -93,7 +95,7 @@ fun SavedFlightCard(flightData: HomeViewModel.Flight,  navigator: DestinationsNa
                                 color = Color.Black,
                             )
                         ) {
-                            append(flightData.flightNumber)
+                            append(flightInfo.ident_iata)
                         }
                     })
                     Box(
@@ -104,11 +106,12 @@ fun SavedFlightCard(flightData: HomeViewModel.Flight,  navigator: DestinationsNa
                             withStyle(
                                 style = SpanStyle(
                                     fontWeight = FontWeight.W500,
-                                    color = delayTypeColor[flightData.delayType] ?: Color.Black,
+                                    //todo: color = delayTypeColor[flightData.delayType] ?: Color.Black,
                                     fontSize = 12.sp
                                 )
                             ) {
-                                append(flightData.delayText)
+//                                val flightData
+//                                todo: append(flightData.delayText) need delay text with "Likely 15m", OnTime, or Delayed
                             }
                         })
                     }
@@ -123,7 +126,7 @@ fun SavedFlightCard(flightData: HomeViewModel.Flight,  navigator: DestinationsNa
                                 color = Color.Gray
                             )
                         ) {
-                            append(flightData.departAirport)
+                            append(flightInfo.origin.code_iata + "(${flightInfo.origin.city})")
                         }
                     })
                     Image(
@@ -140,7 +143,7 @@ fun SavedFlightCard(flightData: HomeViewModel.Flight,  navigator: DestinationsNa
                                 color = Color.Gray
                             )
                         ) {
-                            append(flightData.arrivalAirport)
+                            append(flightInfo.destination.code_iata + "(${flightInfo.destination.city})")
                         }
                     })
                     Box(
@@ -161,25 +164,10 @@ fun SavedFlightCard(flightData: HomeViewModel.Flight,  navigator: DestinationsNa
                             color = Color.DarkGray
                         )
                     ) {
-                        append(flightData.dateDepart)
+                        append("Expected Departure:" + flightInfo.getDepartureDate().toString())
                     }
                 })
             }
         }
     }
 }
-
-@Preview
-@Composable
-fun PreviewSavedFlightCard() = SavedFlightCard(
-    flightData = HomeViewModel.Flight(
-        "LH1810",
-        "LH",
-        "Likely 1h Delay",
-        DelayType.LIKELY,
-        "MUC(Munich)",
-        "BCN(Barcelona)",
-        "Mon 21 March, 2022"
-    ),
-    navigator = EmptyDestinationsNavigator
-)
