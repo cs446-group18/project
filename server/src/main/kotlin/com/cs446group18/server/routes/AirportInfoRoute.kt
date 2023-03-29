@@ -9,7 +9,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 fun Route.airportInfo() {
-    get("airports/{airport_code}/weather") {
+    get("airports/{airport_code}/weather/observations") {
         var airportCode = call.parameters["airport_code"]
         airportCode ?: throw Exception("airport_code not provided")
         val response = ServerModel.getWeatherRaw(airportCode)

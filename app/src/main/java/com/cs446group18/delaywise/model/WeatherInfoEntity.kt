@@ -1,7 +1,7 @@
 package com.cs446group18.delaywise.model
 import androidx.room.*
 
-@Entity(tableName = "flight_info")
+@Entity(tableName = "weather_info")
 data class WeatherInfoEntity(
     @PrimaryKey
     override val id: String,
