@@ -7,6 +7,7 @@ import androidx.room.RoomDatabase
 import com.cs446group18.lib.models.*
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -22,6 +23,11 @@ import kotlin.time.toDuration
 
 val client = HttpClient(CIO) {
     install(Logging)
+    install(HttpTimeout) {
+        requestTimeoutMillis = 7000;
+        connectTimeoutMillis = 7000;
+        socketTimeoutMillis = 7000;
+    }
 }
 
 data class ClientFetcher(
@@ -55,25 +61,27 @@ data class ClientFetcher(
         FlightInfoEntity::class,
         AirportDelayEntity::class,
         ScheduledFlightEntity::class,
-        AirportEntity::class,
         SavedFlightEntity::class,
         WeatherInfoEntity::class,
+        AirportInfoEntity::class,
     ], version = 5, exportSchema = false
 )
 abstract class DelayWiseLocalDatabase : RoomDatabase() {
     abstract fun flightInfoDao(): FlightInfoDao
     abstract fun airportDelayDao(): AirportDelayDao
     abstract fun scheduledFlightDao(): ScheduledFlightDao
-    abstract fun airportDao(): AirportDao
     abstract fun weatherDao(): WeatherInfoDao
+    abstract fun airportDao(): AirportInfoDao
     abstract fun savedFlightDao(): SavedFlightDao
+    abstract fun savedAirportDao(): SavedAirportDao
 }
 
 class ClientModel(
     val model : Model,
     val airlinesByIata: Map<String, Airline>,
     val airportsByIata: Map<String, Airport>,
-    val savedFlightDao: SavedFlightDao
+    val savedFlightDao: SavedFlightDao,
+    val savedAirportDao: SavedAirportDao
 ) {
     companion object {
         @Volatile
@@ -149,7 +157,7 @@ object ClientModelFactory {
                 ),
                 airportCache = ClientCache(
                     dao = db.airportDao(),
-                    createEntity = ::AirportEntity,
+                    createEntity = ::AirportInfoEntity,
                     encode = { Json.encodeToString(it) },
                     decode = { Json.decodeFromString(it) },
                     maxCacheTime = 30.toDuration(DurationUnit.DAYS)
@@ -164,7 +172,8 @@ object ClientModelFactory {
             ),
             airlinesByIata = loadMapping(context, "airline_codes.csv"),
             airportsByIata = loadMapping(context, "airport_codes.csv"),
-            savedFlightDao = db.savedFlightDao()
+            savedFlightDao = db.savedFlightDao(),
+            savedAirportDao = db.savedAirportDao()
         )
     }
 }

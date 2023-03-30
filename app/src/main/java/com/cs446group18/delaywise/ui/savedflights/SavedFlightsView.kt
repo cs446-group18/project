@@ -24,6 +24,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.*
@@ -31,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cs446group18.delaywise.model.SavedFlightEntity
 import com.cs446group18.delaywise.ui.components.*
 import com.cs446group18.delaywise.ui.flightinfo.FlightInfoViewModel
 import com.cs446group18.delaywise.ui.flightinfo.SavedFlightsViewModel
@@ -60,6 +62,7 @@ fun SavedFlightsView(
     navigator: DestinationsNavigator,
     savedFlightsViewModel: SavedFlightsViewModel = viewModel { SavedFlightsViewModel()},
 ) {
+    val state by savedFlightsViewModel.savedFlightState.collectAsState()
     Scaffold(
         topBar = {
             TopBar(navigator)
@@ -68,15 +71,16 @@ fun SavedFlightsView(
             BottomBar(navigator)
         },
     ) { contentPadding ->
-            when (val state = savedFlightsViewModel.savedFlightState.collectAsState(UiState.Loading()).value) {
+            when (state) {
                 is UiState.Loading -> {
                     LoadingCircle()
                 }
                 is UiState.Error -> {
-                    ErrorMessage(state.message)
+                    val message = (state as UiState.Error).message
+                    ErrorMessage(message)
                 }
                 is UiState.Loaded -> {
-                    val savedFlights = state.data
+                    val savedFlights = (state as UiState.Loaded<List<SavedFlightEntity>>).data
                     Column(modifier = Modifier.padding(contentPadding).verticalScroll(rememberScrollState())
                     ) {
                         Text(

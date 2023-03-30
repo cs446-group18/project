@@ -50,15 +50,17 @@ fun FlightInfoView(
             BottomBar(navigator)
         },
     ) { contentPadding ->
-        when (val state = flightInfoViewModel.flightState.collectAsState(UiState.Loading()).value) {
+        val state by flightInfoViewModel.flightState.collectAsState()
+        when (state) {
             is UiState.Loading -> {
                 LoadingCircle()
             }
             is UiState.Error -> {
-                ErrorMessage(state.message)
+                val message = (state as UiState.Error).message
+                ErrorMessage(message)
             }
             is UiState.Loaded -> {
-                val flightInfo = state.data
+                val flightInfo = (state as UiState.Loaded).data
                 Column(
                     modifier = Modifier.padding(contentPadding) ,
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -71,10 +73,16 @@ fun FlightInfoView(
                             fontSize = 32.sp,
                             modifier = Modifier.absolutePadding(left = 10.dp)
                         )
-                        displaySaveToggleButton(
+                        DisplaySaveToggleButton(
+                            flightInfo.ident_iata,
                             passedModifier = Modifier
-                                .align(Alignment.CenterVertically)
+                                .align(Alignment.CenterVertically),
+                            flightInfoViewModel.isSaved,
+                            flightInfoViewModel::saveActionTriggered,
+                            flightInfoViewModel::removeActionTriggered
                         )
+                    }
+                    Row(horizontalArrangement = Arrangement.Center) {
                         DateSelector(dates = dates)
                     }
                     FlightInfoUI(
@@ -127,65 +135,6 @@ fun DateSelector(dates : List<String>) {
                 )
             }
         }
-    }
-}
-
-//Below code referenced from: https://www.geeksforgeeks.org/icon-toggle-button-in-android-using-jetpack-compose/
-@SuppressLint("UnusedTransitionTargetStateParameter")
-@Composable
-fun displaySaveToggleButton(passedModifier: Modifier) {
-    val savedState= remember {mutableStateOf(false)}
-    IconToggleButton(
-        checked = savedState.value,
-        onCheckedChange = {
-            savedState.value = !savedState.value
-            if (savedState.value) {
-
-            }
-            else {
-
-            }
-        },
-        modifier = passedModifier
-    ) {
-        val transition = updateTransition(savedState.value, "isSaved: {$savedState.value}")
-
-        // on below line we are creating a variable for
-        // color of our icon
-        val tint by transition.animateColor(label = "iconColor") { isSaved ->
-            // if toggle button is checked we are setting color as red.
-            // in else condition we are setting color as black
-            if (isSaved) Color.Red else Color.DarkGray
-        }
-
-        // om below line we are specifying transition
-        val size by transition.animateDp(
-            transitionSpec = {
-                // on below line we are specifying transition
-                if (false isTransitioningTo true) {
-                    // on below line we are specifying key frames
-                    keyframes {
-                        // on below line we are specifying animation duration
-                        durationMillis = 250
-                        // on below line we are specifying animations.
-                        30.dp at 0 with LinearOutSlowInEasing // for 0-15 ms
-                        35.dp at 15 with FastOutLinearInEasing // for 15-75 ms
-                        40.dp at 75 // ms
-                        35.dp at 150 // ms
-                    }
-                } else {
-                    spring(stiffness = Spring.StiffnessVeryLow)
-                }
-            },
-            label = "size"
-        ) { 30.dp }
-
-        Icon(
-            imageVector = if (savedState.value) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-            contentDescription = "Icon",
-            tint = tint,
-            modifier = Modifier.size(size)
-        )
     }
 }
 

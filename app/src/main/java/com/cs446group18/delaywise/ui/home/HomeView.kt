@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cs446group18.delaywise.R
+import com.cs446group18.delaywise.model.SavedFlightEntity
 import com.cs446group18.delaywise.ui.components.*
 import com.cs446group18.delaywise.ui.flightinfo.SavedFlightsViewModel
 import com.cs446group18.delaywise.ui.styles.headingFont
@@ -53,10 +55,11 @@ import kotlinx.serialization.json.Json
 @Composable
 fun HomeView(
     navigator: DestinationsNavigator,
-    HomeViewModel: HomeViewModel = viewModel { HomeViewModel()}
+    homeViewModel: HomeViewModel = viewModel { HomeViewModel()}
 ) {
     val focusManager = LocalFocusManager.current
-    
+    val state by homeViewModel.homeSavedFlightState.collectAsState()
+
     Scaffold(
         modifier = Modifier.clickable(
             indication = null,
@@ -89,15 +92,16 @@ fun HomeView(
             SearchBox(navigator)
             Spacer(modifier = Modifier.height(15.dp))
             Text("Saved Flights/Airports", fontSize = 28.sp, fontFamily = headingFont)
-            when (val state = HomeViewModel.homeSavedFlightState.collectAsState(UiState.Loading()).value) {
+            when (state) {
                 is UiState.Loading -> {
                     LoadingCircle()
                 }
                 is UiState.Error -> {
-                    ErrorMessage(state.message)
+                    val message = (state as UiState.Error).message
+                    ErrorMessage(message)
                 }
                 is UiState.Loaded -> {
-                    val savedFlights = state.data
+                    val savedFlights = (state as UiState.Loaded<List<SavedFlightEntity>>).data
                     if (savedFlights.isEmpty()) {
                         Box (
                             contentAlignment = Alignment.Center,
@@ -112,7 +116,6 @@ fun HomeView(
                     else{
                         for (savedFlight in savedFlights) {
                             Column(modifier = Modifier
-                                .padding(PaddingValues(0.dp,0.dp,0.dp,100.dp))
                                 .fillMaxWidth()
                                 .verticalScroll(rememberScrollState()),
                                 verticalArrangement = Arrangement.spacedBy(3.dp)
