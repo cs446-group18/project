@@ -37,7 +37,6 @@ data class ListItem(val name: String)
 fun ListItem(item: ListItem, onSelect: (String) -> Unit) {
     Card(
         modifier = Modifier
-            //.heightIn(min = 50.dp)
             .fillMaxWidth()
             .clickable { onSelect(item.name) },
         shape = RoundedCornerShape(0),
@@ -58,18 +57,15 @@ fun ListItem(item: ListItem, onSelect: (String) -> Unit) {
         }
     }
 }
-val mockData = listOf(ListItem("AC8836"), ListItem("AC914"),ListItem("AC918"),ListItem("AC1088"), ListItem("AC8839"), ListItem("AC834"), ListItem("LH1810"), ListItem("AC883"))
-suspend fun mockApi(searchText: TextFieldValue): List<ListItem> {
-    delay(500L) // synthetic delay
-
-    return mockData.filter{
+suspend fun filterResults(searchText: TextFieldValue, optionLists: List<ListItem>): List<ListItem> {
+    return optionLists.filter{
         (listItem) -> listItem.lowercase().contains(searchText.text.lowercase())
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchBox(navigator: DestinationsNavigator) {
+fun SearchBox(navigator: DestinationsNavigator, rawSearchResults: List<String>, placeHolderText: String) {
     var textFieldValueState by remember{
         mutableStateOf(
             TextFieldValue(
@@ -81,11 +77,17 @@ fun SearchBox(navigator: DestinationsNavigator) {
     var searchResults by remember {
         mutableStateOf(listOf<ListItem>())
     }
-    val scope = rememberCoroutineScope()
+
+    var processedRawSearchResults = mutableListOf<ListItem>()
+    for (item in rawSearchResults) {
+        processedRawSearchResults.add(ListItem(item))
+    }
 
     var showDropDown by remember {
         mutableStateOf(false)
     }
+
+    val scope = rememberCoroutineScope()
 
     Column {
         TextField(
@@ -100,10 +102,10 @@ fun SearchBox(navigator: DestinationsNavigator) {
             onValueChange = {
                 textFieldValueState = it
                 scope.launch {
-                    searchResults = mockApi(it)
+                    searchResults = filterResults(it, processedRawSearchResults)
                 }
             },
-            placeholder = { Text("ex. AA5555") },
+            placeholder = { Text(placeHolderText) },
             modifier = Modifier
                 .fillMaxWidth()
                 .onFocusChanged {
@@ -130,6 +132,3 @@ fun SearchBox(navigator: DestinationsNavigator) {
         }
     }
 }
-@Preview
-@Composable
-fun PreviewBox() = SearchBox(EmptyDestinationsNavigator)

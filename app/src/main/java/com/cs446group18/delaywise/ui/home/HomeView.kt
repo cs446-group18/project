@@ -5,18 +5,18 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.*
@@ -27,11 +27,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cs446group18.delaywise.R
+import com.cs446group18.delaywise.model.Airline
 import com.cs446group18.delaywise.model.SavedFlightEntity
 import com.cs446group18.delaywise.ui.components.*
-import com.cs446group18.delaywise.ui.flightinfo.SavedFlightsViewModel
-import com.cs446group18.delaywise.ui.styles.headingFont
 import com.cs446group18.delaywise.ui.styles.bodyFont
+import com.cs446group18.delaywise.ui.styles.headingFont
 import com.cs446group18.delaywise.util.UiState
 import com.cs446group18.lib.models.FlightInfo
 import com.ramcosta.composedestinations.annotation.Destination
@@ -40,7 +40,6 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-
 
 //todo: delete old list
 //private val savedFlightsList = mutableListOf(
@@ -60,6 +59,10 @@ fun HomeView(
 ) {
     val focusManager = LocalFocusManager.current
     val state by homeViewModel.homeSavedFlightState.collectAsState()
+    val searchOptions = listOf("Flights", "Airports")
+    val selectedText = remember { mutableStateOf(searchOptions[0]) }
+    val airlinePair = remember { mutableStateOf(Pair(Airline("","",""), ""))}
+    var flightNumber by remember { mutableStateOf("")}
 
     Scaffold(
         modifier = Modifier.clickable(
@@ -81,17 +84,35 @@ fun HomeView(
                     painter = painterResource(id = R.drawable.homepage_bg),
                     contentScale = ContentScale.FillHeight,
                 )
-                .padding(top = 70.dp)
+                .padding(top = 50.dp)
                 .padding(horizontal = 30.dp)
-                .padding(contentPadding.calculateEndPadding(layoutDirection = LayoutDirection.Ltr))
+                .padding(contentPadding.calculateEndPadding(layoutDirection = LayoutDirection.Ltr)),
+            verticalArrangement = Arrangement.spacedBy(3.dp)
 
         ) {
-            Text("Welcome to", fontFamily = headingFont, fontSize = 28.sp)
+            Text("Welcome to", fontFamily = headingFont, fontSize = 26.sp)
             Text("DelayWise!", fontFamily = headingFont, fontSize = 40.sp)
-            Text("Enter a flight number or airport:", fontFamily = bodyFont, fontSize = 15.sp)
-            Spacer(modifier = Modifier.height(15.dp))
-            SearchBox(navigator)
-            Spacer(modifier = Modifier.height(15.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Search by:", fontFamily = bodyFont, fontSize = 18.sp)
+                Spacer(modifier = Modifier.width(135.dp))
+                DropdownSmall(
+                    suggestions = searchOptions,
+                    mutableState = selectedText,
+                    isReadOnly = true,
+                )
+            }
+            Spacer(modifier = Modifier.height(13.dp))
+            if (selectedText.value == "Flights") {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    AirlineSearchBox(homeViewModel.airlineResults.collectAsState().value, mutableState = airlinePair)
+                    Spacer(modifier = Modifier.width(135.dp))
+                    TextField(value = flightNumber, onValueChange = {flightNumber = it})
+                }
+            }
+            else {
+                SearchBox(navigator, homeViewModel.airportResults.collectAsState().value, "Airport (e.g. YYZ, Pearson International)")
+            }
+            Spacer(modifier = Modifier.height(6.dp))
             Text("Saved Flights/Airports", fontSize = 28.sp, fontFamily = headingFont)
             when (state) {
                 is UiState.Loading -> {
