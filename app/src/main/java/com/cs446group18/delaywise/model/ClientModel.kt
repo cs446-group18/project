@@ -56,13 +56,15 @@ data class ClientFetcher(
         AirportDelayEntity::class,
         ScheduledFlightEntity::class,
         AirportEntity::class,
-    ], version = 4, exportSchema = false
+        WeatherInfoEntity::class,
+    ], version = 5, exportSchema = false
 )
 abstract class DelayWiseLocalDatabase : RoomDatabase() {
     abstract fun flightInfoDao(): FlightInfoDao
     abstract fun airportDelayDao(): AirportDelayDao
     abstract fun scheduledFlightDao(): ScheduledFlightDao
     abstract fun airportDao(): AirportDao
+    abstract fun weatherDao(): WeatherInfoDao
 }
 
 class ClientModel(
@@ -80,6 +82,8 @@ class ClientModel(
         fun init(context: Context) { INSTANCE = ClientModelFactory.createClientModel(context) }
     }
     suspend fun getAirport(airportCode: String) = model.getAirport(airportCode)
+
+    suspend fun getWeather(airportCode: String) = model.getWeatherRaw(airportCode).observations.first()
 
     suspend fun getFlight(flightIata: String, date: LocalDate? = null): FlightInfo {
         val match = """^(.*?)(\d+)$""".toRegex().matchEntire(flightIata)
@@ -147,6 +151,13 @@ object ClientModelFactory {
                     decode = { Json.decodeFromString(it) },
                     maxCacheTime = 30.toDuration(DurationUnit.DAYS)
                 ),
+                weatherCache = ClientCache(
+                    dao = db.weatherDao(),
+                    createEntity = ::WeatherInfoEntity,
+                    encode = { Json.encodeToString(it) },
+                    decode = { Json.decodeFromString(it) },
+                    maxCacheTime = 15.toDuration(DurationUnit.MINUTES)
+                )
             ),
             airlinesByIata = loadMapping(context, "airline_codes.csv"),
             airportsByIata = loadMapping(context, "airport_codes.csv"),

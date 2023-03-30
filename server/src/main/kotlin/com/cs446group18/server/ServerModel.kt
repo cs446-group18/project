@@ -51,7 +51,7 @@ class ServerCache<T>(val maxCacheTime: Duration) : Cache<T> {
                     // evict expired entries
                     val toRemove = ArrayList<String>()
                     for ((key, value) in map.entries) {
-                        if (value.second <= Clock.System.now() - 10.toDuration(DurationUnit.MINUTES)) {
+                        if (value.second <= Clock.System.now() - maxCacheTime) {
                             toRemove.add(key)
                         }
                     }
@@ -82,4 +82,5 @@ val ServerModel = Model(
     airportDelayCache = ServerCache(maxCacheTime = 5.toDuration(DurationUnit.MINUTES)),
     scheduledFlightCache = ServerCache(maxCacheTime = 3.toDuration(DurationUnit.HOURS)),
     airportCache = ServerCache(maxCacheTime = 15.toDuration(DurationUnit.DAYS)),
+    weatherCache = ServerCache(maxCacheTime = 15.toDuration(DurationUnit.MINUTES))
 )

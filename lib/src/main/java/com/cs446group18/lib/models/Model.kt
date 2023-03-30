@@ -36,6 +36,7 @@ open class Model(
     private val airportDelayCache: Cache<AirportDelayResponse>,
     private val scheduledFlightCache: Cache<ScheduledFlightsResponse>,
     private val airportCache: Cache<Airport>,
+    private val weatherCache: Cache<WeatherResponse>,
 ) {
     suspend fun getFlightRaw(flightCode: String) : FlightInfoResponse {
         val cached = flightInfoCache.lookup(flightCode)
@@ -64,6 +65,18 @@ open class Model(
         if(decoded.scheduled.isEmpty()) {
             throw NoFlightsFoundException("No flights found with code $flightCode")
         }
+        return decoded
+    }
+
+    suspend fun getWeatherRaw(airportCode: String): WeatherResponse {
+        val cached = weatherCache.lookup(airportCode)
+        if(cached != null) return cached
+        val currentDateTime = truncateToHours(Clock.System.now())
+        val response = fetcher.makeAeroApiCall("/airports/$airportCode/weather/observations") {
+            parameter("timestamp", currentDateTime)
+        }
+        val decoded = json.decodeFromString<WeatherResponse>(response.bodyAsText())
+        weatherCache.insert(airportCode, decoded)
         return decoded
     }
     suspend fun getAirport(airportCode: String) : Airport {
