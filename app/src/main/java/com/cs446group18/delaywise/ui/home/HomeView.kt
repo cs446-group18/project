@@ -4,6 +4,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -114,15 +115,16 @@ fun HomeView(
                         }
                     }
                     else{
-                        for (savedFlight in savedFlights) {
-                            Column(modifier = Modifier
-                                .fillMaxWidth()
-                                .verticalScroll(rememberScrollState()),
-                                verticalArrangement = Arrangement.spacedBy(3.dp)
-                            ){
-                                var flightInfo = Json.decodeFromString<FlightInfo>(savedFlight.json);
-                                SavedFlightCard(flightInfo, navigator)
+                        LazyColumn(modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 500.dp),
+                            verticalArrangement = Arrangement.spacedBy(3.dp),
+                            contentPadding = PaddingValues(bottom = 100.dp)
+                        ){
+                            items(savedFlights) {
+                                flight -> SavedFlightCard(Json.decodeFromString<FlightInfo>(flight.json), navigator);
                             }
+
                         }
                     }
                 }

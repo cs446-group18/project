@@ -29,6 +29,7 @@ import com.cs446group18.delaywise.ui.destinations.FlightInfoViewDestination
 import com.cs446group18.delaywise.ui.destinations.SavedFlightsViewDestination
 import com.cs446group18.delaywise.ui.flightinfo.FlightInfoViewModel
 import com.cs446group18.delaywise.ui.home.HomeViewModel
+import com.cs446group18.delaywise.util.formatAsTime
 import com.cs446group18.lib.models.FlightInfo
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
@@ -146,17 +147,6 @@ fun SavedFlightCard(flightInfo: FlightInfo, navigator: DestinationsNavigator) {
                             append(flightInfo.destination.code_iata + "(${flightInfo.destination.city})")
                         }
                     })
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.CenterEnd
-                    ) {
-                        Icon(
-                            Icons.Sharp.NavigateNext,
-                            contentDescription = null,
-                            modifier = Modifier.size(35.dp),
-                            tint = Color.LightGray
-                        )
-                    }
                 }
                 Text(modifier = Modifier.padding(), text = buildAnnotatedString {
                     withStyle(
@@ -164,7 +154,8 @@ fun SavedFlightCard(flightInfo: FlightInfo, navigator: DestinationsNavigator) {
                             color = Color.DarkGray
                         )
                     ) {
-                        append("Expected Departure:" + flightInfo.getDepartureDate().toString())
+                        val scheduledTime = flightInfo.actual_out ?: flightInfo.scheduled_out
+                        append("Scheduled: " +  scheduledTime.formatAsTime() + " || " + flightInfo.getDepartureDate().toString())
                     }
                 })
             }
