@@ -7,11 +7,8 @@ import com.cs446group18.delaywise.model.SavedFlightEntity
 import com.cs446group18.delaywise.util.UiState
 import com.cs446group18.lib.models.FlightInfo
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -41,7 +38,6 @@ class FlightInfoViewModel(private val flightIata: String) : ViewModel() {
 
     suspend fun saveActionTriggered(id: String){
         try {
-            println("Calling Save Saved Flight")
             val flightInfo = ClientModel.getInstance().getFlight(id)
             val jsonString = Json.encodeToString(flightInfo)
             val flightInfoEntity = SavedFlightEntity(flightInfo.ident_iata, jsonString)
@@ -55,7 +51,6 @@ class FlightInfoViewModel(private val flightIata: String) : ViewModel() {
 
     suspend fun removeActionTriggered(id: String){
         try {
-            println("Calling Delete Saved Flight")
             val flightInfo = ClientModel.getInstance().getFlight(id)
             val jsonString = Json.encodeToString(flightInfo)
             val flightInfoEntity = SavedFlightEntity(flightInfo.ident_iata, jsonString)

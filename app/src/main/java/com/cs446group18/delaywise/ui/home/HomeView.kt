@@ -110,7 +110,7 @@ fun HomeView(
                 Row(modifier = Modifier.align(Alignment.End)) {
                     AirlineSearchBox(homeViewModel.airlineResults.collectAsState().value, mutableState = airlinePair)
                     Spacer(modifier = Modifier.width(9.dp))
-                    TextField(modifier = Modifier.height(55.dp), shape = RoundedCornerShape(8.dp), placeholder = { Text("Flight # (ex. 886)") },
+                    TextField(modifier = Modifier.height(55.dp), shape = RoundedCornerShape(8.dp), placeholder = { Text("Flight #") },
                         value = flightNumber,
                         onValueChange = {flightNumber = it},
                         colors = TextFieldDefaults.outlinedTextFieldColors(containerColor = Color.White,

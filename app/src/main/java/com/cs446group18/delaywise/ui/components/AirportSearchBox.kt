@@ -114,9 +114,9 @@ fun AirportSearchBox(navigator: DestinationsNavigator, airports: List<Airport>, 
             ) {
                 items(searchResults) { item ->
                     AirportSearchBoxItem(item, onSelect = {
+                        println("in AirportSearchBox OnSelect")
                         textFieldValueState = TextFieldValue(
                             text = item.displayText,
-                            selection = TextRange(item.displayText.length)
                         )
                         navigator.navigate(AirportInfoViewDestination(item.airport.iata))
                     })
