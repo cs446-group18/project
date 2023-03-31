@@ -15,11 +15,12 @@ import androidx.compose.ui.unit.dp
 import com.cs446group18.delaywise.R
 
 @Composable
-fun SearchButton() {
+fun SearchButton(isEnabled: Boolean, onClickParam: () -> Unit) {
     Button(
-        onClick = {},
+        onClick = onClickParam,
         shape = RoundedCornerShape(8.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(R.color.main_blue).copy(alpha = 1F))
+        colors = ButtonDefaults.buttonColors(containerColor = Color(R.color.main_blue).copy(alpha = 1F)),
+        enabled = isEnabled
     ) {
         Row(
             modifier = Modifier
@@ -40,4 +41,4 @@ fun SearchButton() {
 
 @Preview
 @Composable
-fun PreviewButton() = SearchButton()
+fun PreviewButton() = SearchButton(false) {}

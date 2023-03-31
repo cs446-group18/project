@@ -26,8 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cs446group18.delaywise.R
 import com.cs446group18.delaywise.model.Airline
-import com.cs446group18.delaywise.ui.destinations.FlightInfoViewDestination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 
 data class AirlineSearchBoxItem(val airline: Airline, val displayText: String)
@@ -65,7 +63,7 @@ suspend fun filterResults(searchText: String, optionLists: List<AirlineSearchBox
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AirlineSearchBox(airlines: List<Airline>, mutableState: MutableState<Pair<Airline, String>>) {
+fun AirlineSearchBox(airlines: List<Airline>, mutableState: MutableState<Pair<Airline?, String>>) {
     var expanded by remember { mutableStateOf(false) }
     var dropDownWidth by remember { mutableStateOf(0) }
     val suggestions = mutableListOf<Pair<Airline, String>>()
@@ -86,7 +84,7 @@ fun AirlineSearchBox(airlines: List<Airline>, mutableState: MutableState<Pair<Ai
 
     val scope = rememberCoroutineScope()
 
-    Column{
+    Column(){
         TextField(
             value = mutableState.value.second,
             shape = RoundedCornerShape(8.dp),
@@ -100,9 +98,9 @@ fun AirlineSearchBox(airlines: List<Airline>, mutableState: MutableState<Pair<Ai
                 scope.launch {
                     searchResults = filterResults(mutableState.value.second, processedRawSearchResults)
                 }},
-            placeholder = { Text("Airline (e.g. AC, Air Canada)") },
+            placeholder = { Text("Airline (ex. DAL, Delta)") },
             modifier = Modifier
-                .width(135.dp)
+                .width(220.dp)
                 .onFocusChanged {
                     showDropDown = it.isFocused
                 }
@@ -111,7 +109,7 @@ fun AirlineSearchBox(airlines: List<Airline>, mutableState: MutableState<Pair<Ai
         if (showDropDown) {
             LazyColumn(
                 modifier = Modifier
-                    .width(135.dp)
+                    .width(220.dp)
                     .heightIn(max = 220.dp)
                     .clip(shape = RoundedCornerShape(8.dp))
             ) {

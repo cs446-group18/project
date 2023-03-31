@@ -1,7 +1,5 @@
 package com.cs446group18.delaywise.ui.components
 
-import android.util.Log
-import android.view.MotionEvent
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,31 +12,25 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.*
 import androidx.compose.foundation.gestures.*
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.cs446group18.delaywise.R
-import com.cs446group18.delaywise.ui.destinations.FlightInfoViewDestination
+import com.cs446group18.delaywise.model.Airport
+import com.cs446group18.delaywise.ui.destinations.AirportInfoViewDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-data class ListItem(val name: String)
+data class AirportSearchBoxItem(val airport: Airport, val displayText: String)
 
 @Composable
-fun ListItem(item: ListItem, onSelect: (String) -> Unit) {
+fun AirportSearchBoxItem(item: AirportSearchBoxItem, onSelect: (String) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onSelect(item.name) },
+            .clickable { onSelect(item.displayText) },
         shape = RoundedCornerShape(0),
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
@@ -50,22 +42,22 @@ fun ListItem(item: ListItem, onSelect: (String) -> Unit) {
                 .fillMaxSize(0.1F)
         ) {
             Text(
-                item.name,
+                item.displayText,
                 textAlign = TextAlign.Left,
                 modifier = Modifier.absolutePadding(7.dp, 0.dp, 7.dp, 0.dp)
             )
         }
     }
 }
-suspend fun filterResults(searchText: TextFieldValue, optionLists: List<ListItem>): List<ListItem> {
+suspend fun filterResults(searchText: TextFieldValue, optionLists: List<AirportSearchBoxItem>): List<AirportSearchBoxItem> {
     return optionLists.filter{
-        (listItem) -> listItem.lowercase().contains(searchText.text.lowercase())
+       it.displayText.contains(searchText.text, ignoreCase = true)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchBox(navigator: DestinationsNavigator, rawSearchResults: List<String>, placeHolderText: String) {
+fun AirportSearchBox(navigator: DestinationsNavigator, airports: List<Airport>, placeHolderText: String) {
     var textFieldValueState by remember{
         mutableStateOf(
             TextFieldValue(
@@ -75,12 +67,13 @@ fun SearchBox(navigator: DestinationsNavigator, rawSearchResults: List<String>, 
     }
 
     var searchResults by remember {
-        mutableStateOf(listOf<ListItem>())
+        mutableStateOf(listOf<AirportSearchBoxItem>())
     }
 
-    var processedRawSearchResults = mutableListOf<ListItem>()
-    for (item in rawSearchResults) {
-        processedRawSearchResults.add(ListItem(item))
+    var processedRawSearchResults = mutableListOf<AirportSearchBoxItem>()
+    for (item in airports) {
+        val displayText = item.iata + "/" + item.icao + " || " + item.airport
+        processedRawSearchResults.add(AirportSearchBoxItem(item, displayText))
     }
 
     var showDropDown by remember {
@@ -120,12 +113,12 @@ fun SearchBox(navigator: DestinationsNavigator, rawSearchResults: List<String>, 
                     .clip(shape = RoundedCornerShape(8.dp))
             ) {
                 items(searchResults) { item ->
-                    ListItem(item, onSelect = {
+                    AirportSearchBoxItem(item, onSelect = {
                         textFieldValueState = TextFieldValue(
-                            text = it,
-                            selection = TextRange(it.length)
+                            text = item.displayText,
+                            selection = TextRange(item.displayText.length)
                         )
-                        navigator.navigate(FlightInfoViewDestination(it))
+                        navigator.navigate(AirportInfoViewDestination(item.airport.iata))
                     })
                 }
             }

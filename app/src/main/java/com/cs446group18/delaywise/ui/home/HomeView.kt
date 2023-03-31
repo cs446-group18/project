@@ -5,6 +5,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -30,6 +31,7 @@ import com.cs446group18.delaywise.R
 import com.cs446group18.delaywise.model.Airline
 import com.cs446group18.delaywise.model.SavedFlightEntity
 import com.cs446group18.delaywise.ui.components.*
+import com.cs446group18.delaywise.ui.destinations.FlightInfoViewDestination
 import com.cs446group18.delaywise.ui.styles.bodyFont
 import com.cs446group18.delaywise.ui.styles.headingFont
 import com.cs446group18.delaywise.util.UiState
@@ -40,6 +42,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import org.w3c.dom.Text
 
 //todo: delete old list
 //private val savedFlightsList = mutableListOf(
@@ -49,6 +52,7 @@ import kotlinx.serialization.json.Json
 //    HomeViewModel.Flight("LH1810", "LH","Likely 17m Delay", DelayType.LIKELY, "MUC(Munich)", "BCN(Barcelona)", "Scheduled 9am; Mon 16 March, 2023"),
 //    HomeViewModel.Flight("AC8838", "AC","Likely 1h Delay", DelayType.LIKELY, "YYZ(Toronto)", "RDU(Raleigh)", "Scheduled 2pm; Mon 21 March, 2023"),
 //)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @RootNavGraph(start = true)
 @Destination
@@ -61,7 +65,7 @@ fun HomeView(
     val state by homeViewModel.homeSavedFlightState.collectAsState()
     val searchOptions = listOf("Flights", "Airports")
     val selectedText = remember { mutableStateOf(searchOptions[0]) }
-    val airlinePair = remember { mutableStateOf(Pair(Airline("","",""), ""))}
+    val airlinePair: MutableState<Pair<Airline?, String>> = remember { mutableStateOf(Pair(null, ""))}
     var flightNumber by remember { mutableStateOf("")}
 
     Scaffold(
@@ -101,16 +105,33 @@ fun HomeView(
                     isReadOnly = true,
                 )
             }
-            Spacer(modifier = Modifier.height(13.dp))
-            if (selectedText.value == "Flights") {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+            Spacer(modifier = Modifier.height(10.dp))
+            if (selectedText.value == "Flights") { //User selected Search by Flight
+                Row(modifier = Modifier.align(Alignment.End)) {
                     AirlineSearchBox(homeViewModel.airlineResults.collectAsState().value, mutableState = airlinePair)
-                    Spacer(modifier = Modifier.width(135.dp))
-                    TextField(value = flightNumber, onValueChange = {flightNumber = it})
+                    Spacer(modifier = Modifier.width(9.dp))
+                    TextField(modifier = Modifier.height(55.dp), shape = RoundedCornerShape(8.dp), placeholder = { Text("Flight # (ex. 886)") },
+                        value = flightNumber,
+                        onValueChange = {flightNumber = it},
+                        colors = TextFieldDefaults.outlinedTextFieldColors(containerColor = Color.White,
+                            focusedBorderColor = Color(
+                                R.color.main_blue).copy(
+                                alpha = 1F
+                            )
+                        )
+                    )
+                }
+                val chosenAirline = airlinePair.value.first
+                if (flightNumber == "" || chosenAirline == null) {
+                    SearchButton(false) {}
+                }
+                else { //User selected Search by Airport
+                    val searchString = chosenAirline.iata + flightNumber
+                    SearchButton(true) { navigator.navigate(FlightInfoViewDestination(searchString)) }
                 }
             }
             else {
-                SearchBox(navigator, homeViewModel.airportResults.collectAsState().value, "Airport (e.g. YYZ, Pearson International)")
+                AirportSearchBox(navigator, homeViewModel.airportResults.collectAsState().value, "Airport (ex. YYZ, Pearson International)")
             }
             Spacer(modifier = Modifier.height(6.dp))
             Text("Saved Flights/Airports", fontSize = 28.sp, fontFamily = headingFont)
@@ -145,7 +166,6 @@ fun HomeView(
                             items(savedFlights) {
                                 flight -> SavedFlightCard(Json.decodeFromString<FlightInfo>(flight.json), navigator);
                             }
-
                         }
                     }
                 }
