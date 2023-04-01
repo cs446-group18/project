@@ -56,9 +56,9 @@ class FlightInfoViewModel(private val flightIata: String) : ViewModel() {
 
     suspend fun saveActionTriggered(id: String){
         try {
-            val flightInfo = ClientModel.getInstance().getFlight(id)
+            val (flightInfo, _) = ClientModel.getInstance().getFlight(id)
             val jsonString = Json.encodeToString(flightInfo)
-            val flightInfoEntity = SavedFlightEntity(flightInfo.first.ident_iata, jsonString)
+            val flightInfoEntity = SavedFlightEntity(flightInfo.ident_iata, jsonString)
             ClientModel.getInstance().savedFlightDao.insert(flightInfoEntity)
             _isSaved.value = true
         } catch (ex: Exception) {
@@ -69,9 +69,9 @@ class FlightInfoViewModel(private val flightIata: String) : ViewModel() {
 
     suspend fun removeActionTriggered(id: String){
         try {
-            val flightInfo = ClientModel.getInstance().getFlight(id)
+            val (flightInfo, _) = ClientModel.getInstance().getFlight(id)
             val jsonString = Json.encodeToString(flightInfo)
-            val flightInfoEntity = SavedFlightEntity(flightInfo.first.ident_iata, jsonString)
+            val flightInfoEntity = SavedFlightEntity(flightInfo.ident_iata, jsonString)
             ClientModel.getInstance().savedFlightDao.delete(flightInfoEntity)
             _isSaved.value = false
         } catch (ex: Exception) {
