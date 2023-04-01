@@ -15,4 +15,5 @@ build
 .externalNativeBuild
 .cxx
 local.properties
+bin
 
