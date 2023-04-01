@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.LocalAirport
 import androidx.compose.material.icons.sharp.NavigateNext
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -30,6 +31,7 @@ import com.cs446group18.delaywise.ui.destinations.SavedFlightsViewDestination
 import com.cs446group18.delaywise.ui.flightinfo.FlightInfoViewModel
 import com.cs446group18.delaywise.ui.home.HomeViewModel
 import com.cs446group18.delaywise.util.formatAsTime
+import com.cs446group18.lib.models.Airport
 import com.cs446group18.lib.models.FlightInfo
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
@@ -37,26 +39,9 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
 
-enum class DelayType {
-    DELAYED, LIKELY, ONTIME
-}
-
-val delayTypeColor: Map<DelayType, Color> = mapOf(
-    DelayType.DELAYED to Color(0xffBF0000),
-    DelayType.LIKELY to Color(0xffFF9900),
-    DelayType.ONTIME to Color(0xff00BF1F)
-)
-
-private val airlineMap = mapOf(
-    "default" to R.drawable.__plane_icon,
-    "LH" to R.drawable.lufthansa,
-    "AC" to R.drawable.aircanada
-)
 @Composable
-fun SavedFlightCard(flightInfo: FlightInfo, navigator: DestinationsNavigator) {
+fun SavedAirportCard(airportInfo: Airport, navigator: DestinationsNavigator) {
     val scope = rememberCoroutineScope()
-    val airlineAsset =
-        if (airlineMap.containsKey(flightInfo.operator_iata)) airlineMap[flightInfo.operator_iata] else airlineMap["default"];
     Card(
         elevation = CardDefaults.cardElevation(15.dp),
         shape = RoundedCornerShape(size = 12.dp),
@@ -65,7 +50,13 @@ fun SavedFlightCard(flightInfo: FlightInfo, navigator: DestinationsNavigator) {
             .fillMaxWidth()
             .padding(3.dp)
             .clickable {
-                scope.launch { navigator.navigate(FlightInfoViewDestination(flightInfo.ident_iata)) }
+                scope.launch {
+                    navigator.navigate(
+                        com.cs446group18.delaywise.ui.destinations.AirportInfoViewDestination(
+                            airportInfo.code_iata
+                        )
+                    )
+                }
             }
     ) {
         Row(
@@ -77,13 +68,13 @@ fun SavedFlightCard(flightInfo: FlightInfo, navigator: DestinationsNavigator) {
                 modifier = Modifier.padding(all = 10.dp)
             ) {
                 Image(
-                    modifier = Modifier.size(40.dp),
-                    painter = painterResource(airlineAsset!!),
-                    contentDescription = null
+                    modifier = Modifier.size(50.dp),
+                    painter = painterResource(id = R.drawable.airport_icon),
+                    contentDescription = "Saved Airport"
                 )
             }
             Column(
-                modifier = Modifier.padding(15.dp)
+                modifier = Modifier.padding(start = 5.dp, top = 15.dp, bottom = 15.dp, end = 15.dp)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -96,7 +87,7 @@ fun SavedFlightCard(flightInfo: FlightInfo, navigator: DestinationsNavigator) {
                                 color = Color.Black,
                             )
                         ) {
-                            append("Flight: " + flightInfo.ident_iata)
+                            append("Airport: " + airportInfo.name + " (${airportInfo.code_iata})")
                         }
                     })
                     Box(
@@ -127,37 +118,42 @@ fun SavedFlightCard(flightInfo: FlightInfo, navigator: DestinationsNavigator) {
                                 color = Color.Gray
                             )
                         ) {
-                            append(flightInfo.origin.code_iata + "(${flightInfo.origin.city})")
+                            append(airportInfo.city + ", ")
                         }
                     })
-                    Image(
-                        modifier = Modifier
-                            .size(15.dp)
-                            .padding(end = 2.dp),
-                        painter = painterResource(id = R.drawable.__plane_icon),
-                        contentDescription = null
-                    )
-
                     Text(modifier = Modifier.padding(end = 5.dp), text = buildAnnotatedString {
                         withStyle(
                             style = SpanStyle(
                                 color = Color.Gray
                             )
                         ) {
-                            append(flightInfo.destination.code_iata + "(${flightInfo.destination.city})")
+                            append(airportInfo.timezone)
                         }
                     })
                 }
-                Text(modifier = Modifier.padding(), text = buildAnnotatedString {
-                    withStyle(
-                        style = SpanStyle(
-                            color = Color.DarkGray
-                        )
-                    ) {
-                        val scheduledTime = flightInfo.actual_out ?: flightInfo.scheduled_out
-                        append("Scheduled: " +  scheduledTime.formatAsTime() + " || " + flightInfo.getDepartureDate().toString())
-                    }
-                })
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(modifier = Modifier.padding(), text = buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                color = Color.DarkGray
+                            )
+                        ) {
+                            append("Busy: | ") //todo: adding this delay data
+                        }
+                    })
+                    Text(modifier = Modifier.padding(), text = buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                color = Color.DarkGray
+                            )
+                        ) {
+                            append("Avg Delay: ") //todo: adding this delay data
+                        }
+                    })
+                }
             }
         }
     }

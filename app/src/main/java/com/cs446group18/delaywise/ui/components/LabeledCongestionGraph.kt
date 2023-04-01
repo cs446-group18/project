@@ -77,6 +77,8 @@ fun LabeledCongestionGraph(navigator: DestinationsNavigator, keys: List<String>,
                         .vertical()
                         .padding(4.dp, 4.dp, 28.dp, 4.dp)
                 )
+            println("LabeledCongestionGraphKeys: $keys")
+            println("LabeledCongestionGraphKeys: $values")
             CongestionGraph(navigator = navigator, keys, values)
         }
     }

@@ -4,38 +4,64 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.cs446group18.lib.models.Airport
 import com.cs446group18.delaywise.model.ClientModel
+import com.cs446group18.delaywise.model.SavedAirportEntity
 import com.cs446group18.delaywise.util.UiState
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
-class AirportInfoViewModel(private val airport: String) : ViewModel() {
-    private val _airportDelay = MutableSharedFlow<UiState<List<Int>>>()
-    val airportDelay = _airportDelay.asSharedFlow()
+class AirportInfoViewModel(private val airportCode: String) : ViewModel() {
+    private val _airportState = MutableStateFlow<UiState<Pair<Airport, List<Int>>>>(UiState.Loading())
+    val airportState: StateFlow<UiState<Pair<Airport, List<Int>>>> = _airportState
+
+    val _isSaved = MutableStateFlow<Boolean>(false)
+    val isSaved: StateFlow<Boolean> = _isSaved
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            _airportDelay.emit(UiState.Loading())
+            _airportState.emit(UiState.Loading())
             try {
-                val flight = ClientModel.getInstance().getAirportDelay(airport).getAverageDelays()
-
-                delay(1000) //Todo: remove delay
-                _airportDelay.emit(
-                    UiState.Loaded(flight)
-                )
+                val airport = ClientModel.getInstance().getAirport(airportCode)
+                val delayStatus = ClientModel.getInstance().getAirportDelay(airportCode).getAverageDelays()
+                val saveStatus = (ClientModel.getInstance().savedAirportDao.getItem(airportCode) != null)
+                _airportState.value = UiState.Loaded(Pair(airport, delayStatus))
+                _isSaved.value = saveStatus
             } catch (ex: Exception) {
                 println(ex.toString())
                 println(ex.stackTraceToString())
-                _airportDelay.emit(UiState.Error(ex.toString()))
+                _airportState.value = (UiState.Error(ex.toString()))
             }
         }
     }
-
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is gallery Fragment"
+    suspend fun saveActionTriggered(id: String){
+        try {
+            val airportInfo = ClientModel.getInstance().getAirport(id)
+            val jsonString = Json.encodeToString(airportInfo)
+            val airportInfoEntity = SavedAirportEntity(airportInfo.code_iata, jsonString)
+            ClientModel.getInstance().savedAirportDao.insert(airportInfoEntity)
+            _isSaved.value = true
+        } catch (ex: Exception) {
+            println(ex.toString())
+            println(ex.stackTraceToString())
+        }
     }
-    val text: LiveData<String> = _text
+
+    suspend fun removeActionTriggered(id: String){
+        try {
+            val airportInfo = ClientModel.getInstance().getAirport(id)
+            val jsonString = Json.encodeToString(airportInfo)
+            val airportInfoEntity = SavedAirportEntity(airportInfo.code_iata, jsonString)
+            ClientModel.getInstance().savedAirportDao.delete(airportInfoEntity)
+            _isSaved.value = false
+        } catch (ex: Exception) {
+            println(ex.toString())
+            println(ex.stackTraceToString())
+        }
+    }
 }

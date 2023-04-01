@@ -1,26 +1,35 @@
 package com.cs446group18.delaywise.ui.components
 
+import android.graphics.fonts.Font
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.cs446group18.delaywise.R
 import com.cs446group18.delaywise.model.getAirlineName
-import com.cs446group18.delaywise.ui.styles.BodyText
-import com.cs446group18.delaywise.ui.styles.Heading
+import com.cs446group18.delaywise.ui.destinations.AirportInfoViewDestination
+import com.cs446group18.delaywise.ui.styles.*
 import com.cs446group18.delaywise.util.formatAsDate
 import com.cs446group18.delaywise.util.formatAsTime
 import com.cs446group18.delaywise.util.formatInHoursMinutes
 import com.cs446group18.lib.models.Airport
 import com.cs446group18.lib.models.FlightInfo
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.datetime.*
 import kotlin.time.Duration
 
@@ -28,6 +37,13 @@ import kotlin.time.Duration
 fun FullRow(content: @Composable() () -> Unit) {
     Row(modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround) {
+        content()
+    }
+}
+
+@Composable
+fun FullColumn(content: @Composable() () -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(3.dp), modifier = Modifier.padding(start = 16.dp, top = 10.dp)) {
         content()
     }
 }
@@ -101,7 +117,7 @@ fun BasicInfoCard(
 
 // TODO: move to ui.flightinfo package because it's specific to that screen
 @Composable
-fun FlightInfoUI(flightInfoData: FlightInfo) {
+fun FlightInfoUI(flightInfoData: FlightInfo, navigator: DestinationsNavigator) {
     Column(modifier = Modifier
         .padding(vertical = 10.dp)
         .fillMaxHeight()
@@ -128,23 +144,26 @@ fun FlightInfoUI(flightInfoData: FlightInfo) {
             }
         }
         Spacer(modifier = Modifier.padding(10.dp))
-        FullCard {
-            Row {
-                Heading("Predicted Delay by Amadeus")
-            }
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    // TODO: get real data from amadeus or historical data
-                    BodyText( "15-30 min", color = Color(0xFFFFA500)) // Orange
-                    BodyText("Projected Delay")
-                }
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    BodyText("45%")
-                    BodyText("Likelihood")
-                }
-            }
+//        FullCard {
+//            Row {
+//                Heading("Predicted Delay by Amadeus")
+//            }
+//            Row(modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
+//                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+//                    // TODO: get real data from amadeus or historical data
+//                    BodyText( "15-30 min", color = Color(0xFFFFA500)) // Orange
+//                    BodyText("Projected Delay")
+//                }
+//                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+//                    BodyText("45%")
+//                    BodyText("Likelihood")
+//                }
+//            }
+//        }
+        FullColumn{
+            LargeHeading("Flight Info")
         }
         BasicInfoCard(
             label = "Departure",
@@ -162,12 +181,17 @@ fun FlightInfoUI(flightInfoData: FlightInfo) {
             terminal = flightInfoData.terminal_destination ?: "unknown terminal", // TODO: fix
             gate = flightInfoData.gate_destination,
         )
+        FullColumn{
+            LargeHeading("Historical Delays for Flight: " + flightInfoData.ident_iata)
+        }
+        Spacer(modifier = Modifier.padding(10.dp))
         FullCard {
             Row {
-                Heading("Historical Delays Over:")
-                DropdownMenu(expanded = false, onDismissRequest = { /*TODO*/ }) {
-                    DropdownMenuItem(text = { Text("7 days") }, onClick = { /*TODO*/ })
-                }
+                val numDays = 0 //@todo: make real number
+                Heading("In the last $numDays days, " + flightInfoData.ident_iata + " saw a:")
+//                DropdownMenu(expanded = false, onDismissRequest = { /*TODO*/ }) {
+////                    DropdownMenuItem(text = { Text("7 days") }, onClick = { /*TODO*/ })
+////                }
             }
             Row(modifier = Modifier
                 .fillMaxWidth()
@@ -200,6 +224,14 @@ fun FlightInfoUI(flightInfoData: FlightInfo) {
             ),
             mutableListOf<Int>(1, 2, 3, 2, 2, 1, 1, 2, 7)
         )
+        Column (horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(10.dp)) {
+            Heading("Check Departure Airport for Weather & Congestion Delays:", textAlign = TextAlign.Center)
+            ClickableText(
+                text = AnnotatedString("${flightInfoData.origin.code_iata}: ${flightInfoData.origin.cleanName()}"),
+                style = TextStyle(color = Color.Blue, fontFamily = bodyFont, textDecoration = TextDecoration.Underline, fontSize = 18.sp ),
+                onClick = {navigator.navigate(AirportInfoViewDestination(flightInfoData.origin.code_iata))}
+            )
+        }
     }
 }
 
@@ -235,5 +267,6 @@ fun PreviewFlightInfoCard() = FlightInfoUI(
         gate_destination = null,
         terminal_origin = "1",
         terminal_destination = "2",
-    )
+    ),
+    navigator = EmptyDestinationsNavigator
 )

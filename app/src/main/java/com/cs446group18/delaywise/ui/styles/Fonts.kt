@@ -34,14 +34,26 @@ val bodyFont = FontFamily(
 
 
 @Composable
-fun Heading(text: String) {
+fun Heading(text: String, textAlign: TextAlign? = null,) {
     Text(
         text = text,
         fontFamily = headingFont,
         fontSize = 16.sp,
-//        textAlign = TextAlign.Center,
+        textAlign = textAlign,
     )
 }
+
+@Composable
+fun LargeHeading(text: String) {
+    Text(
+        text = text,
+        fontFamily = headingFont,
+        fontSize = 18.sp,
+//      textAlign = TextAlign.Center,
+    )
+}
+
+
 @Composable
 fun BodyText(
     text: String,

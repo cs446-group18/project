@@ -7,6 +7,7 @@ import androidx.room.RoomDatabase
 import com.cs446group18.lib.models.*
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -22,6 +23,11 @@ import kotlin.time.toDuration
 
 val client = HttpClient(CIO) {
     install(Logging)
+    install(HttpTimeout) {
+        requestTimeoutMillis = 7000;
+        connectTimeoutMillis = 7000;
+        socketTimeoutMillis = 7000;
+    }
 }
 
 data class ClientFetcher(
@@ -55,22 +61,28 @@ data class ClientFetcher(
         FlightInfoEntity::class,
         AirportDelayEntity::class,
         ScheduledFlightEntity::class,
-        AirportEntity::class,
+        SavedFlightEntity::class,
         WeatherInfoEntity::class,
-    ], version = 5, exportSchema = false
+        AirportInfoEntity::class,
+        SavedAirportEntity::class,
+    ], version = 6, exportSchema = false
 )
 abstract class DelayWiseLocalDatabase : RoomDatabase() {
     abstract fun flightInfoDao(): FlightInfoDao
     abstract fun airportDelayDao(): AirportDelayDao
     abstract fun scheduledFlightDao(): ScheduledFlightDao
-    abstract fun airportDao(): AirportDao
     abstract fun weatherDao(): WeatherInfoDao
+    abstract fun airportDao(): AirportInfoDao
+    abstract fun savedFlightDao(): SavedFlightDao
+    abstract fun savedAirportDao(): SavedAirportDao
 }
 
 class ClientModel(
     val model : Model,
     val airlinesByIata: Map<String, Airline>,
     val airportsByIata: Map<String, Airport>,
+    val savedFlightDao: SavedFlightDao,
+    val savedAirportDao: SavedAirportDao
 ) {
     companion object {
         @Volatile
@@ -85,21 +97,19 @@ class ClientModel(
 
     suspend fun getWeather(airportCode: String) = model.getWeatherRaw(airportCode).observations.first()
 
-    suspend fun getFlight(flightIata: String, date: LocalDate? = null): FlightInfo {
+    suspend fun getFlight(flightIata: String, date: LocalDate? = null): Pair<FlightInfo, List<FlightInfo>> {
         val match = """^(.*?)(\d+)$""".toRegex().matchEntire(flightIata)
         match ?: throw Exception("could not extract airline code from $flightIata")
         val (airlineIata, flightNumber) = match.destructured
         val airlineIcao = airlinesByIata[airlineIata]?.icao
             ?: throw Exception("could not find matching an airline matching $airlineIata")
         val flightInfoResponse = model.getFlightRaw(airlineIcao + flightNumber)
-        var selectedFlight = pickFlight(date, flightInfoResponse.flights)
-        if(selectedFlight == null) {
-            val scheduledFlightsResponse = model.getScheduledFlights(airlineIcao + flightNumber)
-            val templateFlight = flightInfoResponse.flights.first()
-            val flightsIncludingScheduled = flightInfoResponse.flights + scheduledFlightsResponse.scheduled.map{ it.toFlightInfo(templateFlight) }
-            selectedFlight = pickFlight(date, flightsIncludingScheduled) ?: flightsIncludingScheduled.minBy{ it.scheduled_out }
-        }
-        return selectedFlight!!
+        // TODO(david): fix 404 errors on scheduled flights
+//        val scheduledFlightsResponse = model.getScheduledFlights(airlineIcao + flightNumber)
+        val templateFlight = flightInfoResponse.flights.first()
+        val flightsIncludingScheduled = flightInfoResponse.flights //+ scheduledFlightsResponse.scheduled.map{ it.toFlightInfo(templateFlight) }
+        val selectedFlight = pickFlight(date, flightsIncludingScheduled) ?: flightsIncludingScheduled.minBy{ it.scheduled_out }
+        return Pair(selectedFlight, flightsIncludingScheduled)
     }
 
     suspend fun getAirportDelay(airportCode: String): AirportDelayWrapper {
@@ -146,7 +156,7 @@ object ClientModelFactory {
                 ),
                 airportCache = ClientCache(
                     dao = db.airportDao(),
-                    createEntity = ::AirportEntity,
+                    createEntity = ::AirportInfoEntity,
                     encode = { Json.encodeToString(it) },
                     decode = { Json.decodeFromString(it) },
                     maxCacheTime = 30.toDuration(DurationUnit.DAYS)
@@ -161,15 +171,21 @@ object ClientModelFactory {
             ),
             airlinesByIata = loadMapping(context, "airline_codes.csv"),
             airportsByIata = loadMapping(context, "airport_codes.csv"),
+            savedFlightDao = db.savedFlightDao(),
+            savedAirportDao = db.savedAirportDao()
         )
     }
 }
 
-fun pickFlight(date: LocalDate?, flightArray: List<FlightInfo>) : FlightInfo? {
+fun List<FlightInfo>.filterPickableFlights(): List<FlightInfo> {
+    return filter {
+        it.scheduled_out >= Clock.System.now() - 6.toDuration(DurationUnit.HOURS)
+    }
+}
+
+fun pickFlight(date: LocalDate?, flightArray: List<FlightInfo>): FlightInfo? {
     return when(date) {
-        null -> flightArray.filter {
-            it.scheduled_out >= Clock.System.now() - 6.toDuration(DurationUnit.HOURS)
-        }.minByOrNull { it.scheduled_out }
+        null -> flightArray.filterPickableFlights().minByOrNull { it.scheduled_out }
         else -> flightArray.find { it.getDepartureDate() == date }
     }
 }

@@ -1,13 +1,38 @@
-package com.cs446group18.delaywise.ui.savedflights
+package com.cs446group18.delaywise.ui.flightinfo
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.cs446group18.delaywise.R
+import androidx.lifecycle.viewModelScope
+import com.cs446group18.delaywise.model.ClientModel
+import com.cs446group18.delaywise.model.SavedAirportEntity
+import com.cs446group18.delaywise.model.SavedFlightEntity
+import com.cs446group18.delaywise.util.UiState
+import com.cs446group18.lib.models.FlightInfo
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 
-class SavedFlightsViewModel : ViewModel() {
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is slideshow Fragment"
+class SavedFlightsViewModel(): ViewModel() {
+    private val _savedFlightAirportState = MutableStateFlow<UiState<Pair<List<SavedFlightEntity>,List<SavedAirportEntity>>>>(UiState.Loading())
+    val savedFlightAirportState: StateFlow<UiState<Pair<List<SavedFlightEntity>,List<SavedAirportEntity>>>> = _savedFlightAirportState
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            _savedFlightAirportState.emit(UiState.Loading())
+            try {
+                val savedFlights = ClientModel.getInstance().savedFlightDao.listFlights()
+                val savedAirports = ClientModel.getInstance().savedAirportDao.listAirports()
+                _savedFlightAirportState.value = UiState.Loaded(Pair(savedFlights, savedAirports))
+            } catch (ex: Exception) {
+                println(ex.toString())
+                println(ex.stackTraceToString())
+                _savedFlightAirportState.value = UiState.Error(ex.toString())
+            }
+        }
     }
-    val text: LiveData<String> = _text
 }
