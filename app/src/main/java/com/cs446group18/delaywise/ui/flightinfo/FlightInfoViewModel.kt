@@ -1,5 +1,7 @@
 package com.cs446group18.delaywise.ui.flightinfo
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cs446group18.delaywise.model.ClientModel

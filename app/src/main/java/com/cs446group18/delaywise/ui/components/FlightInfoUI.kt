@@ -29,14 +29,11 @@ import com.cs446group18.delaywise.util.formatInHoursMinutes
 import com.cs446group18.lib.models.Airport
 import com.cs446group18.lib.models.FlightInfo
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.datetime.*
 import kotlin.time.Duration
 import com.cs446group18.delaywise.ui.flightinfo.FlightInfoViewModel
 import com.cs446group18.delaywise.ui.styles.BodyText
 import com.cs446group18.delaywise.ui.styles.Heading
-import com.cs446group18.lib.models.FlightInfo
-import com.cs446group18.lib.models.FlightStatus
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
