@@ -4,19 +4,14 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,12 +22,14 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Destination
 @Composable
 fun SettingsView(
     navigator: DestinationsNavigator,
 ) {
     val checkedState = remember { mutableStateOf(true) }
+    var text by remember { mutableStateOf(TextFieldValue("")) }
 
     Column(
         modifier = Modifier
@@ -62,6 +59,16 @@ fun SettingsView(
             }
         }
 
+        Spacer(modifier = Modifier.height(15.dp))
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
+            TextField(
+                value = text,
+                onValueChange = { newText ->
+                    text = newText }
+            )
+        }
         Spacer(modifier = Modifier.height(15.dp))
         Row(modifier = Modifier
             .fillMaxWidth()
