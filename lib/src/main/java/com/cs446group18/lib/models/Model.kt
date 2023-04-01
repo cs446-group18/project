@@ -59,6 +59,7 @@ open class Model(
         val response = fetcher.makeAeroApiCall("/schedules/$startInterval/$endInterval") {
             parameter("airline", airlineIata)
             parameter("flight_number", flightNumber)
+            parameter("max_pages", 5)
         }
         val decoded = json.decodeFromString<ScheduledFlightsResponse>(response.bodyAsText())
         scheduledFlightCache.insert(flightCode, decoded)

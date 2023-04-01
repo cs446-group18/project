@@ -15,7 +15,7 @@ sealed interface Cacheable
 @Serializable
 data class ScheduledFlight(
     val ident_iata: String, // e.g. AC8835
-    val actual_ident_iata: String,
+    val actual_ident_iata: String?,
     val scheduled_in: Instant,
     val scheduled_out: Instant,
     val origin_iata: String,
@@ -43,6 +43,7 @@ data class ScheduledFlight(
     )
 }
 
+@Serializable
 data class ScheduledFlightsResponse(
     val scheduled: List<ScheduledFlight>
 ): Cacheable
