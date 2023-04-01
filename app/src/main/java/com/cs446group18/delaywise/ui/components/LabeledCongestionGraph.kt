@@ -35,7 +35,7 @@ private val appFontFamily = FontFamily(
 )
 
 @Composable
-fun LabeledCongestionGraph(navigator: DestinationsNavigator, keys: List<String>, values: List<Int>) {
+fun LabeledCongestionGraph(keys: List<String>, values: List<Int>) {
     val scope = rememberCoroutineScope()
     Column(
         modifier = Modifier.height(260.dp),
@@ -77,9 +77,7 @@ fun LabeledCongestionGraph(navigator: DestinationsNavigator, keys: List<String>,
                         .vertical()
                         .padding(4.dp, 4.dp, 28.dp, 4.dp)
                 )
-            println("LabeledCongestionGraphKeys: $keys")
-            println("LabeledCongestionGraphKeys: $values")
-            CongestionGraph(navigator = navigator, keys, values)
+            CongestionGraph(keys, values)
         }
     }
 }
@@ -98,7 +96,6 @@ fun Modifier.vertical() =
 @Preview
 @Composable
 fun PreviewLabeledCongestionGraph() = LabeledCongestionGraph(
-    navigator = EmptyDestinationsNavigator,
     List<String>(1){"9am"},
     List<Int>(1){15}
 )
