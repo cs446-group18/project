@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cs446group18.delaywise.model.ClientModel
+import com.cs446group18.delaywise.model.SavedAirportEntity
 import com.cs446group18.delaywise.model.SavedFlightEntity
 import com.cs446group18.delaywise.util.UiState
 import com.cs446group18.lib.models.FlightInfo
@@ -17,19 +18,20 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class SavedFlightsViewModel(): ViewModel() {
-    private val _savedFlightState = MutableStateFlow<UiState<List<SavedFlightEntity>>>(UiState.Loading())
-    val savedFlightState: StateFlow<UiState<List<SavedFlightEntity>>> = _savedFlightState
+    private val _savedFlightAirportState = MutableStateFlow<UiState<Pair<List<SavedFlightEntity>,List<SavedAirportEntity>>>>(UiState.Loading())
+    val savedFlightAirportState: StateFlow<UiState<Pair<List<SavedFlightEntity>,List<SavedAirportEntity>>>> = _savedFlightAirportState
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            _savedFlightState.emit(UiState.Loading())
+            _savedFlightAirportState.emit(UiState.Loading())
             try {
                 val savedFlights = ClientModel.getInstance().savedFlightDao.listFlights()
-                _savedFlightState.value = UiState.Loaded(savedFlights)
+                val savedAirports = ClientModel.getInstance().savedAirportDao.listAirports()
+                _savedFlightAirportState.value = UiState.Loaded(Pair(savedFlights, savedAirports))
             } catch (ex: Exception) {
                 println(ex.toString())
                 println(ex.stackTraceToString())
-                _savedFlightState.value = UiState.Error(ex.toString())
+                _savedFlightAirportState.value = UiState.Error(ex.toString())
             }
         }
     }

@@ -97,21 +97,18 @@ class ClientModel(
 
     suspend fun getWeather(airportCode: String) = model.getWeatherRaw(airportCode).observations.first()
 
-    suspend fun getFlight(flightIata: String, date: LocalDate? = null): FlightInfo {
+    suspend fun getFlight(flightIata: String, date: LocalDate? = null): Pair<FlightInfo, List<FlightInfo>> {
         val match = """^(.*?)(\d+)$""".toRegex().matchEntire(flightIata)
         match ?: throw Exception("could not extract airline code from $flightIata")
         val (airlineIata, flightNumber) = match.destructured
         val airlineIcao = airlinesByIata[airlineIata]?.icao
             ?: throw Exception("could not find matching an airline matching $airlineIata")
         val flightInfoResponse = model.getFlightRaw(airlineIcao + flightNumber)
-        var selectedFlight = pickFlight(date, flightInfoResponse.flights)
-        if(selectedFlight == null) {
-            val scheduledFlightsResponse = model.getScheduledFlights(airlineIcao + flightNumber)
-            val templateFlight = flightInfoResponse.flights.first()
-            val flightsIncludingScheduled = flightInfoResponse.flights + scheduledFlightsResponse.scheduled.map{ it.toFlightInfo(templateFlight) }
-            selectedFlight = pickFlight(date, flightsIncludingScheduled) ?: flightsIncludingScheduled.minBy{ it.scheduled_out }
-        }
-        return selectedFlight!!
+        val scheduledFlightsResponse = model.getScheduledFlights(airlineIcao + flightNumber)
+        val templateFlight = flightInfoResponse.flights.first()
+        val flightsIncludingScheduled = flightInfoResponse.flights + scheduledFlightsResponse.scheduled.map{ it.toFlightInfo(templateFlight) }
+        val selectedFlight = pickFlight(date, flightsIncludingScheduled) ?: flightsIncludingScheduled.minBy{ it.scheduled_out }
+        return Pair(selectedFlight, flightsIncludingScheduled)
     }
 
     suspend fun getAirportDelay(airportCode: String): AirportDelayWrapper {
@@ -179,11 +176,15 @@ object ClientModelFactory {
     }
 }
 
-fun pickFlight(date: LocalDate?, flightArray: List<FlightInfo>) : FlightInfo? {
+fun List<FlightInfo>.filterPickableFlights(): List<FlightInfo> {
+    return filter {
+        it.scheduled_out >= Clock.System.now() - 6.toDuration(DurationUnit.HOURS)
+    }
+}
+
+fun pickFlight(date: LocalDate?, flightArray: List<FlightInfo>): FlightInfo? {
     return when(date) {
-        null -> flightArray.filter {
-            it.scheduled_out >= Clock.System.now() - 6.toDuration(DurationUnit.HOURS)
-        }.minByOrNull { it.scheduled_out }
+        null -> flightArray.filterPickableFlights().minByOrNull { it.scheduled_out }
         else -> flightArray.find { it.getDepartureDate() == date }
     }
 }

@@ -16,7 +16,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cs446group18.delaywise.model.getAirlineName
 import com.cs446group18.delaywise.ui.components.*
-import com.cs446group18.delaywise.ui.flightinfo.DateSelector
 import com.cs446group18.delaywise.ui.styles.headingFont
 import com.cs446group18.delaywise.util.UiState
 import com.ramcosta.composedestinations.annotation.Destination

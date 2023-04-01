@@ -1,6 +1,5 @@
 package com.cs446group18.delaywise.ui.savedflights
 
-import android.media.Image
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -32,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cs446group18.delaywise.model.SavedAirportEntity
 import com.cs446group18.delaywise.model.SavedFlightEntity
 import com.cs446group18.delaywise.ui.components.*
 import com.cs446group18.delaywise.ui.flightinfo.FlightInfoViewModel
@@ -39,6 +39,7 @@ import com.cs446group18.delaywise.ui.flightinfo.SavedFlightsViewModel
 import com.cs446group18.delaywise.ui.home.HomeViewModel
 import com.cs446group18.delaywise.ui.styles.bodyFont
 import com.cs446group18.delaywise.util.UiState
+import com.cs446group18.lib.models.Airport
 import com.cs446group18.lib.models.FlightInfo
 import com.patrykandpatrick.vico.core.component.dimension.Padding
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
@@ -62,7 +63,7 @@ fun SavedFlightsView(
     navigator: DestinationsNavigator,
     savedFlightsViewModel: SavedFlightsViewModel = viewModel { SavedFlightsViewModel()},
 ) {
-    val state by savedFlightsViewModel.savedFlightState.collectAsState()
+    val state by savedFlightsViewModel.savedFlightAirportState.collectAsState()
     Scaffold(
         topBar = {
             TopBar(navigator)
@@ -80,7 +81,7 @@ fun SavedFlightsView(
                     ErrorMessage(message)
                 }
                 is UiState.Loaded -> {
-                    val savedFlights = (state as UiState.Loaded<List<SavedFlightEntity>>).data
+                    val savedItems = (state as UiState.Loaded<Pair<List<SavedFlightEntity>,List<SavedAirportEntity>>>).data
                     Column(modifier = Modifier.padding(contentPadding).verticalScroll(rememberScrollState())
                     ) {
                         Text(
@@ -89,7 +90,7 @@ fun SavedFlightsView(
                             fontSize = 40.sp,
                             modifier = Modifier.absolutePadding(left = 20.dp)
                         )
-                        if (savedFlights.isEmpty()) {
+                        if (savedItems.first.isEmpty() && savedItems.second.isEmpty()) {
                             Column(
                                 modifier = Modifier.padding(vertical = 150.dp, horizontal = 50.dp).fillMaxSize(),
                                 verticalArrangement = Arrangement.spacedBy(60.dp, Alignment.CenterVertically),
@@ -107,9 +108,13 @@ fun SavedFlightsView(
                             }
                         }
                         else{
-                            for (savedFlight in savedFlights) {
+                            for (savedFlight in savedItems.first) {
                                 var flightInfo = Json.decodeFromString<FlightInfo>(savedFlight.json);
                                 SavedFlightCard(flightInfo, navigator)
+                            }
+                            for (savedAirport in savedItems.second) {
+                                var airportInfo = Json.decodeFromString<Airport>(savedAirport.json);
+                                SavedAirportCard(airportInfo, navigator)
                             }
                         }
                     }

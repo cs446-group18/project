@@ -5,17 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.cs446group18.delaywise.model.*
 import com.cs446group18.delaywise.util.UiState
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 
 class HomeViewModel : ViewModel() {
-    private val _homeSavedFlightState = MutableStateFlow<UiState<List<SavedFlightEntity>>>(UiState.Loading())
-    val homeSavedFlightState: StateFlow<UiState<List<SavedFlightEntity>>> = _homeSavedFlightState
+    private val _homeSavedState = MutableStateFlow<UiState<Pair<List<SavedFlightEntity>,List<SavedAirportEntity>>>>(UiState.Loading())
+    val homeSavedState: StateFlow<UiState<Pair<List<SavedFlightEntity>,List<SavedAirportEntity>>>> = _homeSavedState
 
     val _airportResults = MutableStateFlow<List<Airport>>(emptyList())
     val airportResults:  StateFlow<List<Airport>> = _airportResults
@@ -25,10 +22,11 @@ class HomeViewModel : ViewModel() {
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            _homeSavedFlightState.emit(UiState.Loading())
+            _homeSavedState.emit(UiState.Loading())
             try {
                 val savedFlights = ClientModel.getInstance().savedFlightDao.listFlights()
-                _homeSavedFlightState.value = UiState.Loaded(savedFlights)
+                val savedAirports = ClientModel.getInstance().savedAirportDao.listAirports()
+                _homeSavedState.value = UiState.Loaded(Pair(savedFlights, savedAirports))
 
                 val airportMappings = ClientModel.getInstance().airportsByIata
                 var processedAirportSearchResults = mutableListOf<Airport>()
@@ -49,7 +47,7 @@ class HomeViewModel : ViewModel() {
             } catch (ex: Exception) {
                 println(ex.toString())
                 println(ex.stackTraceToString())
-                _homeSavedFlightState.value = UiState.Error(ex.toString())
+                _homeSavedState.value = UiState.Error(ex.toString())
             }
         }
     }

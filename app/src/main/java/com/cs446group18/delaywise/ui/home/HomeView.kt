@@ -29,12 +29,14 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cs446group18.delaywise.R
 import com.cs446group18.delaywise.model.Airline
+import com.cs446group18.delaywise.model.SavedAirportEntity
 import com.cs446group18.delaywise.model.SavedFlightEntity
 import com.cs446group18.delaywise.ui.components.*
 import com.cs446group18.delaywise.ui.destinations.FlightInfoViewDestination
 import com.cs446group18.delaywise.ui.styles.bodyFont
 import com.cs446group18.delaywise.ui.styles.headingFont
 import com.cs446group18.delaywise.util.UiState
+import com.cs446group18.lib.models.Airport
 import com.cs446group18.lib.models.FlightInfo
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
@@ -62,7 +64,7 @@ fun HomeView(
     homeViewModel: HomeViewModel = viewModel { HomeViewModel()}
 ) {
     val focusManager = LocalFocusManager.current
-    val state by homeViewModel.homeSavedFlightState.collectAsState()
+    val state by homeViewModel.homeSavedState.collectAsState()
     val searchOptions = listOf("Flights", "Airports")
     val selectedText = remember { mutableStateOf(searchOptions[0]) }
     val airlinePair: MutableState<Pair<Airline?, String>> = remember { mutableStateOf(Pair(null, ""))}
@@ -144,8 +146,8 @@ fun HomeView(
                     ErrorMessage(message)
                 }
                 is UiState.Loaded -> {
-                    val savedFlights = (state as UiState.Loaded<List<SavedFlightEntity>>).data
-                    if (savedFlights.isEmpty()) {
+                    val savedItems = (state as UiState.Loaded<Pair<List<SavedFlightEntity>, List<SavedAirportEntity>>>).data
+                    if (savedItems.first.isEmpty() && savedItems.second.isEmpty()) {
                         Box (
                             contentAlignment = Alignment.Center,
                             modifier = Modifier.fillMaxSize()){
@@ -163,8 +165,11 @@ fun HomeView(
                             verticalArrangement = Arrangement.spacedBy(3.dp),
                             contentPadding = PaddingValues(bottom = 100.dp)
                         ){
-                            items(savedFlights) {
+                            items(savedItems.first) {
                                 flight -> SavedFlightCard(Json.decodeFromString<FlightInfo>(flight.json), navigator);
+                            }
+                            items(savedItems.second){
+                                airport -> SavedAirportCard(airportInfo = Json.decodeFromString<Airport>(airport.json), navigator = navigator)
                             }
                         }
                     }
