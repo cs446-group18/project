@@ -79,6 +79,7 @@ fun AirportInfoView(
                     println(airport)
                     println(airportDelay)
                     //todo: @hanz- figure out why graph is reaching a range exception when you search for airport YYZ
+                    LabeledCongestionGraph(navigator = navigator, keys = mutableListOf("10am", "11am", "12pm"), values = mutableListOf(1,4,2))
 //                    LabeledCongestionGraph(navigator, timeLabelGenerator(airportDelay.size), airportDelay)
                 }
             }
