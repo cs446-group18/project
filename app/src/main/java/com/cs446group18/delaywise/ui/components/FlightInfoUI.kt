@@ -32,6 +32,17 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.datetime.*
 import kotlin.time.Duration
+import com.cs446group18.delaywise.ui.flightinfo.FlightInfoViewModel
+import com.cs446group18.delaywise.ui.styles.BodyText
+import com.cs446group18.delaywise.ui.styles.Heading
+import com.cs446group18.lib.models.FlightInfo
+import com.cs446group18.lib.models.FlightStatus
+import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 @Composable
 fun FullRow(content: @Composable() () -> Unit) {
@@ -186,6 +197,17 @@ fun FlightInfoUI(flightInfoData: FlightInfo, navigator: DestinationsNavigator) {
         }
         Spacer(modifier = Modifier.padding(10.dp))
         FullCard {
+//            .Color(0xffBF0000)
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    BodyText("No Extreme Weather")
+                    /*TODO:Add Color Changes*/
+                }
+            }
+        }
+        FullCard {
             Row {
                 val numDays = 0 //@todo: make real number
                 Heading("In the last $numDays days, " + flightInfoData.ident_iata + " saw a:")
@@ -232,6 +254,29 @@ fun FlightInfoUI(flightInfoData: FlightInfo, navigator: DestinationsNavigator) {
                 onClick = {navigator.navigate(AirportInfoViewDestination(flightInfoData.origin.code_iata))}
             )
         }
+        FullCard {
+
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Heading("Weather")
+                }
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    WeatherCard(
+                        weatherData = FlightInfoViewModel.WeatherData(
+                            "Wednesday",
+                            "Sunny"
+                        )
+                        , navigator = EmptyDestinationsNavigator
+
+                    )
+                }
+
+
+            }
+        }
+
     }
 }
 
