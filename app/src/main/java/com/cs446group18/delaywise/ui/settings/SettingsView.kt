@@ -4,11 +4,14 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -16,11 +19,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cs446group18.delaywise.R
+import com.cs446group18.delaywise.ui.components.mockApi
 import com.cs446group18.delaywise.ui.styles.bodyFont
 import com.cs446group18.delaywise.ui.styles.headingFont
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination
@@ -29,7 +34,13 @@ fun SettingsView(
     navigator: DestinationsNavigator,
 ) {
     val checkedState = remember { mutableStateOf(true) }
-    var text by remember { mutableStateOf(TextFieldValue("")) }
+    var textFieldValueState by remember{
+        mutableStateOf(
+            TextFieldValue(
+                text = ""
+            )
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -64,9 +75,20 @@ fun SettingsView(
             .fillMaxWidth()
             .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
             TextField(
-                value = text,
-                onValueChange = { newText ->
-                    text = newText }
+                value = textFieldValueState,
+                shape = RoundedCornerShape(8.dp),
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = Color.White,
+                    focusedIndicatorColor = Color(R.color.main_blue).copy(
+                        alpha = 1F
+                    )
+                ),
+                onValueChange = {
+                    textFieldValueState = it
+                },
+                placeholder = { Text("Optional: Add API Key") },
+                modifier = Modifier
+                    .fillMaxWidth()
             )
         }
         Spacer(modifier = Modifier.height(15.dp))
