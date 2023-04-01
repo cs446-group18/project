@@ -1,4 +1,6 @@
 package com.cs446group18.delaywise.ui.settings
 
-class SettingsViewModel {
+import androidx.lifecycle.ViewModel
+
+class SettingsViewModel():ViewModel() {
 }
