@@ -102,12 +102,14 @@ class ClientModel(
         match ?: throw Exception("could not extract airline code from $flightIata")
         val (airlineIata, flightNumber) = match.destructured
         val airlineIcao = airlinesByIata[airlineIata]?.icao
-            ?: throw Exception("could not find matching an airline matching $airlineIata")
+            ?: throw Exception("could not find an airline matching $airlineIata")
         val flightInfoResponse = model.getFlightRaw(airlineIcao + flightNumber)
-        // TODO(david): fix 404 errors on scheduled flights
-//        val scheduledFlightsResponse = model.getScheduledFlights(airlineIcao + flightNumber)
+        val existingOutTimes = flightInfoResponse.flights.map{ it.scheduled_out }.toHashSet()
+        val scheduledFlights = model.getScheduledFlights(airlineIcao + flightNumber).scheduled.filter {
+            (it.actual_ident_iata == null || it.ident_iata == it.actual_ident_iata) && it.scheduled_out !in existingOutTimes
+        }
         val templateFlight = flightInfoResponse.flights.first()
-        val flightsIncludingScheduled = flightInfoResponse.flights //+ scheduledFlightsResponse.scheduled.map{ it.toFlightInfo(templateFlight) }
+        val flightsIncludingScheduled = (flightInfoResponse.flights + scheduledFlights.map{ it.toFlightInfo(templateFlight) }).sortedBy { it.scheduled_out }
         val selectedFlight = pickFlight(date, flightsIncludingScheduled) ?: flightsIncludingScheduled.minBy{ it.scheduled_out }
         return Pair(selectedFlight, flightsIncludingScheduled)
     }

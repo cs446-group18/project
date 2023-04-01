@@ -16,7 +16,7 @@ fun Route.flightInfo() {
         val strResponse = Json.encodeToString(response)
         call.respondText(strResponse, ContentType.Application.Json)
     }
-    get("/scheduled/{start_interval}/{end_interval}") {
+    get("/schedules/{start_interval}/{end_interval}") {
         val airline = call.parameters["airline"]
         val flightNumber = call.parameters["flight_number"]
         airline ?: throw Exception("airline not provided")
