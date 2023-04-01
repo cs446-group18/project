@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.*
@@ -31,6 +32,7 @@ import com.cs446group18.delaywise.R
 import com.cs446group18.delaywise.model.Airline
 import com.cs446group18.delaywise.model.SavedAirportEntity
 import com.cs446group18.delaywise.model.SavedFlightEntity
+import com.cs446group18.delaywise.createNotification
 import com.cs446group18.delaywise.ui.components.*
 import com.cs446group18.delaywise.ui.destinations.FlightInfoViewDestination
 import com.cs446group18.delaywise.ui.styles.bodyFont
@@ -69,6 +71,7 @@ fun HomeView(
     val selectedText = remember { mutableStateOf(searchOptions[0]) }
     val airlinePair: MutableState<Pair<Airline?, String>> = remember { mutableStateOf(Pair(null, ""))}
     var flightNumber by remember { mutableStateOf("")}
+    val context = LocalContext.current
 
     Scaffold(
         modifier = Modifier.clickable(
@@ -97,6 +100,11 @@ fun HomeView(
 
         ) {
             Text("Welcome to", fontFamily = headingFont, fontSize = 26.sp)
+            Button(onClick = {
+                createNotification(context)
+            }) {
+                Text("Click Me")
+            }
             Text("DelayWise!", fontFamily = headingFont, fontSize = 40.sp)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Search by:", fontFamily = bodyFont, fontSize = 18.sp)
