@@ -1,8 +1,10 @@
 package com.cs446group18.delaywise.ui.components
 
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -83,7 +85,7 @@ fun m3ChartStyle(
 }
 
 @Composable
-fun CongestionGraph(navigator: DestinationsNavigator, keys: List<String>, values: List<Int>) {
+fun CongestionGraph(keys: List<String>, values: List<Int>) {
     val marker = rememberMarker()
     val thresholdline = rememberThresholdLine(values.average().toFloat())
     var chartEntryModel = entryModelOf(*values.toTypedArray())
@@ -134,7 +136,6 @@ private fun rememberStartAxisLabel() = axisLabelComponent(
 @Preview
 @Composable
 fun PreviewCongestionGraph() = CongestionGraph(
-    navigator = EmptyDestinationsNavigator,
     mutableListOf<String>("10am", "11am", "12pm", "1pm"),
     mutableListOf<Int>(1,2, 3, 2)
 )

@@ -135,7 +135,6 @@ fun HomeView(
             else {
                 AirportSearchBox(navigator, homeViewModel.airportResults.collectAsState().value, "Airport (ex. YYZ, Pearson International)")
             }
-            LabeledCongestionGraph(navigator = navigator, keys = mutableListOf("10am", "11am", "12pm"), values = mutableListOf(1,4,2))
             Spacer(modifier = Modifier.height(6.dp))
             Text("Saved Flights/Airports", fontSize = 28.sp, fontFamily = headingFont)
             when (state) {
