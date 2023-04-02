@@ -103,6 +103,8 @@ fun AirportInfoUI(airportInfoData: Airport, timeLabels: List<String>, airportDel
             }
         }
         Spacer(modifier = Modifier.padding(10.dp))
-        LabeledCongestionGraph(timeLabels, airportDelay)
+        FullCard {
+            LabeledCongestionGraph(timeLabels, airportDelay)
+        }
     }
 }
