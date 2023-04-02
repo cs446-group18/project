@@ -54,6 +54,7 @@ data class Weather(
     val cloud_friendly: String,
     val wind_friendly: String,
     val temp_air: Int, //degrees celcius
+    val time:Instant,
 )
 
 @Serializable

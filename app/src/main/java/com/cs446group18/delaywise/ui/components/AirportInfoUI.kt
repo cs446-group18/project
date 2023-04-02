@@ -23,6 +23,7 @@ import com.cs446group18.delaywise.util.formatAsTime
 import com.cs446group18.delaywise.util.formatInHoursMinutes
 import com.cs446group18.lib.models.Airport
 import com.cs446group18.lib.models.FlightInfo
+import com.cs446group18.lib.models.Weather
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.datetime.*
@@ -30,7 +31,7 @@ import java.util.*
 import kotlin.time.Duration
 
 @Composable
-fun AirportInfoUI(airportInfoData: Airport) {
+fun AirportInfoUI(airportInfoData: Airport, weatherObservations: List<Weather>) {
     Column(modifier = Modifier
         .padding(vertical = 10.dp)
         .fillMaxHeight()
@@ -72,20 +73,30 @@ fun AirportInfoUI(airportInfoData: Airport) {
             }
         }
         FullCard {
-
+            Row {
+                Heading("Weather:")
+            }
             Row(modifier = Modifier
                 .fillMaxWidth()
                 .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Heading("Weather")
-                }
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(horizontalAlignment = Alignment.End) {
                     WeatherCard(
-                        weatherData = FlightInfoViewModel.WeatherData(
-                            "Wednesday",
-                            "Sunny"
-                        )
-                        , navigator = EmptyDestinationsNavigator
+                        weather =  weatherObservations[0]!! ,
+                        navigator = EmptyDestinationsNavigator
+
+                    )
+                }
+                Column(horizontalAlignment = Alignment.End) {
+                    WeatherCard(
+                        weather =  weatherObservations[1]!! ,
+                        navigator = EmptyDestinationsNavigator
+
+                    )
+                }
+                Column(horizontalAlignment = Alignment.End) {
+                    WeatherCard(
+                        weather =  weatherObservations[2]!! ,
+                        navigator = EmptyDestinationsNavigator
 
                     )
                 }

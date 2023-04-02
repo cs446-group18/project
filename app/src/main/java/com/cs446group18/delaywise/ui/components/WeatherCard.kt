@@ -18,9 +18,12 @@ import com.cs446group18.delaywise.R
 import com.cs446group18.delaywise.ui.flightinfo.FlightInfoViewModel
 import com.cs446group18.delaywise.ui.home.HomeViewModel
 import com.cs446group18.delaywise.ui.styles.BodyText
+import com.cs446group18.delaywise.util.formatAsTime
+import com.cs446group18.lib.models.Weather
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 
 enum class WeatherType {
     CLEAR_DAY,
@@ -40,15 +43,25 @@ enum class WeatherType {
 
 private val weatherMap = mapOf(
     "default" to R.drawable.cloudy_day_icon,
+    "snow"    to R.drawable.heavy_snow_icon,
+    "clear skies" to R.drawable.clear_day_icon,
+    "fog"      to R.drawable.fog_icon,
+    "light fog"  to R.drawable.fog_icon,
+    "partly cloudy"  to R.drawable.cloudy_day_icon,
+    "mostly cloudy" to R.drawable.cloudy_day_icon,
+    "light rain" to R.drawable.rain_day_icon,
+    "heavy rain" to R.drawable.rain_day_icon,
+    "freezing rain" to R.drawable.freezing_rain_icon,
+    "drizzle" to R.drawable.rain_day_icon,
 )
 
 @Composable
-fun WeatherCard(weatherData: FlightInfoViewModel.WeatherData, navigator: DestinationsNavigator) {
+fun WeatherCard(weather: Weather, navigator: DestinationsNavigator) {
     val scope = rememberCoroutineScope()
     val weatherAsset =
-        if (weatherMap.containsKey(weatherData.weather)) weatherMap[weatherData.weather] else weatherMap["default"];
+        if (weatherMap.containsKey(weather.cloud_friendly.lowercase())) weatherMap[weather.cloud_friendly.lowercase()] else weatherMap["default"];
     Card(
-        elevation = CardDefaults.cardElevation(15.dp),
+        elevation = CardDefaults.cardElevation(5.dp),
         shape = RoundedCornerShape(size = 12.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         modifier = Modifier
@@ -65,19 +78,27 @@ fun WeatherCard(weatherData: FlightInfoViewModel.WeatherData, navigator: Destina
             )
         }
         Row(
-            modifier = Modifier.padding(all = 5.dp),
+            modifier = Modifier.padding(all = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
-        ) { BodyText(weatherData.date) }
+        ) { BodyText(weather.temp_air.toString() + "°C") }
+        Row(
+            modifier = Modifier.padding(all = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) { BodyText(weather.time.formatAsTime()) } /*TODO*/
     }
     }
 }
 @Preview
 @Composable
 fun PreviewWeatherCard() = WeatherCard(
-    weatherData = FlightInfoViewModel.WeatherData(
-        "Wednesday",
-        "4C")
-    , navigator = EmptyDestinationsNavigator
+    weather = Weather(
+        "YYZ",
+        "",
+        "",
+        0,
+        Clock.System.now()),
+    navigator = EmptyDestinationsNavigator
 
 )

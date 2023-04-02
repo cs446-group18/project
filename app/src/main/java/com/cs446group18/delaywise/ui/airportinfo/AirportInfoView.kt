@@ -9,6 +9,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,6 +42,7 @@ fun AirportInfoView(
         },
     ) { contentPadding ->
         val airportState by airportInfoViewModel.airportState.collectAsState()
+        val weatherState by airportInfoViewModel.weatherState.collectAsState()
         when (airportState)
         {
             is UiState.Loading -> {
@@ -53,12 +55,21 @@ fun AirportInfoView(
             is UiState.Loaded -> {
                 val airport = (airportState as UiState.Loaded).data.first
                 val airportDelay = (airportState as UiState.Loaded).data.second
+                val weather = (weatherState as UiState.Loaded).data
                 Row(modifier = Modifier
                     .fillMaxWidth()
                     .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        BodyText("No Extreme Weather")
-                        /*TODO:Add Color Changes*/
+
+                        if(weather.observations[0]!!.cloud_friendly.lowercase() == "heavy snow"){
+                            BodyText("Extreme Weather: Heavy Snow", color = Color(0xffBF0000))
+                        } else if(weather.observations[0]!!.cloud_friendly.lowercase() == "freezing rain"){
+                            BodyText("Extreme Weather: Freezing Rain", color = Color(0xffBF0000))
+                        }else if(weather.observations[0]!!.cloud_friendly.lowercase() == "thunderstorm"){
+                            BodyText("Extreme Weather:ThunderStorm", color = Color(0xffFF9900))
+                        }else{
+                            BodyText("No Extreme Weather")
+                        }
                     }
                 }
                 Column(
@@ -84,7 +95,7 @@ fun AirportInfoView(
                             airportInfoViewModel::removeActionTriggered
                         )
                     }
-                    AirportInfoUI(airportInfoData = airport)
+                    AirportInfoUI(airportInfoData = airport , weatherObservations = weather.observations)
                     println(airport)
                     println(airportDelay)
                     //todo: @hanz- figure out why graph is reaching a range exception when you search for airport YYZ
