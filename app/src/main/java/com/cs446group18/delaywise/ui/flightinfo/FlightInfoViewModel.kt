@@ -26,7 +26,7 @@ class FlightInfoViewModel(private val flightIata: String, private val date: Loca
                 val flightInfo = ClientModel.getInstance().getFlight(flightIata, date)
 
                 _flightState.value = UiState.Loaded(flightInfo)
-                _isSaved.value = date != null && ClientModel.getInstance().savedFlightDao.getItem(SavedFlightKey(flightIata, date)) != null
+                _isSaved.value = ClientModel.getInstance().savedFlightDao.getItem(flightInfo.first) != null
             } catch (ex: Exception) {
                 println(ex.toString())
                 println(ex.stackTraceToString())
