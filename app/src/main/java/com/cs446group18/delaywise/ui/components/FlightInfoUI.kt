@@ -26,6 +26,7 @@ import com.cs446group18.delaywise.ui.styles.*
 import com.cs446group18.delaywise.util.formatAsDate
 import com.cs446group18.delaywise.util.formatAsTime
 import com.cs446group18.delaywise.util.formatInHoursMinutes
+import com.cs446group18.delaywise.util.getDelayPrediction
 import com.cs446group18.lib.models.Airport
 import com.cs446group18.lib.models.FlightInfo
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -117,7 +118,7 @@ fun BasicInfoCard(
 
 // TODO: move to ui.flightinfo package because it's specific to that screen
 @Composable
-fun FlightInfoUI(flightInfoData: FlightInfo, navigator: DestinationsNavigator) {
+fun FlightInfoUI(flightInfoData: FlightInfo, navigator: DestinationsNavigator, pastFlightInfoData: List<FlightInfo>) {
     Column(modifier = Modifier
         .padding(vertical = 10.dp)
         .fillMaxHeight()
@@ -184,29 +185,36 @@ fun FlightInfoUI(flightInfoData: FlightInfo, navigator: DestinationsNavigator) {
         FullColumn{
             LargeHeading("Historical Delays for Flight: " + flightInfoData.ident_iata)
         }
-        Spacer(modifier = Modifier.padding(10.dp))
-        FullCard {
-            Row {
-                val numDays = 0 //@todo: make real number
-                Heading("In the last $numDays days, " + flightInfoData.ident_iata + " saw a:")
-//                DropdownMenu(expanded = false, onDismissRequest = { /*TODO*/ }) {
-////                    DropdownMenuItem(text = { Text("7 days") }, onClick = { /*TODO*/ })
-////                }
+        if (pastFlightInfoData.isEmpty()) {
+            FullRow {
+                BodyText("Sorry, no data is available for this flight!")
+                Spacer(modifier = Modifier.padding(18.dp))
             }
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    BodyText("43%")
-                    BodyText("rate of delay")
+        }
+        else {
+            Spacer(modifier = Modifier.padding(10.dp))
+            val delayStats = pastFlightInfoData.getDelayPrediction()
+            println(pastFlightInfoData)
+            println(delayStats)
+            FullCard {
+                Row {
+                    Heading("In the last ${pastFlightInfoData.size} days, " + flightInfoData.ident_iata + " saw a:")
                 }
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    BodyText("25 min")
-                    BodyText("avg. delay")
-                }
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    BodyText("10%")
-                    BodyText("cancellation rate")
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        BodyText(delayStats[0])
+                        BodyText("rate of delay")
+                    }
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        BodyText(delayStats[1])
+                        BodyText("avg. delay")
+                    }
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        BodyText(delayStats[2])
+                        BodyText("cancellation rate")
+                    }
                 }
             }
         }
@@ -254,6 +262,7 @@ fun PreviewFlightInfoCard() = FlightInfoUI(
             name = "San Francisco Int'l",
             city = "San Francisco",
         ),
+        cancelled = false,
         departure_delay_raw = 20,
         arrival_delay_raw = 3,
         scheduled_out = Instant.parse("2023-03-18T20:30:00Z")!!,
@@ -268,5 +277,6 @@ fun PreviewFlightInfoCard() = FlightInfoUI(
         terminal_origin = "1",
         terminal_destination = "2",
     ),
-    navigator = EmptyDestinationsNavigator
+    navigator = EmptyDestinationsNavigator,
+    pastFlightInfoData = emptyList()
 )

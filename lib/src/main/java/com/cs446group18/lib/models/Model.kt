@@ -42,6 +42,7 @@ open class Model(
         val cached = flightInfoCache.lookup(flightCode)
         if(cached != null) return cached
         val response = fetcher.makeAeroApiCall("/flights/${flightCode}")
+        println(response.bodyAsText())
         val decoded = json.decodeFromString<FlightInfoResponse>(response.bodyAsText())
         flightInfoCache.insert(flightCode, decoded)
         if(decoded.flights.isEmpty()) {

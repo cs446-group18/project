@@ -55,12 +55,14 @@ fun AirlineSearchBoxItem(item: AirlineSearchBoxItem, onSelect: (String) -> Unit)
             )
         }
     }
-}
+}///
 
 
 suspend fun filterResults(searchText: String, optionLists: List<AirlineSearchBoxItem>): List<AirlineSearchBoxItem> {
     return optionLists.filter{
         it.displayText.contains(searchText, ignoreCase = true)
+    }.sortedBy{
+        it.displayText.indexOf(searchText, ignoreCase = true)
     }
 }
 

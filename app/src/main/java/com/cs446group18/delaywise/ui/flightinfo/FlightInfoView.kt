@@ -11,6 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cs446group18.delaywise.model.filterPastFlights
 import com.cs446group18.delaywise.model.filterPickableFlights
 import com.cs446group18.delaywise.model.getAirlineName
 import com.cs446group18.delaywise.ui.components.*
@@ -55,6 +56,8 @@ fun FlightInfoView(
                     modifier = Modifier.padding(contentPadding) ,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    var dates = flightList.filterPickableFlights().map{it.scheduled_out}
+                    var pastFlights = flightList.filterPastFlights()
 
                     Row(horizontalArrangement = Arrangement.spacedBy(5.dp,Alignment.CenterHorizontally)) {
                         Text(
@@ -72,7 +75,7 @@ fun FlightInfoView(
                             flightInfoViewModel::removeActionTriggered
                         )
                     }
-                    Row(horizontalArrangement = Arrangement.Start, modifier = Modifier.padding(10.dp)) {
+                    Row(horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(10.dp)) {
                         Text("Choose a Departure Date: ",
                             fontFamily = bodyFont,
                             fontSize = 18.sp)
@@ -85,7 +88,8 @@ fun FlightInfoView(
                     }
                     FlightInfoUI(
                         flightInfoData = flightInfo,
-                        navigator = navigator
+                        navigator = navigator,
+                        pastFlightInfoData = pastFlights
                     )
                 }
             }
