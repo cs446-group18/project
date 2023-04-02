@@ -6,18 +6,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cs446group18.delaywise.R
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 
 private val appFontFamily = FontFamily(
     fonts = listOf(
@@ -65,6 +61,17 @@ fun LabeledFlightDelayGraph(keys: List<String>, values: List<Int>) {
 @Preview
 @Composable
 fun PreviewLabeledFlightDelayGraph() = LabeledFlightDelayGraph(
-    mutableListOf<String>("03-21", "03-22", "03-23", "03-24", "03-25", "03-26", "03-27", "03-28", "03-29", "03-30"),
-    mutableListOf<Int>(1,2, 3, 2, 2, 1, 1, 2, 3,7)
+    mutableListOf<String>(
+        "03-21",
+        "03-22",
+        "03-23",
+        "03-24",
+        "03-25",
+        "03-26",
+        "03-27",
+        "03-28",
+        "03-29",
+        "03-30"
+    ),
+    mutableListOf<Int>(1, 2, 3, 2, 2, 1, 1, 2, 3, 7)
 )

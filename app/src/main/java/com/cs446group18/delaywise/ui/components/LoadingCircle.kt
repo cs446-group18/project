@@ -16,9 +16,10 @@ import com.cs446group18.delaywise.R
 
 @Composable
 fun LoadingCircle() {
-    Box (
+    Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize()){
+        modifier = Modifier.fillMaxSize()
+    ) {
         Image(
             modifier = Modifier
                 .size(50.dp),

@@ -1,25 +1,22 @@
 package com.cs446group18.delaywise.ui.airportinfo
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cs446group18.lib.models.Airport
 import com.cs446group18.delaywise.model.ClientModel
 import com.cs446group18.delaywise.model.SavedAirportEntity
 import com.cs446group18.delaywise.util.UiState
-import com.cs446group18.lib.models.Weather
+import com.cs446group18.lib.models.Airport
 import com.cs446group18.lib.models.WeatherResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 class AirportInfoViewModel(private val airportCode: String) : ViewModel() {
-    private val _airportState = MutableStateFlow<UiState<Pair<Airport, List<Int>>>>(UiState.Loading())
+    private val _airportState =
+        MutableStateFlow<UiState<Pair<Airport, List<Int>>>>(UiState.Loading())
     val airportState: StateFlow<UiState<Pair<Airport, List<Int>>>> = _airportState
     private val _weatherState = MutableStateFlow<UiState<WeatherResponse>>(UiState.Loading())
     val weatherState: StateFlow<UiState<WeatherResponse>> = _weatherState
@@ -33,8 +30,10 @@ class AirportInfoViewModel(private val airportCode: String) : ViewModel() {
             try {
                 val airport = ClientModel.getInstance().getAirport(airportCode)
                 val weatherInfo = ClientModel.getInstance().getWeather(airportCode)
-                val delayStatus = ClientModel.getInstance().getAirportDelay(airportCode).getAverageDelays()
-                val saveStatus = (ClientModel.getInstance().savedAirportDao.getItem(airportCode) != null)
+                val delayStatus =
+                    ClientModel.getInstance().getAirportDelay(airportCode).getAverageDelays()
+                val saveStatus =
+                    (ClientModel.getInstance().savedAirportDao.getItem(airportCode) != null)
                 _airportState.value = UiState.Loaded(Pair(airport, delayStatus))
                 _weatherState.value = UiState.Loaded(weatherInfo)
                 _isSaved.value = saveStatus
@@ -47,6 +46,7 @@ class AirportInfoViewModel(private val airportCode: String) : ViewModel() {
             }
         }
     }
+
     suspend fun saveActionTriggered() {
         try {
             val (airportInfo, _) = (_airportState.value as UiState.Loaded).data

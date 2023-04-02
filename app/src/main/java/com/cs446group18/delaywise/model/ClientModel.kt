@@ -24,9 +24,9 @@ import kotlin.time.toDuration
 val client = HttpClient(CIO) {
     install(Logging)
     install(HttpTimeout) {
-        requestTimeoutMillis = 7000;
-        connectTimeoutMillis = 7000;
-        socketTimeoutMillis = 7000;
+        requestTimeoutMillis = 7000
+        connectTimeoutMillis = 7000
+        socketTimeoutMillis = 7000
     }
 }
 
@@ -78,7 +78,7 @@ abstract class DelayWiseLocalDatabase : RoomDatabase() {
 }
 
 class ClientModel(
-    val model : Model,
+    val model: Model,
     val airlinesByIata: Map<String, Airline>,
     val airportsByIata: Map<String, Airport>,
     val savedFlightDao: SavedFlightDao,
@@ -91,32 +91,43 @@ class ClientModel(
             return INSTANCE
                 ?: throw Exception("ClientModel not yet initialized; only call ClientModel.getInstance() after setup in MainActivity.kt")
         }
-        fun init(context: Context) { INSTANCE = ClientModelFactory.createClientModel(context) }
+
+        fun init(context: Context) {
+            INSTANCE = ClientModelFactory.createClientModel(context)
+        }
     }
+
     suspend fun getAirport(airportCode: String) = model.getAirport(airportCode)
 
     suspend fun getWeather(airportCode: String) = model.getWeatherRaw(airportCode)
 
-    suspend fun getFlight(flightIata: String, date: LocalDate? = null): Pair<FlightInfo, List<FlightInfo>> {
+    suspend fun getFlight(
+        flightIata: String,
+        date: LocalDate? = null
+    ): Pair<FlightInfo, List<FlightInfo>> {
         val match = """^(.*?)(\d+)$""".toRegex().matchEntire(flightIata)
         match ?: throw Exception("could not extract airline code from $flightIata")
         val (airlineIata, flightNumber) = match.destructured
         val airlineIcao = airlinesByIata[airlineIata]?.icao
             ?: throw Exception("could not find an airline matching $airlineIata")
         val flightInfoResponse = model.getFlightRaw(airlineIcao + flightNumber)
-        val existingOutTimes = flightInfoResponse.flights.map{ it.scheduled_out }.toHashSet()
-        val scheduledFlights = model.getScheduledFlights(airlineIcao + flightNumber).scheduled.filter {
-            (it.actual_ident_iata == null || it.ident_iata == it.actual_ident_iata) && it.scheduled_out !in existingOutTimes
-        }
+        val existingOutTimes = flightInfoResponse.flights.map { it.scheduled_out }.toHashSet()
+        val scheduledFlights =
+            model.getScheduledFlights(airlineIcao + flightNumber).scheduled.filter {
+                (it.actual_ident_iata == null || it.ident_iata == it.actual_ident_iata) && it.scheduled_out !in existingOutTimes
+            }
         val templateFlight = flightInfoResponse.flights.first()
-        val flightsIncludingScheduled = (flightInfoResponse.flights + scheduledFlights.map{ it.toFlightInfo(templateFlight) }).sortedBy { it.scheduled_out }
-        val selectedFlight = pickFlight(date, flightsIncludingScheduled) ?: flightsIncludingScheduled.minBy{ it.scheduled_out }
+        val flightsIncludingScheduled =
+            (flightInfoResponse.flights + scheduledFlights.map { it.toFlightInfo(templateFlight) }).sortedBy { it.scheduled_out }
+        val selectedFlight = pickFlight(date, flightsIncludingScheduled)
+            ?: flightsIncludingScheduled.minBy { it.scheduled_out }
         return Pair(selectedFlight, flightsIncludingScheduled)
     }
 
     suspend fun getAirportDelay(airportCode: String): AirportDelayWrapper {
         val intervalEnd = truncateToHours(Clock.System.now())
-        val intervalStart = intervalEnd - HOURS_IN_AIRPORT_DELAY_GRAPH.toDuration(DurationUnit.HOURS)
+        val intervalStart =
+            intervalEnd - HOURS_IN_AIRPORT_DELAY_GRAPH.toDuration(DurationUnit.HOURS)
         return AirportDelayWrapper(
             response = model.getAirportDelayRaw(airportCode),
             intervalStart = intervalStart,
@@ -192,7 +203,7 @@ fun List<FlightInfo>.filterPastFlights(): List<FlightInfo> {
 }
 
 fun pickFlight(date: LocalDate?, flightArray: List<FlightInfo>): FlightInfo? {
-    return when(date) {
+    return when (date) {
         null -> flightArray.filterPickableFlights().minByOrNull { it.scheduled_out }
         else -> flightArray.find { it.getDepartureDate() == date }
     }
