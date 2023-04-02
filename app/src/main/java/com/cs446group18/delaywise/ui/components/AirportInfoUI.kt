@@ -15,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.cs446group18.delaywise.model.getAirlineName
 import com.cs446group18.delaywise.ui.airportinfo.timeLabelGenerator
+import com.cs446group18.delaywise.ui.flightinfo.FlightInfoViewModel
 import com.cs446group18.delaywise.ui.styles.BodyText
 import com.cs446group18.delaywise.ui.styles.Heading
 import com.cs446group18.delaywise.util.formatAsDate
@@ -23,6 +24,7 @@ import com.cs446group18.delaywise.util.formatInHoursMinutes
 import com.cs446group18.lib.models.Airport
 import com.cs446group18.lib.models.FlightInfo
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.datetime.*
 import java.util.*
 import kotlin.time.Duration
@@ -69,5 +71,27 @@ fun AirportInfoUI(airportInfoData: Airport) {
                 }
             }
         }
+        FullCard {
+
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Heading("Weather")
+                }
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    WeatherCard(
+                        weatherData = FlightInfoViewModel.WeatherData(
+                            "Wednesday",
+                            "Sunny"
+                        )
+                        , navigator = EmptyDestinationsNavigator
+
+                    )
+                }
+            }
+        }
+
+
     }
 }

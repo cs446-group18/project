@@ -55,11 +55,7 @@ fun WeatherCard(weatherData: FlightInfoViewModel.WeatherData, navigator: Destina
             .padding(3.dp)
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Row(
-            modifier = Modifier.padding(all = 5.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) { BodyText(weatherData.date) }
+
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
                 modifier = Modifier.size(40.dp),
@@ -68,6 +64,11 @@ fun WeatherCard(weatherData: FlightInfoViewModel.WeatherData, navigator: Destina
                 contentDescription = null
             )
         }
+        Row(
+            modifier = Modifier.padding(all = 5.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) { BodyText(weatherData.date) }
     }
     }
 }
@@ -76,7 +77,7 @@ fun WeatherCard(weatherData: FlightInfoViewModel.WeatherData, navigator: Destina
 fun PreviewWeatherCard() = WeatherCard(
     weatherData = FlightInfoViewModel.WeatherData(
         "Wednesday",
-        "Sunny")
+        "4C")
     , navigator = EmptyDestinationsNavigator
 
 )

@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cs446group18.delaywise.model.getAirlineName
 import com.cs446group18.delaywise.ui.components.*
+import com.cs446group18.delaywise.ui.styles.BodyText
 import com.cs446group18.delaywise.ui.styles.headingFont
 import com.cs446group18.delaywise.util.UiState
 import com.ramcosta.composedestinations.annotation.Destination
@@ -52,6 +53,14 @@ fun AirportInfoView(
             is UiState.Loaded -> {
                 val airport = (airportState as UiState.Loaded).data.first
                 val airportDelay = (airportState as UiState.Loaded).data.second
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        BodyText("No Extreme Weather")
+                        /*TODO:Add Color Changes*/
+                    }
+                }
                 Column(
                     modifier = Modifier.padding(contentPadding) ,
                     horizontalAlignment = Alignment.CenterHorizontally

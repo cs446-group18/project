@@ -203,17 +203,17 @@ fun FlightInfoUI(flightInfoData: FlightInfo, navigator: DestinationsNavigator) {
             LargeHeading("Historical Delays for Flight: " + flightInfoData.ident_iata)
         }
         Spacer(modifier = Modifier.padding(10.dp))
-        FullCard {
-//            .Color(0xffBF0000)
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    BodyText("No Extreme Weather")
-                    /*TODO:Add Color Changes*/
-                }
-            }
-        }
+//        FullCard {
+////            .Color(0xffBF0000)
+//            Row(modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
+//                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+//                    BodyText("No Extreme Weather")
+//                    /*TODO:Add Color Changes*/
+//                }
+//            }
+//        }
         FullCard {
             Row {
                 val numDays = 0 //@todo: make real number
@@ -261,28 +261,7 @@ fun FlightInfoUI(flightInfoData: FlightInfo, navigator: DestinationsNavigator) {
                 onClick = {navigator.navigate(AirportInfoViewDestination(flightInfoData.origin.code_iata))}
             )
         }
-        FullCard {
 
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Heading("Weather")
-                }
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    WeatherCard(
-                        weatherData = FlightInfoViewModel.WeatherData(
-                            "Wednesday",
-                            "Sunny"
-                        )
-                        , navigator = EmptyDestinationsNavigator
-
-                    )
-                }
-
-
-            }
-        }
 
     }
 }
