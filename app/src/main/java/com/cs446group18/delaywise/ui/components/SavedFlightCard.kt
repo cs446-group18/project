@@ -4,11 +4,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.sharp.NavigateNext
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -20,21 +17,14 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cs446group18.delaywise.R
-import com.cs446group18.delaywise.model.SavedFlightEntity
 import com.cs446group18.delaywise.ui.destinations.FlightInfoViewDestination
-import com.cs446group18.delaywise.ui.destinations.SavedFlightsViewDestination
-import com.cs446group18.delaywise.ui.flightinfo.FlightInfoViewModel
-import com.cs446group18.delaywise.ui.home.HomeViewModel
 import com.cs446group18.delaywise.util.formatAsTime
 import com.cs446group18.lib.models.FlightInfo
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 
 
 enum class DelayType {

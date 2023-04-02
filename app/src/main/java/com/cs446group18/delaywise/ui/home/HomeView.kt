@@ -32,7 +32,6 @@ import com.cs446group18.delaywise.model.SavedAirportEntity
 import com.cs446group18.delaywise.model.SavedFlightEntity
 import com.cs446group18.delaywise.ui.components.*
 import com.cs446group18.delaywise.ui.destinations.FlightInfoViewDestination
-import com.cs446group18.delaywise.ui.destinations.HomeViewDestination
 import com.cs446group18.delaywise.ui.styles.BodyText
 import com.cs446group18.delaywise.ui.styles.bodyFont
 import com.cs446group18.delaywise.ui.styles.bodyStyle

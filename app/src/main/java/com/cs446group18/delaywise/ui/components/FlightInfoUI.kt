@@ -1,28 +1,30 @@
 package com.cs446group18.delaywise.ui.components
 
-import android.graphics.fonts.Font
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.cs446group18.delaywise.R
 import com.cs446group18.delaywise.model.getAirlineName
 import com.cs446group18.delaywise.ui.destinations.AirportInfoViewDestination
-import com.cs446group18.delaywise.ui.styles.*
+import com.cs446group18.delaywise.ui.styles.BodyText
+import com.cs446group18.delaywise.ui.styles.Heading
+import com.cs446group18.delaywise.ui.styles.LargeHeading
+import com.cs446group18.delaywise.ui.styles.bodyFont
 import com.cs446group18.delaywise.util.formatAsDate
 import com.cs446group18.delaywise.util.formatAsTime
 import com.cs446group18.delaywise.util.formatInHoursMinutes
@@ -30,7 +32,7 @@ import com.cs446group18.lib.models.Airport
 import com.cs446group18.lib.models.FlightInfo
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
-import kotlinx.datetime.*
+import kotlinx.datetime.Instant
 import kotlin.time.Duration
 
 @Composable
