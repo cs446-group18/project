@@ -10,18 +10,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.cs446group18.delaywise.model.getAirlineName
+import com.cs446group18.delaywise.ui.airportinfo.timeLabelGenerator
+import com.cs446group18.delaywise.ui.flightinfo.FlightInfoViewModel
 import com.cs446group18.delaywise.ui.styles.BodyText
 import com.cs446group18.delaywise.ui.styles.Heading
 import com.cs446group18.lib.models.Airport
+import com.cs446group18.lib.models.FlightInfo
+import com.cs446group18.lib.models.Weather
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
+import kotlinx.datetime.*
+import java.util.*
+import kotlin.time.Duration
 
 @Composable
-fun AirportInfoUI(airportInfoData: Airport, timeLabels: List<String>, airportDelay: List<Int>) {
-    Column(
-        modifier = Modifier
-            .padding(vertical = 10.dp)
-            .fillMaxHeight()
-            .verticalScroll(rememberScrollState())
-    ) {
+fun AirportInfoUI(airportInfoData: Airport, timeLabels: List<String>, airportDelay: List<Int>, weatherObservations: List<Weather>) {
+    Column(modifier = Modifier
+        .padding(vertical = 10.dp)
+        .fillMaxHeight()
+        .verticalScroll(rememberScrollState())) {
 
         FullRow {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -57,6 +65,36 @@ fun AirportInfoUI(airportInfoData: Airport, timeLabels: List<String>, airportDel
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     BodyText("10%")
                     BodyText("cancellation rate")
+                }
+            }
+        }
+        FullCard {
+            Row {
+                Heading("Weather:")
+            }
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
+                Column(horizontalAlignment = Alignment.End) {
+                    WeatherCard(
+                        weather =  weatherObservations[0]!! ,
+                        navigator = EmptyDestinationsNavigator
+
+                    )
+                }
+                Column(horizontalAlignment = Alignment.End) {
+                    WeatherCard(
+                        weather =  weatherObservations[1]!! ,
+                        navigator = EmptyDestinationsNavigator
+
+                    )
+                }
+                Column(horizontalAlignment = Alignment.End) {
+                    WeatherCard(
+                        weather =  weatherObservations[2]!! ,
+                        navigator = EmptyDestinationsNavigator
+
+                    )
                 }
             }
         }

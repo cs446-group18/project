@@ -1,5 +1,7 @@
 package com.cs446group18.delaywise.ui.flightinfo
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cs446group18.delaywise.model.ClientModel
@@ -84,4 +86,12 @@ class FlightInfoViewModel(private val flightIata: String, private val date: Loca
         val arrivalTerminal: String,
         val arrivalGate: String,
     )
+    data class WeatherData(
+        val date: String,
+        val weather: String,
+    )
+    private val _text = MutableLiveData<String>().apply {
+        value = "This is gallery Fragment"
+    }
+    val text: LiveData<String> = _text
 }

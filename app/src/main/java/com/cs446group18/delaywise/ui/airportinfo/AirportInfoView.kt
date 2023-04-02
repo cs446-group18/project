@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cs446group18.delaywise.ui.components.*
+import com.cs446group18.delaywise.ui.styles.BodyText
 import com.cs446group18.delaywise.ui.styles.headingFont
 import com.cs446group18.delaywise.util.UiState
 import com.ramcosta.composedestinations.annotation.Destination
@@ -39,7 +40,9 @@ fun AirportInfoView(
         },
     ) { contentPadding ->
         val airportState by airportInfoViewModel.airportState.collectAsState()
-        when (airportState) {
+        val weatherState by airportInfoViewModel.weatherState.collectAsState()
+        when (airportState)
+        {
             is UiState.Loading -> {
                 LoadingCircle()
             }
@@ -50,6 +53,23 @@ fun AirportInfoView(
             is UiState.Loaded -> {
                 val airport = (airportState as UiState.Loaded).data.first
                 val airportDelay = (airportState as UiState.Loaded).data.second
+                val weather = (weatherState as UiState.Loaded).data
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+                        if(weather.observations[0]!!.cloud_friendly.lowercase() == "heavy snow"){
+                            BodyText("Extreme Weather: Heavy Snow", color = Color(0xffBF0000))
+                        } else if(weather.observations[0]!!.cloud_friendly.lowercase() == "freezing rain"){
+                            BodyText("Extreme Weather: Freezing Rain", color = Color(0xffBF0000))
+                        }else if(weather.observations[0]!!.cloud_friendly.lowercase() == "thunderstorm"){
+                            BodyText("Extreme Weather:ThunderStorm", color = Color(0xffFF9900))
+                        }else{
+                            BodyText("No Extreme Weather")
+                        }
+                    }
+                }
                 Column(
                     modifier = Modifier.padding(contentPadding),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -81,7 +101,8 @@ fun AirportInfoView(
                     AirportInfoUI(
                         airportInfoData = airport,
                         timeLabels = timeLabelGenerator(airportDelay.size),
-                        airportDelay = airportDelay
+                        airportDelay = airportDelay,
+                        weatherObservations = weather.observations
                     )
                 }
             }

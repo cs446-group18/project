@@ -29,9 +29,17 @@ import com.cs446group18.delaywise.util.*
 import com.cs446group18.lib.models.Airport
 import com.cs446group18.lib.models.FlightInfo
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
-import kotlinx.datetime.Instant
+import kotlinx.datetime.*
 import kotlin.time.Duration
+import com.cs446group18.delaywise.ui.flightinfo.FlightInfoViewModel
+import com.cs446group18.delaywise.ui.styles.BodyText
+import com.cs446group18.delaywise.ui.styles.Heading
+import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 @Composable
 fun FullRow(content: @Composable() () -> Unit) {
@@ -129,18 +137,22 @@ fun BasicInfoCard(
 
 // TODO: move to ui.flightinfo package because it's specific to that screen
 @Composable
-fun FlightInfoUI(
-    flightInfoData: FlightInfo,
-    navigator: DestinationsNavigator,
-    pastFlightInfoData: List<FlightInfo>
-) {
-    Column(
-        modifier = Modifier
-            .padding(vertical = 10.dp)
-            .fillMaxHeight()
-            .verticalScroll(rememberScrollState())
-    ) {
-
+fun FlightInfoUI(flightInfoData: FlightInfo, navigator: DestinationsNavigator, pastFlightInfoData: List<FlightInfo>) {
+    Column(modifier = Modifier
+        .padding(vertical = 10.dp)
+        .fillMaxHeight()
+        .verticalScroll(rememberScrollState())) {
+        FullCard {
+//            .Color(0xffBF0000)
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .padding(0.dp), horizontalArrangement = Arrangement.SpaceAround) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    BodyText("No Extreme Weather")
+                    /*TODO:Add Color Changes*/
+                }
+            }
+        }
         FullRow {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Heading(flightInfoData.getAirlineName() ?: "Unknown Airline")
@@ -264,6 +276,8 @@ fun FlightInfoUI(
                 onClick = { navigator.navigate(AirportInfoViewDestination(flightInfoData.origin.code_iata)) }
             )
         }
+
+
     }
 }
 

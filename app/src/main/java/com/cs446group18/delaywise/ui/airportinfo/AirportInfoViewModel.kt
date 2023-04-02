@@ -5,7 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.cs446group18.delaywise.model.ClientModel
 import com.cs446group18.delaywise.model.SavedAirportEntity
 import com.cs446group18.delaywise.util.UiState
-import com.cs446group18.lib.models.Airport
+import com.cs446group18.lib.models.Weather
+import com.cs446group18.lib.models.WeatherResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,6 +18,8 @@ class AirportInfoViewModel(private val airportCode: String) : ViewModel() {
     private val _airportState =
         MutableStateFlow<UiState<Pair<Airport, List<Int>>>>(UiState.Loading())
     val airportState: StateFlow<UiState<Pair<Airport, List<Int>>>> = _airportState
+    private val _weatherState = MutableStateFlow<UiState<WeatherResponse>>(UiState.Loading())
+    val weatherState: StateFlow<UiState<WeatherResponse>> = _weatherState
 
     val _isSaved = MutableStateFlow<Boolean>(false)
     val isSaved: StateFlow<Boolean> = _isSaved
@@ -26,12 +29,14 @@ class AirportInfoViewModel(private val airportCode: String) : ViewModel() {
             _airportState.emit(UiState.Loading())
             try {
                 val airport = ClientModel.getInstance().getAirport(airportCode)
-                val delayStatus =
-                    ClientModel.getInstance().getAirportDelay(airportCode).getAverageDelays()
-                val saveStatus =
-                    (ClientModel.getInstance().savedAirportDao.getItem(airportCode) != null)
+                val weatherInfo = ClientModel.getInstance().getWeather(airportCode)
+                val delayStatus = ClientModel.getInstance().getAirportDelay(airportCode).getAverageDelays()
+                val saveStatus = (ClientModel.getInstance().savedAirportDao.getItem(airportCode) != null)
                 _airportState.value = UiState.Loaded(Pair(airport, delayStatus))
+                _weatherState.value = UiState.Loaded(weatherInfo)
                 _isSaved.value = saveStatus
+
+
             } catch (ex: Exception) {
                 println(ex.toString())
                 println(ex.stackTraceToString())
