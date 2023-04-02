@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.*
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
@@ -62,7 +63,7 @@ fun HomeView(
     val state by homeViewModel.homeSavedState.collectAsState()
     val searchOptions = listOf("Flights", "Airports")
     val selectedText = remember { mutableStateOf(searchOptions[0]) }
-    val airlinePair: MutableState<Pair<Airline?, String>> = remember { mutableStateOf(Pair(null, ""))}
+    val airlinePair: MutableState<Pair<Airline?, TextFieldValue>> = remember { mutableStateOf(Pair(null, TextFieldValue("")))}
     var flightNumber by remember { mutableStateOf("")}
 
     Scaffold(

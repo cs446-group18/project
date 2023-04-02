@@ -1,5 +1,6 @@
 package com.cs446group18.delaywise.ui.settings
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -13,6 +14,7 @@ import androidx.compose.ui.draw.paint
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,6 +42,7 @@ fun SettingsView(
             )
         )
     }
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -57,11 +60,8 @@ fun SettingsView(
         Row(modifier = Modifier
             .fillMaxWidth()
             .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Enable Push Notifications", fontFamily = bodyFont, fontSize = 15.sp)
-
-            }
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Switch(
                     checked = checkedState.value,
                     onCheckedChange = { checkedState.value = it }
@@ -95,7 +95,7 @@ fun SettingsView(
             .fillMaxWidth()
             .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
             PressIconButton(
-                onClick = {},
+                onClick = { Toast.makeText(context, "Button Clicked!", Toast.LENGTH_SHORT).show()},
                 icon = {R.drawable.__plane_icon },
                 text = { Text("Add API Key", fontFamily = bodyFont, fontSize = 15.sp) }
             )

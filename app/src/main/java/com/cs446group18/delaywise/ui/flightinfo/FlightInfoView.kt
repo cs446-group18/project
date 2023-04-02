@@ -7,6 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -56,7 +57,6 @@ fun FlightInfoView(
                     modifier = Modifier.padding(contentPadding) ,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    var dates = flightList.filterPickableFlights().map{it.scheduled_out}
                     var pastFlights = flightList.filterPastFlights()
 
                     Row(horizontalArrangement = Arrangement.spacedBy(5.dp,Alignment.CenterHorizontally)) {
@@ -75,10 +75,12 @@ fun FlightInfoView(
                             flightInfoViewModel::removeActionTriggered
                         )
                     }
-                    Row(horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(10.dp)) {
-                        Text("Choose a Departure Date: ",
-                            fontFamily = bodyFont,
-                            fontSize = 18.sp)
+                    Text("Choose a Departure Date: ",
+                        fontFamily = bodyFont,
+                        fontSize = 18.sp,
+                        textAlign = TextAlign.Center
+                    )
+                    Row(modifier = Modifier.padding(10.dp)) {
                         DateDropdown(
                             suggestions = flightList.filterPickableFlights().map{ it.getDepartureDate() },
                             defaultDate = flightInfo.scheduled_out,
