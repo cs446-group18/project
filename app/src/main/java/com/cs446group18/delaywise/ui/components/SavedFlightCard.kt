@@ -65,7 +65,7 @@ fun SavedFlightCard(flightInfo: FlightInfo, navigator: DestinationsNavigator) {
             .fillMaxWidth()
             .padding(3.dp)
             .clickable {
-                scope.launch { navigator.navigate(FlightInfoViewDestination(flightInfo.ident_iata)) }
+                scope.launch { navigator.navigate(FlightInfoViewDestination(flightInfo.ident_iata, flightInfo.getDepartureDate())) }
             }
     ) {
         Row(
