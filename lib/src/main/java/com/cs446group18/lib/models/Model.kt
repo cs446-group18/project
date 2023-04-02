@@ -33,7 +33,7 @@ interface Cache<T> {
  * patterns on the Android client and the backend server (caching layer).
  */
 open class Model(
-    private val fetcher: Fetcher,
+    val fetcher: Fetcher,
     private val flightInfoCache: Cache<FlightInfoResponse>,
     private val airportDelayCache: Cache<AirportDelayResponse>,
     private val scheduledFlightCache: Cache<ScheduledFlightsResponse>,
