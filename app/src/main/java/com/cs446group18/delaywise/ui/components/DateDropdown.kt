@@ -1,6 +1,8 @@
 package com.cs446group18.delaywise.ui.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -25,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cs446group18.delaywise.R
+import com.cs446group18.delaywise.ui.styles.bodyStyle
 import com.cs446group18.delaywise.util.formatAsDate
 import com.cs446group18.lib.models.FlightInfo
 import kotlinx.coroutines.Dispatchers
@@ -52,6 +55,7 @@ fun DropdownItem(suggestionText: String, onClick: () -> Unit) {
         ) {
             Text(
                 text = suggestionText,
+                style = bodyStyle,
                 textAlign = TextAlign.Left,
                 modifier = Modifier.absolutePadding(7.dp, 0.dp, 7.dp, 0.dp)
             )
@@ -81,10 +85,22 @@ fun DateDropdown(suggestions: List<LocalDate>, defaultDate: Instant, changeDateF
                 R.color.main_blue).copy(
                 alpha = 1F
             )),
+            singleLine = true,
+            // TextFields aren't clickable by default: https://stackoverflow.com/a/70335041/7062267
+            interactionSource = remember { MutableInteractionSource() }
+                .also { interactionSource ->
+                    LaunchedEffect(interactionSource) {
+                        interactionSource.interactions.collect {
+                            if (it is PressInteraction.Release) {
+                                expanded = !expanded
+                            }
+                        }
+                    }
+                },
             trailingIcon = {
-                Icon(icon,"contentDescription", Modifier.clickable { expanded = !expanded })
+                Icon(icon,"contentDescription")
             },
-            textStyle = TextStyle(fontSize = 14.sp)
+            textStyle = bodyStyle,
         )
         if (expanded) {
             LazyColumn(
