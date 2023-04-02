@@ -1,5 +1,6 @@
 package com.cs446group18.delaywise.ui.settings
 
+import android.app.Activity
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -15,33 +16,36 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cs446group18.delaywise.R
 import com.cs446group18.delaywise.ui.components.BottomBar
+import com.cs446group18.delaywise.ui.styles.BodyText
 import com.cs446group18.delaywise.ui.styles.bodyFont
+import com.cs446group18.delaywise.ui.styles.bodyStyle
 import com.cs446group18.delaywise.ui.styles.headingFont
+import com.cs446group18.delaywise.util.UiState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination
 @Composable
 fun SettingsView(
     navigator: DestinationsNavigator,
+    settingsViewModel : SettingsViewModel = viewModel { SettingsViewModel() },
 ) {
     val checkedState = remember { mutableStateOf(true) }
-    var textFieldValueState by remember {
-        mutableStateOf(
-            TextFieldValue(
-                text = ""
-            )
-        )
-    }
+    val textFieldValueState = settingsViewModel.apiKeyState.collectAsState().value
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    if(textFieldValueState is UiState.Loaded<String>)
     Scaffold(bottomBar = { BottomBar(navigator) }) { contentPadding ->
         Column(
             modifier = Modifier
@@ -77,7 +81,7 @@ fun SettingsView(
                     .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround
             ) {
                 TextField(
-                    value = textFieldValueState,
+                    value = textFieldValueState.data,
                     shape = RoundedCornerShape(8.dp),
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.White,
@@ -86,9 +90,12 @@ fun SettingsView(
                         )
                     ),
                     onValueChange = {
-                        textFieldValueState = it
+                        scope.launch(Dispatchers.IO) {
+                            settingsViewModel.updateApiKey(it, context as Activity)
+                        }
                     },
-                    placeholder = { Text("Optional: Add API Key") },
+                    textStyle = bodyStyle,
+                    placeholder = { BodyText("Optional: Add API Key") },
                     modifier = Modifier
                         .fillMaxWidth()
                 )

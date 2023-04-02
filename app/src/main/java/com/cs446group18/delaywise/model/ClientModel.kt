@@ -31,16 +31,18 @@ val client = HttpClient(CIO) {
 }
 
 data class ClientFetcher(
-    val apiKey: String? = null,
+    var apiKey: String? = null,
 ) : Fetcher {
     override suspend fun makeAeroApiCall(
         url: String,
         block: HttpRequestBuilder.() -> Unit
     ): HttpResponse {
+        val apiKey = apiKey
         val baseUrl = when (apiKey) {
             null -> "http://10.0.2.2:8082"
             else -> "https://aeroapi.flightaware.com/aeroapi"
         }
+        println("Fetching ${baseUrl + url} with apiKey $apiKey")
         val response = client.get(baseUrl + url) {
             headers {
                 if (apiKey != null) {
@@ -65,7 +67,8 @@ data class ClientFetcher(
         WeatherInfoEntity::class,
         AirportInfoEntity::class,
         SavedAirportEntity::class,
-    ], version = 7, exportSchema = false
+        ApiKeyEntity::class,
+    ], version = 8, exportSchema = false
 )
 abstract class DelayWiseLocalDatabase : RoomDatabase() {
     abstract fun flightInfoDao(): FlightInfoDao
@@ -75,14 +78,17 @@ abstract class DelayWiseLocalDatabase : RoomDatabase() {
     abstract fun airportDao(): AirportInfoDao
     abstract fun savedFlightDao(): SavedFlightDao
     abstract fun savedAirportDao(): SavedAirportDao
+    abstract fun apiKeyDao(): ApiKeyDao
 }
 
 class ClientModel(
-    val model: Model,
+    val model : Model,
+    val fetcher: ClientFetcher,
     val airlinesByIata: Map<String, Airline>,
     val airportsByIata: Map<String, Airport>,
     val savedFlightDao: SavedFlightDao,
-    val savedAirportDao: SavedAirportDao
+    val savedAirportDao: SavedAirportDao,
+    val apiKeyDao: ApiKeyDao,
 ) {
     companion object {
         @Volatile
@@ -143,9 +149,11 @@ object ClientModelFactory {
             DelayWiseLocalDatabase::class.java,
             "delaywise_local_database"
         ).fallbackToDestructiveMigration().build()
+        val fetcher = ClientFetcher()
         return ClientModel(
+            fetcher = fetcher,
             model = Model(
-                fetcher = ClientFetcher(),
+                fetcher = fetcher,
                 flightInfoCache = ClientCache(
                     dao = db.flightInfoDao(),
                     createEntity = ::FlightInfoEntity,
@@ -185,7 +193,8 @@ object ClientModelFactory {
             airlinesByIata = loadMapping(context, "airline_codes.csv"),
             airportsByIata = loadMapping(context, "airport_codes.csv"),
             savedFlightDao = db.savedFlightDao(),
-            savedAirportDao = db.savedAirportDao()
+            savedAirportDao = db.savedAirportDao(),
+            apiKeyDao = db.apiKeyDao(),
         )
     }
 }

@@ -15,6 +15,6 @@ interface AirportInfoDao : ClientCacheDao<AirportInfoEntity> {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     override suspend fun insert(entity: AirportInfoEntity)
 
-    @Query("SELECT * from flight_info WHERE id = :id")
+    @Query("SELECT * from airport_info WHERE id = :id")
     override fun getItem(id: String): AirportInfoEntity?
 }
