@@ -136,7 +136,7 @@ fun FlightInfoUI(flightInfoData: FlightInfo, navigator: DestinationsNavigator, h
                 BodyText(
                     statusText,
                     color = when(flightInfoData.getDepartureDelay().inWholeMinutes) {
-                        in (Int.MAX_VALUE)..15 -> Color.Green
+                        in (Int.MIN_VALUE)..15 -> Color.Green
                         in 15..30 -> Color(0xFFFF9900) // Yellow/Orange
                         else -> Color.Red
                     }
