@@ -1,6 +1,5 @@
 package com.cs446group18.delaywise.ui.components
 
-import android.graphics.fonts.Font
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,32 +11,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.cs446group18.delaywise.R
 import com.cs446group18.delaywise.model.getAirlineName
 import com.cs446group18.delaywise.ui.destinations.AirportInfoViewDestination
 import com.cs446group18.delaywise.ui.styles.*
 import com.cs446group18.delaywise.util.*
 import com.cs446group18.lib.models.Airport
 import com.cs446group18.lib.models.FlightInfo
+import com.cs446group18.lib.models.HistoricalInfo
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.datetime.*
-import kotlin.time.Duration
-import com.cs446group18.delaywise.ui.flightinfo.FlightInfoViewModel
 import com.cs446group18.delaywise.ui.styles.BodyText
 import com.cs446group18.delaywise.ui.styles.Heading
-import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
+
 
 @Composable
 fun FullRow(content: @Composable() () -> Unit) {
@@ -125,7 +119,7 @@ fun BasicInfoCard(
 
 // TODO: move to ui.flightinfo package because it's specific to that screen
 @Composable
-fun FlightInfoUI(flightInfoData: FlightInfo, navigator: DestinationsNavigator, pastFlightInfoData: List<FlightInfo>) {
+fun FlightInfoUI(flightInfoData: FlightInfo, navigator: DestinationsNavigator, historical: HistoricalInfo) {
     Column(modifier = Modifier
         .padding(vertical = 10.dp)
         .fillMaxHeight()
@@ -144,11 +138,15 @@ fun FlightInfoUI(flightInfoData: FlightInfo, navigator: DestinationsNavigator, p
         FullRow {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Heading(flightInfoData.getAirlineName() ?: "Unknown Airline")
+                val statusText =
+                    if (flightInfoData.actual_in != null) "Landed"
+                    else if (flightInfoData.actual_out != null) "En Route"
+                    else if (flightInfoData.estimated_out == null) "Scheduled"
+                    else if (flightInfoData.getDepartureDelay() <= 5.toDuration(DurationUnit.MINUTES)) "On Time"
+                    else if (flightInfoData.getDepartureDelay() > 5.toDuration(DurationUnit.MINUTES)) "Delayed ${flightInfoData.getDepartureDelay().formatInHoursMinutes()}"
+                    else "Unknown"
                 BodyText(
-                    when(flightInfoData.getDepartureDelay()) {
-                        Duration.ZERO -> "On Time"
-                        else -> "Delayed ${flightInfoData.getDepartureDelay().formatInHoursMinutes()}"
-                    },
+                    statusText,
                     color = when(flightInfoData.getDepartureDelay().inWholeMinutes) {
                         in (Int.MIN_VALUE)..15 -> Color.Green
                         in 15..30 -> Color(0xFFFF9900) // Yellow/Orange
@@ -186,59 +184,62 @@ fun FlightInfoUI(flightInfoData: FlightInfo, navigator: DestinationsNavigator, p
         BasicInfoCard(
             label = "Departure",
             airport = flightInfoData.origin,
-            estimatedTime = flightInfoData.estimated_out ?: flightInfoData.scheduled_out,
-            scheduledTime = flightInfoData.actual_out ?: flightInfoData.scheduled_out,
+            estimatedTime = flightInfoData.actual_out ?: flightInfoData.estimated_out ?: flightInfoData.scheduled_out,
+            scheduledTime = flightInfoData.scheduled_out,
             terminal = flightInfoData.terminal_origin ?: "unknown terminal",
             gate = flightInfoData.gate_origin,
         )
         BasicInfoCard(
             label = "Arrival",
             airport = flightInfoData.destination,
-            estimatedTime = flightInfoData.estimated_in ?: flightInfoData.scheduled_in,
-            scheduledTime = flightInfoData.actual_in ?: flightInfoData.scheduled_in,
+            estimatedTime = flightInfoData.actual_in ?: flightInfoData.estimated_in ?: flightInfoData.scheduled_in,
+            scheduledTime = flightInfoData.scheduled_in,
             terminal = flightInfoData.terminal_destination ?: "unknown terminal", // TODO: fix
             gate = flightInfoData.gate_destination,
         )
         FullColumn{
             LargeHeading("Historical Delays for Flight: " + flightInfoData.ident_iata)
         }
-        if (pastFlightInfoData.isEmpty()) {
+        if (historical.delayDates.isEmpty()) {
             FullRow {
                 BodyText("Sorry, no data is available for this flight!")
                 Spacer(modifier = Modifier.padding(10.dp))
             }
         }
         else {
+            val avgDelayString = if (historical.averageDelay < 59) "${historical.averageDelay}min"
+            else {
+                val hours = historical.averageDelay / 60
+                val minutes = historical.averageDelay % 60
+
+                "${hours}h" + {if (minutes != 0) "${minutes}min"}
+            }
             Spacer(modifier = Modifier.padding(10.dp))
-            val delayStats = pastFlightInfoData.getDelayPrediction()
-            println(pastFlightInfoData)
-            println(delayStats)
             FullCard {
                 Row {
-                    Heading("In the last ${pastFlightInfoData.size} days, " + flightInfoData.ident_iata + " saw a:")
+                    Heading("In the last ${historical.numDays} days, " + flightInfoData.ident_iata + " saw a:")
                 }
                 Row(modifier = Modifier
                     .fillMaxWidth()
                     .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        BodyText(delayStats[0])
-                        BodyText("rate of delay")
+                        BodyText(historical.delayRate.toString() + "%")
+                        BodyText("Delay Rate")
                     }
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        BodyText(delayStats[1])
-                        BodyText("avg. delay")
+                        BodyText(avgDelayString)
+                        BodyText("Avg. Delay")
                     }
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        BodyText(delayStats[2])
-                        BodyText("cancellation rate")
+                        BodyText(historical.cancellationRate.toString() + "%")
+                        BodyText("Cancel Rate")
                     }
                 }
             }
-            val flightGraphInputs = pastFlightInfoData.getGraphInputs()
             FullCard {
                 LabeledFlightDelayGraph(
-                    flightGraphInputs.first,
-                    flightGraphInputs.second
+                    historical.delayDates,
+                    historical.delayLengths
                 )
             }
         }
@@ -290,5 +291,5 @@ fun PreviewFlightInfoCard() = FlightInfoUI(
         terminal_destination = "2",
     ),
     navigator = EmptyDestinationsNavigator,
-    pastFlightInfoData = emptyList()
+    historical = HistoricalInfo()
 )

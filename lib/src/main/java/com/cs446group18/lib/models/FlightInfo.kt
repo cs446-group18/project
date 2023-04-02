@@ -1,5 +1,6 @@
 package com.cs446group18.lib.models
 
+import kotlin.collections.mutableListOf
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -65,7 +66,7 @@ data class WeatherResponse(
 
 @Serializable
 data class FlightInfo(
-    val ident_iata: String, // e.g. AC8835
+    var ident_iata: String, // e.g. AC8835
     val flight_number: String, // e.g. 8838
     val status: String,
 
@@ -109,11 +110,11 @@ data class AirportDelayResponse(
     val departures: List<FlightInfo>,
 ) : Cacheable
 
-data class AmadeusDelayPrediction(
-    var delayRate7: Int? = null,                // percentage of flights delayed in past 7 days (e.g. 14 for 14%)
-    var delayRate14: Int? = null,               // percentage of flights delayed in past 14 days (e.g. 12 for 12%)
-    var delayRate30: Int? = null,               // percentage of flights delayed in past 30 days (e.g. 10 for 10%)
-    var avgDelay7: Int? = null,                 // the average length of all delays in past 7 days in minutes (e.g. 30)
-    var avgDelay14: Int? = null,                // the average length of all delays in past 14 days in minutes (e.g. 24)
-    var avgDelay30: Int? = null,                // the average length of all delays in past 30 days in minutes (e.g. 19)
+data class HistoricalInfo(
+    var numDays: Int = 10,
+    var delayRate: Int = 0,                                      // percentage of flights delayed in past 10 days
+    var cancellationRate: Int = 0,                              // percentage of flights cancelled in past 10 days
+    var averageDelay: Int = 0,                                  // average delay of flights in past 10 days
+    var delayDates: MutableList<String> = mutableListOf(),       // list of dates for flights in past 10 days
+    var delayLengths: MutableList<Int> = mutableListOf()      // list of delay lengths for flights in past 10 days
 )

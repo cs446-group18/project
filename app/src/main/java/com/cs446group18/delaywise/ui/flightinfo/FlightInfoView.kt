@@ -12,7 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.cs446group18.delaywise.model.filterPastFlights
+import com.cs446group18.delaywise.model.calcHistorical
 import com.cs446group18.delaywise.model.filterPickableFlights
 import com.cs446group18.delaywise.model.getAirlineName
 import com.cs446group18.delaywise.ui.components.*
@@ -23,7 +23,6 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.datetime.LocalDate
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination
@@ -57,8 +56,6 @@ fun FlightInfoView(
                     modifier = Modifier.padding(contentPadding) ,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    var pastFlights = flightList.filterPastFlights()
-
                     Row(horizontalArrangement = Arrangement.spacedBy(5.dp,Alignment.CenterHorizontally)) {
                         Text(
                             "${flightInfo.getAirlineName() ?: flightInfo.operator_iata} ${flightInfo.flight_number}",
@@ -88,10 +85,11 @@ fun FlightInfoView(
                             isReadOnly = true,
                         )
                     }
+                    val historical = flightList.calcHistorical()
                     FlightInfoUI(
                         flightInfoData = flightInfo,
                         navigator = navigator,
-                        pastFlightInfoData = pastFlights
+                        historical = historical
                     )
                 }
             }
