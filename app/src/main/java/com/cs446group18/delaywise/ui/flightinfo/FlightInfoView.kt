@@ -7,10 +7,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cs446group18.delaywise.model.filterPastFlights
 import com.cs446group18.delaywise.model.filterPickableFlights
 import com.cs446group18.delaywise.model.getAirlineName
 import com.cs446group18.delaywise.ui.components.*
@@ -55,6 +57,7 @@ fun FlightInfoView(
                     modifier = Modifier.padding(contentPadding) ,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    var pastFlights = flightList.filterPastFlights()
 
                     Row(horizontalArrangement = Arrangement.spacedBy(5.dp,Alignment.CenterHorizontally)) {
                         Text(
@@ -72,10 +75,12 @@ fun FlightInfoView(
                             flightInfoViewModel::removeActionTriggered
                         )
                     }
-                    Row(horizontalArrangement = Arrangement.Start, modifier = Modifier.padding(10.dp)) {
-                        Text("Choose a Departure Date: ",
-                            fontFamily = bodyFont,
-                            fontSize = 18.sp)
+                    Text("Choose a Departure Date: ",
+                        fontFamily = bodyFont,
+                        fontSize = 18.sp,
+                        textAlign = TextAlign.Center
+                    )
+                    Row(modifier = Modifier.padding(10.dp)) {
                         DateDropdown(
                             suggestions = flightList.filterPickableFlights().map{ it.getDepartureDate() },
                             defaultDate = flightInfo.scheduled_out,
@@ -85,7 +90,8 @@ fun FlightInfoView(
                     }
                     FlightInfoUI(
                         flightInfoData = flightInfo,
-                        navigator = navigator
+                        navigator = navigator,
+                        pastFlightInfoData = pastFlights
                     )
                 }
             }

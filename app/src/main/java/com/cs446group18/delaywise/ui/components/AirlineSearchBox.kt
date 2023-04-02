@@ -55,22 +55,20 @@ fun AirlineSearchBoxItem(item: AirlineSearchBoxItem, onSelect: (String) -> Unit)
             )
         }
     }
-}
+}///
 
 
 suspend fun filterResults(searchText: String, optionLists: List<AirlineSearchBoxItem>): List<AirlineSearchBoxItem> {
     return optionLists.filter{
         it.displayText.contains(searchText, ignoreCase = true)
+    }.sortedBy{
+        it.displayText.indexOf(searchText, ignoreCase = true)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RowScope.AirlineSearchBox(airlines: List<Airline>, mutableState: MutableState<Pair<Airline?, String>>) {
-    var expanded by remember { mutableStateOf(false) }
-    var dropDownWidth by remember { mutableStateOf(0) }
-    val suggestions = mutableListOf<Pair<Airline, String>>()
-
+fun RowScope.AirlineSearchBox(airlines: List<Airline>, mutableState: MutableState<Pair<Airline?, TextFieldValue>>) {
     var searchResults by remember {
         mutableStateOf(listOf<AirlineSearchBoxItem>())
     }
@@ -101,8 +99,8 @@ fun RowScope.AirlineSearchBox(airlines: List<Airline>, mutableState: MutableStat
             onValueChange = {
                 mutableState.value = Pair(mutableState.value.first, it)
                 scope.launch {
-                    searchResults = filterResults(mutableState.value.second, processedRawSearchResults)
-                }},
+                    searchResults = filterResults(mutableState.value.second.text, processedRawSearchResults)
+                } },
             placeholder = { BodyText("Airline (ex. DAL, Delta)") },
             modifier = Modifier
                 .onFocusChanged {
@@ -119,11 +117,11 @@ fun RowScope.AirlineSearchBox(airlines: List<Airline>, mutableState: MutableStat
             ) {
                 items(searchResults) { item ->
                     AirlineSearchBoxItem(item, onSelect = {
-                        mutableState.value = Pair(item.airline, item.displayText)
-                        TextFieldValue(
+                        mutableState.value = Pair(item.airline, TextFieldValue(
                             text = item.displayText,
-                            selection = TextRange(item.displayText.length)
-                        )
+                            selection = TextRange(index = item.displayText.length)
+                        ))
+                        showDropDown = false
                     })
                 }
             }

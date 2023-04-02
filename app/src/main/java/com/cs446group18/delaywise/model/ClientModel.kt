@@ -185,6 +185,12 @@ fun List<FlightInfo>.filterPickableFlights(): List<FlightInfo> {
     }
 }
 
+fun List<FlightInfo>.filterPastFlights(): List<FlightInfo> {
+    return filter {
+        it.scheduled_out <= Clock.System.now() + 6.toDuration(DurationUnit.HOURS)
+    }
+}
+
 fun pickFlight(date: LocalDate?, flightArray: List<FlightInfo>): FlightInfo? {
     return when(date) {
         null -> flightArray.filterPickableFlights().minByOrNull { it.scheduled_out }
