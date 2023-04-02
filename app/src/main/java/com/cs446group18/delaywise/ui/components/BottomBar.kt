@@ -20,6 +20,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.cs446group18.delaywise.ui.destinations.AirportInfoViewDestination
 import com.cs446group18.delaywise.ui.destinations.HomeViewDestination
 import com.cs446group18.delaywise.ui.destinations.SavedFlightsViewDestination
+import com.cs446group18.delaywise.ui.destinations.SettingsViewDestination
 import com.cs446group18.delaywise.ui.navArgs
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
@@ -58,7 +59,7 @@ fun BottomBar(
                     )
                 }
                 IconButton(onClick = {
-                    scope.launch { navigator.navigate(AirportInfoViewDestination("YYZ")) }
+                    scope.launch { navigator.navigate(SettingsViewDestination()) }
                 }) {
                     Icon(
                         Icons.Filled.Tune,

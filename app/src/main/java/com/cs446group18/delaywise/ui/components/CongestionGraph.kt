@@ -1,7 +1,10 @@
 package com.cs446group18.delaywise.ui.components
 
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -24,6 +27,7 @@ import com.patrykandpatrick.vico.core.axis.AxisPosition
 import com.patrykandpatrick.vico.core.axis.formatter.AxisValueFormatter
 import com.patrykandpatrick.vico.core.axis.horizontal.HorizontalAxis
 import com.patrykandpatrick.vico.core.axis.vertical.VerticalAxis
+import com.patrykandpatrick.vico.core.chart.decoration.ThresholdLine
 import com.patrykandpatrick.vico.core.chart.line.LineChart
 import com.patrykandpatrick.vico.core.component.shape.LineComponent
 import com.patrykandpatrick.vico.core.component.shape.Shapes
@@ -81,21 +85,25 @@ fun m3ChartStyle(
 }
 
 @Composable
-fun CongestionGraph(navigator: DestinationsNavigator, keys: List<String>, values: List<Int>) {
+fun CongestionGraph(keys: List<String>, values: List<Int>) {
+    val marker = rememberMarker()
+    val thresholdline = rememberThresholdLine(values.average().toFloat())
     var chartEntryModel = entryModelOf(*values.toTypedArray())
     val bottomAxisValueFormatter =
         AxisValueFormatter<AxisPosition.Horizontal.Bottom> { x, _ -> keys[x.toInt()] }
     ProvideChartStyle(m3ChartStyle()) {
         Chart(
+            marker = marker,
             chart = lineChart(
-                pointPosition = LineChart.PointPosition.Start
+                pointPosition = LineChart.PointPosition.Start,
+                decorations = remember(thresholdline) { listOf(thresholdline)}
             ),
             model = chartEntryModel,
             startAxis = startAxis(
                 horizontalLabelPosition = VerticalAxis.HorizontalLabelPosition.Inside,
                 label = rememberStartAxisLabel(),
                 guideline = null,
-                maxLabelCount = 1
+                maxLabelCount = 3
             ),
             bottomAxis = bottomAxis(
                 guideline = null,
@@ -105,6 +113,15 @@ fun CongestionGraph(navigator: DestinationsNavigator, keys: List<String>, values
         )
     }
 }
+
+@Composable
+private fun rememberThresholdLine(average : Float): ThresholdLine {
+    val line = shapeComponent(strokeWidth = thresholdLineThickness, strokeColor = color2, shape = DottedShape(step = 10.dp))
+    return remember(line) {
+        ThresholdLine(thresholdValue = average, lineComponent = line, thresholdLabel = "")
+    }
+}
+
 
 @Composable
 private fun rememberStartAxisLabel() = axisLabelComponent(
@@ -119,7 +136,6 @@ private fun rememberStartAxisLabel() = axisLabelComponent(
 @Preview
 @Composable
 fun PreviewCongestionGraph() = CongestionGraph(
-    navigator = EmptyDestinationsNavigator,
-    mutableListOf<String>(),
-    mutableListOf<Int>()
+    mutableListOf<String>("10am", "11am", "12pm", "1pm"),
+    mutableListOf<Int>(1,2, 3, 2)
 )

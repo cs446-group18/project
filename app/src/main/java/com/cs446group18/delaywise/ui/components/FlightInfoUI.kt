@@ -20,9 +20,7 @@ import androidx.compose.ui.unit.sp
 import com.cs446group18.delaywise.model.getAirlineName
 import com.cs446group18.delaywise.ui.destinations.AirportInfoViewDestination
 import com.cs446group18.delaywise.ui.styles.*
-import com.cs446group18.delaywise.util.formatAsDate
-import com.cs446group18.delaywise.util.formatAsTime
-import com.cs446group18.delaywise.util.formatInHoursMinutes
+import com.cs446group18.delaywise.util.*
 import com.cs446group18.lib.models.Airport
 import com.cs446group18.lib.models.FlightInfo
 import com.cs446group18.lib.models.HistoricalInfo
@@ -81,7 +79,9 @@ fun BasicInfoCard(
         Heading(
             "${airport.code_iata}: ${airport.cleanName()}"
         )
-        Row (modifier = Modifier.fillMaxWidth().padding(5.dp), horizontalArrangement = Arrangement.Start)
+        Row (modifier = Modifier
+            .fillMaxWidth()
+            .padding(5.dp), horizontalArrangement = Arrangement.Start)
         {
             BodyText("Date: ${scheduledTime.formatAsDate()}")
         }
@@ -188,35 +188,45 @@ fun FlightInfoUI(flightInfoData: FlightInfo, navigator: DestinationsNavigator, h
         FullColumn{
             LargeHeading("Historical Delays for Flight: " + flightInfoData.ident_iata)
         }
-        Spacer(modifier = Modifier.padding(10.dp))
-        FullCard {
-            Row {
-                Heading("In the last ${historical.numDays} days, " + flightInfoData.ident_iata + " saw a:")
+        if (historical.delayDates.isEmpty()) {
+            FullRow {
+                BodyText("Sorry, no data is available for this flight!")
+                Spacer(modifier = Modifier.padding(10.dp))
+            }
+        }
+        else {
+            Spacer(modifier = Modifier.padding(10.dp))
+            FullCard {
+                Row {
+                    Heading("In the last ${historical.numDays} days, " + flightInfoData.ident_iata + " saw a:")
 //                DropdownMenu(expanded = false, onDismissRequest = { /*TODO*/ }) {
 ////                    DropdownMenuItem(text = { Text("7 days") }, onClick = { /*TODO*/ })
 ////                }
+                }
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        BodyText(historical.delayRate.toString() + "%")
+                        BodyText("Delayed")
+                    }
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        BodyText(historical.averageDelay.toString() + "min")
+                        BodyText("Avg. Delay")
+                    }
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        BodyText(historical.cancellationRate.toString() + "%")
+                        BodyText("Cancelled")
+                    }
+                }
             }
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    BodyText(historical.delayRate.toString() + "%")
-                    BodyText("Delayed")
-                }
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    BodyText(historical.averageDelay.toString() + "min")
-                    BodyText("Avg. Delay")
-                }
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    BodyText(historical.cancellationRate.toString() + "%")
-                    BodyText("Cancelled")
-                }
+            FullCard {
+                LabeledFlightDelayGraph(
+                    historical.delayDates,
+                    historical.delayLengths
+                )
             }
         }
-        LabeledFlightDelayGraph(
-            historical.delayDates,
-            historical.delayLengths
-        )
         Column (horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(10.dp)) {
             Heading("Check Departure Airport for Weather & Congestion Delays:", textAlign = TextAlign.Center)
             ClickableText(
@@ -247,6 +257,7 @@ fun PreviewFlightInfoCard() = FlightInfoUI(
             name = "San Francisco Int'l",
             city = "San Francisco",
         ),
+        cancelled = false,
         departure_delay_raw = 20,
         arrival_delay_raw = 3,
         scheduled_out = Instant.parse("2023-03-18T20:30:00Z")!!,

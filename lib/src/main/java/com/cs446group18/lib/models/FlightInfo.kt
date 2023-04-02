@@ -26,6 +26,7 @@ data class ScheduledFlight(
         ident_iata = ident_iata,
         flight_number = destructureFlightCode(ident_iata).component2(),
         status = "Scheduled",
+        cancelled = false,
         departure_delay_raw = 0,
         arrival_delay_raw = 0,
         scheduled_out = scheduled_out,
@@ -72,6 +73,7 @@ data class FlightInfo(
     val departure_delay_raw: Int,
     @SerialName("arrival_delay")
     val arrival_delay_raw: Int,
+    val cancelled: Boolean,
 
     val scheduled_out: Instant,
     val estimated_out: Instant?,

@@ -9,8 +9,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.paint
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -75,11 +79,7 @@ fun AirportInfoView(
                             airportInfoViewModel::removeActionTriggered
                         )
                     }
-                    AirportInfoUI(airportInfoData = airport)
-                    println(airport)
-                    println(airportDelay)
-                    //todo: @hanz- figure out why graph is reaching a range exception when you search for airport YYZ
-//                    LabeledCongestionGraph(navigator, timeLabelGenerator(airportDelay.size), airportDelay)
+                    AirportInfoUI(airportInfoData = airport, timeLabels = timeLabelGenerator(airportDelay.size), airportDelay = airportDelay)
                 }
             }
         }
@@ -91,8 +91,12 @@ fun timeLabelGenerator(numPoints : Int): List<String> {
     val currentHourIn24Format: Int = rightNow.get(Calendar.HOUR_OF_DAY)
     val times = mutableListOf<String>()
     for (i in numPoints - 1 downTo 0 step 1) {
-        val curr = currentHourIn24Format - i
-        times.add((if (curr % 12 === 0) "12" else (curr % 12)).toString() + if (curr >= 12) "PM" else "AM")
+        var curr = currentHourIn24Format - i
+        if (curr < 0) { //to catch the formatting from AM to PM for points that cross over midnight
+            curr += 24
+        }
+        times.add((if (curr % 12 === 0) "12" else (curr % 12)).toString() +
+                if (curr >= 12) "PM" else "AM")
     }
     return times
 }

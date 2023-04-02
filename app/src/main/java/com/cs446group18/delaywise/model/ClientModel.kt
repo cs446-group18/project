@@ -71,7 +71,7 @@ data class ClientFetcher(
         WeatherInfoEntity::class,
         AirportInfoEntity::class,
         SavedAirportEntity::class,
-    ], version = 6, exportSchema = false
+    ], version = 7, exportSchema = false
 )
 abstract class DelayWiseLocalDatabase : RoomDatabase() {
     abstract fun flightInfoDao(): FlightInfoDao
@@ -203,7 +203,7 @@ fun List<FlightInfo>.calcHistorical(): HistoricalInfo {
     var delayedFlights = 0      // 15 minutes and up
     var cancelledFlights = 0
     var numFlights = 0
-    var historical: HistoricalInfo = HistoricalInfo()
+    var historical = HistoricalInfo()
 
     for (flightInfo in this.sortedBy { it.scheduled_out }) {
         if (flightInfo.scheduled_in <= Clock.System.now() && flightInfo.scheduled_out >= Clock.System.now() - 10.toDuration(DurationUnit.DAYS)) {

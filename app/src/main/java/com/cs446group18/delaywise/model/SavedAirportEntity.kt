@@ -15,8 +15,8 @@ interface SavedAirportDao : ClientCacheDao<SavedAirportEntity> {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     override suspend fun insert(entity: SavedAirportEntity)
 
-    @Delete()
-    suspend fun delete(entity: SavedAirportEntity)
+    @Query("DELETE FROM saved_airports WHERE id = :id")
+    fun delete(id: String)
 
     @Query("SELECT * from saved_airports WHERE id = :id")
     override fun getItem(id: String): SavedAirportEntity?
