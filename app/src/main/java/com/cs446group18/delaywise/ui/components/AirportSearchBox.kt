@@ -13,13 +13,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.*
 import androidx.compose.foundation.gestures.*
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.cs446group18.delaywise.R
 import com.cs446group18.delaywise.model.Airport
 import com.cs446group18.delaywise.ui.destinations.AirportInfoViewDestination
+import com.cs446group18.delaywise.ui.styles.BodyText
+import com.cs446group18.delaywise.ui.styles.bodyStyle
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 
@@ -49,22 +49,18 @@ fun AirportSearchBoxItem(item: AirportSearchBoxItem, onSelect: (String) -> Unit)
         }
     }
 }
-suspend fun filterResults(searchText: TextFieldValue, optionLists: List<AirportSearchBoxItem>): List<AirportSearchBoxItem> {
+fun filterResults(searchText: String, optionLists: List<AirportSearchBoxItem>): List<AirportSearchBoxItem> {
     return optionLists.filter{
-       it.displayText.contains(searchText.text, ignoreCase = true)
+       it.displayText.contains(searchText, ignoreCase = true)
+    }.sortedBy{
+        it.displayText.indexOf(searchText, ignoreCase = true)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AirportSearchBox(navigator: DestinationsNavigator, airports: List<Airport>, placeHolderText: String) {
-    var textFieldValueState by remember{
-        mutableStateOf(
-            TextFieldValue(
-                text = ""
-            )
-        )
-    }
+    var searchText by remember{ mutableStateOf("") }
 
     var searchResults by remember {
         mutableStateOf(listOf<AirportSearchBoxItem>())
@@ -84,7 +80,7 @@ fun AirportSearchBox(navigator: DestinationsNavigator, airports: List<Airport>, 
 
     Column {
         TextField(
-            value = textFieldValueState,
+            value = searchText,
             shape = RoundedCornerShape(8.dp),
             colors = TextFieldDefaults.textFieldColors(
                 containerColor = Color.White,
@@ -92,13 +88,15 @@ fun AirportSearchBox(navigator: DestinationsNavigator, airports: List<Airport>, 
                     alpha = 1F
                 )
             ),
+            singleLine = true,
             onValueChange = {
-                textFieldValueState = it
+                searchText = it
                 scope.launch {
                     searchResults = filterResults(it, processedRawSearchResults)
                 }
             },
-            placeholder = { Text(placeHolderText) },
+            textStyle = bodyStyle,
+            placeholder = { BodyText(placeHolderText) },
             modifier = Modifier
                 .fillMaxWidth()
                 .onFocusChanged {
@@ -115,9 +113,7 @@ fun AirportSearchBox(navigator: DestinationsNavigator, airports: List<Airport>, 
                 items(searchResults) { item ->
                     AirportSearchBoxItem(item, onSelect = {
                         println("in AirportSearchBox OnSelect")
-                        textFieldValueState = TextFieldValue(
-                            text = item.displayText,
-                        )
+                        searchText = item.displayText
                         navigator.navigate(AirportInfoViewDestination(item.airport.iata))
                     })
                 }

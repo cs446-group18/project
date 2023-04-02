@@ -47,9 +47,9 @@ class AirportInfoViewModel(private val airportCode: String) : ViewModel() {
             }
         }
     }
-    suspend fun saveActionTriggered(id: String){
+    suspend fun saveActionTriggered() {
         try {
-            val airportInfo = ClientModel.getInstance().getAirport(id)
+            val (airportInfo, _) = (_airportState.value as UiState.Loaded).data
             val jsonString = Json.encodeToString(airportInfo)
             val airportInfoEntity = SavedAirportEntity(airportInfo.code_iata, jsonString)
             ClientModel.getInstance().savedAirportDao.insert(airportInfoEntity)
@@ -60,15 +60,9 @@ class AirportInfoViewModel(private val airportCode: String) : ViewModel() {
         }
     }
 
-    suspend fun removeActionTriggered(id: String){
+    suspend fun removeActionTriggered() {
         try {
-            val airportInfo = ClientModel.getInstance().getAirport(id)
-            val jsonString = Json.encodeToString(airportInfo)
-            val airportInfoEntity = SavedAirportEntity(airportInfo.code_iata, jsonString)
-            val weatherInfo = ClientModel.getInstance().getAirport(airportInfo.code_iata)
-
-
-            ClientModel.getInstance().savedAirportDao.delete(airportInfoEntity)
+            ClientModel.getInstance().savedAirportDao.delete(airportCode)
             _isSaved.value = false
         } catch (ex: Exception) {
             println(ex.toString())

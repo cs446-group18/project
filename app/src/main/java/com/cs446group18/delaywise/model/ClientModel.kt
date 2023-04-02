@@ -65,7 +65,7 @@ data class ClientFetcher(
         WeatherInfoEntity::class,
         AirportInfoEntity::class,
         SavedAirportEntity::class,
-    ], version = 6, exportSchema = false
+    ], version = 7, exportSchema = false
 )
 abstract class DelayWiseLocalDatabase : RoomDatabase() {
     abstract fun flightInfoDao(): FlightInfoDao
@@ -182,6 +182,12 @@ object ClientModelFactory {
 fun List<FlightInfo>.filterPickableFlights(): List<FlightInfo> {
     return filter {
         it.scheduled_out >= Clock.System.now() - 6.toDuration(DurationUnit.HOURS)
+    }
+}
+
+fun List<FlightInfo>.filterPastFlights(): List<FlightInfo> {
+    return filter {
+        it.scheduled_out <= Clock.System.now() + 6.toDuration(DurationUnit.HOURS)
     }
 }
 

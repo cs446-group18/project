@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 //Below code referenced from: https://www.geeksforgeeks.org/icon-toggle-button-in-android-using-jetpack-compose/
 @SuppressLint("UnusedTransitionTargetStateParameter")
 @Composable
-fun DisplaySaveToggleButton(id: String, passedModifier: Modifier, isSavedFlow: StateFlow<Boolean>, saveFunc: suspend (String) -> Unit, deleteFunc: suspend (String) -> Unit) {
+fun DisplaySaveToggleButton(id: String, passedModifier: Modifier, isSavedFlow: StateFlow<Boolean>, saveFunc: suspend () -> Unit, deleteFunc: suspend () -> Unit) {
     val scope = rememberCoroutineScope()
     val isSaved by isSavedFlow.collectAsState(false)
 
@@ -36,9 +36,9 @@ fun DisplaySaveToggleButton(id: String, passedModifier: Modifier, isSavedFlow: S
         onCheckedChange = {
             scope.launch(Dispatchers.IO) {
                 if (!isSaved) {
-                    saveFunc(id)
+                    saveFunc()
                 } else {
-                    deleteFunc(id)
+                    deleteFunc()
                 }
             }
         },

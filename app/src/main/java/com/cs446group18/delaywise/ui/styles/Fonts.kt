@@ -1,6 +1,5 @@
 package com.cs446group18.delaywise.ui.styles
 
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -10,6 +9,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import com.cs446group18.delaywise.R
 
@@ -32,13 +32,21 @@ val bodyFont = FontFamily(
     )
 )
 
+val headingStyle = TextStyle(
+    fontFamily = headingFont,
+    fontSize = 16.sp,
+)
+
+val bodyStyle = TextStyle(
+    fontFamily = bodyFont,
+    fontSize = 14.sp,
+)
 
 @Composable
 fun Heading(text: String, textAlign: TextAlign? = null,) {
     Text(
         text = text,
-        fontFamily = headingFont,
-        fontSize = 16.sp,
+        style = headingStyle,
         textAlign = textAlign,
     )
 }
@@ -59,14 +67,14 @@ fun BodyText(
     text: String,
     textAlign: TextAlign? = null,
     color: Color = Color.Unspecified,
-    style: TextStyle = LocalTextStyle.current,
+    style: TextStyle = bodyStyle,
+    fontSize: TextUnit? = null
 ) {
     Text(
         text = text,
-        fontFamily = bodyFont,
-        fontSize = 16.sp,
+        style = style,
         textAlign = textAlign,
         color = color,
-        style = style,
+        fontSize = fontSize ?: style.fontSize
     )
 }

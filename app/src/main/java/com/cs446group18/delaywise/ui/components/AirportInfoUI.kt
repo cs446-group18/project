@@ -31,7 +31,7 @@ import java.util.*
 import kotlin.time.Duration
 
 @Composable
-fun AirportInfoUI(airportInfoData: Airport, weatherObservations: List<Weather>) {
+fun AirportInfoUI(airportInfoData: Airport, timeLabels: List<String>, airportDelay: List<Int>, weatherObservations: List<Weather>) {
     Column(modifier = Modifier
         .padding(vertical = 10.dp)
         .fillMaxHeight()
@@ -102,7 +102,7 @@ fun AirportInfoUI(airportInfoData: Airport, weatherObservations: List<Weather>) 
                 }
             }
         }
-
-
+        Spacer(modifier = Modifier.padding(10.dp))
+        LabeledCongestionGraph(timeLabels, airportDelay)
     }
 }
