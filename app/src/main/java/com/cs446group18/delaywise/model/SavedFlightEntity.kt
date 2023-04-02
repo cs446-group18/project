@@ -20,7 +20,7 @@ data class SavedFlightEntity(
     val json: String,
     var updatedAt: Long = System.currentTimeMillis()
 ) {
-    constructor(flightInfo: FlightInfo, date: LocalDate): this(
+    constructor(flightInfo: FlightInfo, date: LocalDate) : this(
         id = Json.encodeToString(SavedFlightKey(flightInfo.ident_iata, date)),
         json = Json.encodeToString(flightInfo),
     )
@@ -33,17 +33,21 @@ interface SavedFlightDao {
     suspend fun insert(flight: FlightInfo) = insert(
         SavedFlightEntity(
             Json.encodeToString((SavedFlightKey(flight.ident_iata, flight.getDepartureDate()))),
-            Json.encodeToString(flight)))
+            Json.encodeToString(flight)
+        )
+    )
 
     @Query("DELETE FROM saved_flights WHERE id = :id")
     fun delete(id: String)
     fun delete(id: SavedFlightKey) = delete(Json.encodeToString(id))
-    fun delete(flight: FlightInfo) = delete(SavedFlightKey(flight.ident_iata, flight.getDepartureDate()))
+    fun delete(flight: FlightInfo) =
+        delete(SavedFlightKey(flight.ident_iata, flight.getDepartureDate()))
 
     @Query("SELECT * from saved_flights WHERE id = :id")
     fun getItem(id: String): SavedFlightEntity?
     fun getItem(id: SavedFlightKey) = getItem(Json.encodeToString(id))
-    fun getItem(flight: FlightInfo) = getItem(SavedFlightKey(flight.ident_iata, flight.getDepartureDate()))
+    fun getItem(flight: FlightInfo) =
+        getItem(SavedFlightKey(flight.ident_iata, flight.getDepartureDate()))
 
     @Query("SELECT * from saved_flights")
     fun listFlights(): List<SavedFlightEntity>

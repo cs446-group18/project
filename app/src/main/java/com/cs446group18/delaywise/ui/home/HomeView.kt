@@ -33,7 +33,6 @@ import com.cs446group18.delaywise.model.SavedAirportEntity
 import com.cs446group18.delaywise.model.SavedFlightEntity
 import com.cs446group18.delaywise.ui.components.*
 import com.cs446group18.delaywise.ui.destinations.FlightInfoViewDestination
-import com.cs446group18.delaywise.ui.destinations.HomeViewDestination
 import com.cs446group18.delaywise.ui.styles.BodyText
 import com.cs446group18.delaywise.ui.styles.bodyFont
 import com.cs446group18.delaywise.ui.styles.bodyStyle
@@ -55,7 +54,7 @@ import kotlinx.serialization.json.Json
 @Composable
 fun HomeView(
     navigator: DestinationsNavigator,
-    homeViewModel: HomeViewModel = viewModel { HomeViewModel()}
+    homeViewModel: HomeViewModel = viewModel { HomeViewModel() }
 ) {
     handleIntents(LocalContext.current as Activity, navigator)
 
@@ -63,8 +62,9 @@ fun HomeView(
     val state by homeViewModel.homeSavedState.collectAsState()
     val searchOptions = listOf("Flight", "Airport")
     val selectedText = remember { mutableStateOf(searchOptions[0]) }
-    val airlinePair: MutableState<Pair<Airline?, TextFieldValue>> = remember { mutableStateOf(Pair(null, TextFieldValue("")))}
-    var flightNumber by remember { mutableStateOf("")}
+    val airlinePair: MutableState<Pair<Airline?, TextFieldValue>> =
+        remember { mutableStateOf(Pair(null, TextFieldValue(""))) }
+    var flightNumber by remember { mutableStateOf("") }
 
     Scaffold(
         modifier = Modifier.clickable(
@@ -94,7 +94,11 @@ fun HomeView(
         ) {
             Text("Welcome to", fontFamily = headingFont, fontSize = 26.sp)
             Text("DelayWise!", fontFamily = headingFont, fontSize = 40.sp)
-            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 BodyText("Search for:", fontSize = 18.sp)
                 DropdownSmall(
                     suggestions = searchOptions,
@@ -104,8 +108,14 @@ fun HomeView(
             }
             Spacer(modifier = Modifier.height(10.dp))
             if (selectedText.value == "Flight") { //User selected Search by Flight
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    AirlineSearchBox(homeViewModel.airlineResults.collectAsState().value, mutableState = airlinePair)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    AirlineSearchBox(
+                        homeViewModel.airlineResults.collectAsState().value,
+                        mutableState = airlinePair
+                    )
                     Spacer(Modifier.width(8.dp))
                     TextField(
                         modifier = Modifier.weight(0.35f, true),
@@ -114,10 +124,12 @@ fun HomeView(
                         shape = RoundedCornerShape(8.dp),
                         placeholder = { BodyText("Flight #") },
                         value = flightNumber,
-                        onValueChange = {flightNumber = it},
-                        colors = TextFieldDefaults.outlinedTextFieldColors(containerColor = Color.White,
+                        onValueChange = { flightNumber = it },
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            containerColor = Color.White,
                             focusedBorderColor = Color(
-                                R.color.main_blue).copy(
+                                R.color.main_blue
+                            ).copy(
                                 alpha = 1F
                             )
                         )
@@ -126,14 +138,16 @@ fun HomeView(
                 val chosenAirline = airlinePair.value.first
                 if (flightNumber == "" || chosenAirline == null) {
                     SearchButton(false) {}
-                }
-                else { //User selected Search by Airport
+                } else { //User selected Search by Airport
                     val searchString = chosenAirline.iata + flightNumber
                     SearchButton(true) { navigator.navigate(FlightInfoViewDestination(searchString)) }
                 }
-            }
-            else {
-                AirportSearchBox(navigator, homeViewModel.airportResults.collectAsState().value, "Airport (ex. YYZ, Pearson International)")
+            } else {
+                AirportSearchBox(
+                    navigator,
+                    homeViewModel.airportResults.collectAsState().value,
+                    "Airport (ex. YYZ, Pearson International)"
+                )
             }
             Spacer(modifier = Modifier.height(6.dp))
             Text("Saved Flights/Airports", fontSize = 28.sp, fontFamily = headingFont)
@@ -146,30 +160,41 @@ fun HomeView(
                     ErrorMessage(message)
                 }
                 is UiState.Loaded -> {
-                    val savedItems = (state as UiState.Loaded<Pair<List<SavedFlightEntity>, List<SavedAirportEntity>>>).data
+                    val savedItems =
+                        (state as UiState.Loaded<Pair<List<SavedFlightEntity>, List<SavedAirportEntity>>>).data
                     if (savedItems.first.isEmpty() && savedItems.second.isEmpty()) {
-                        Box (
+                        Box(
                             contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxSize()){
-                            Text("Nothing saved yet!",
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Text(
+                                "Nothing saved yet!",
                                 modifier = Modifier.background(Color(0x99F6F2FA), RectangleShape),
                                 fontFamily = bodyFont,
                                 fontSize = 24.sp,
-                                textAlign = TextAlign.Center)
+                                textAlign = TextAlign.Center
+                            )
                         }
-                    }
-                    else{
-                        LazyColumn(modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(max = 500.dp),
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(max = 500.dp),
                             verticalArrangement = Arrangement.spacedBy(3.dp),
                             contentPadding = PaddingValues(bottom = 100.dp)
-                        ){
-                            items(savedItems.first) {
-                                flight -> SavedFlightCard(Json.decodeFromString<FlightInfo>(flight.json), navigator);
+                        ) {
+                            items(savedItems.first) { flight ->
+                                SavedFlightCard(
+                                    Json.decodeFromString<FlightInfo>(flight.json),
+                                    navigator
+                                )
                             }
-                            items(savedItems.second){
-                                airport -> SavedAirportCard(airportInfo = Json.decodeFromString<Airport>(airport.json), navigator = navigator)
+                            items(savedItems.second) { airport ->
+                                SavedAirportCard(
+                                    airportInfo = Json.decodeFromString<Airport>(
+                                        airport.json
+                                    ), navigator = navigator
+                                )
                             }
                         }
                     }
@@ -182,7 +207,7 @@ fun HomeView(
 // Navigates to correct destination if specified in activity intent
 fun handleIntents(activity: Activity, navigator: DestinationsNavigator) {
     val intent = activity.intent
-    val destination = when(intent?.action) {
+    val destination = when (intent?.action) {
         "FlightInfoView" -> FlightInfoViewDestination(
             flightIata = intent.getStringExtra("flightIata")!!,
             date = LocalDate.parse(intent.getStringExtra("date")!!),

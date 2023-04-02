@@ -11,7 +11,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -26,7 +25,6 @@ import com.cs446group18.delaywise.ui.styles.headingFont
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination
@@ -35,7 +33,7 @@ fun SettingsView(
     navigator: DestinationsNavigator,
 ) {
     val checkedState = remember { mutableStateOf(true) }
-    var textFieldValueState by remember{
+    var textFieldValueState by remember {
         mutableStateOf(
             TextFieldValue(
                 text = ""
@@ -57,9 +55,11 @@ fun SettingsView(
     ) {
         Text("Settings", fontSize = 40.sp, fontFamily = headingFont)
         Spacer(modifier = Modifier.height(15.dp))
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround
+        ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Enable Push Notifications", fontFamily = bodyFont, fontSize = 15.sp)
                 Switch(
@@ -70,9 +70,11 @@ fun SettingsView(
         }
 
         Spacer(modifier = Modifier.height(15.dp))
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround
+        ) {
             TextField(
                 value = textFieldValueState,
                 shape = RoundedCornerShape(8.dp),
@@ -91,12 +93,14 @@ fun SettingsView(
             )
         }
         Spacer(modifier = Modifier.height(15.dp))
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround
+        ) {
             PressIconButton(
-                onClick = { Toast.makeText(context, "Button Clicked!", Toast.LENGTH_SHORT).show()},
-                icon = {R.drawable.__plane_icon },
+                onClick = { Toast.makeText(context, "Button Clicked!", Toast.LENGTH_SHORT).show() },
+                icon = { R.drawable.__plane_icon },
                 text = { Text("Add API Key", fontFamily = bodyFont, fontSize = 15.sp) }
             )
 
@@ -104,6 +108,7 @@ fun SettingsView(
     }
 
 }
+
 @Preview
 @Composable
 fun Preview() = SettingsView(EmptyDestinationsNavigator)
@@ -118,8 +123,10 @@ fun PressIconButton(
         remember { MutableInteractionSource() },
 ) {
     val isPressed by interactionSource.collectIsPressedAsState()
-    Button(onClick , modifier = modifier,
-        interactionSource = interactionSource) {
+    Button(
+        onClick, modifier = modifier,
+        interactionSource = interactionSource
+    ) {
         AnimatedVisibility(visible = isPressed) {
             if (isPressed) {
                 Row {

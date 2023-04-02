@@ -12,9 +12,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 
-class FlightInfoViewModel(private val flightIata: String, private val date: LocalDate? = null) : ViewModel() {
-    private val _flightState = MutableStateFlow<UiState<Pair<FlightInfo,List<FlightInfo>>>>(UiState.Loading())
-    val flightState: StateFlow<UiState<Pair<FlightInfo,List<FlightInfo>>>> = _flightState
+class FlightInfoViewModel(private val flightIata: String, private val date: LocalDate? = null) :
+    ViewModel() {
+    private val _flightState =
+        MutableStateFlow<UiState<Pair<FlightInfo, List<FlightInfo>>>>(UiState.Loading())
+    val flightState: StateFlow<UiState<Pair<FlightInfo, List<FlightInfo>>>> = _flightState
 
     val _isSaved = MutableStateFlow(false)
     val isSaved: StateFlow<Boolean> = _isSaved
@@ -26,7 +28,12 @@ class FlightInfoViewModel(private val flightIata: String, private val date: Loca
                 val flightInfo = ClientModel.getInstance().getFlight(flightIata, date)
 
                 _flightState.value = UiState.Loaded(flightInfo)
-                _isSaved.value = date != null && ClientModel.getInstance().savedFlightDao.getItem(SavedFlightKey(flightIata, date)) != null
+                _isSaved.value = date != null && ClientModel.getInstance().savedFlightDao.getItem(
+                    SavedFlightKey(
+                        flightIata,
+                        date
+                    )
+                ) != null
             } catch (ex: Exception) {
                 println(ex.toString())
                 println(ex.stackTraceToString())

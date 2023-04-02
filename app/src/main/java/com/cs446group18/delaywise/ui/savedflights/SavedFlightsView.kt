@@ -1,48 +1,33 @@
 package com.cs446group18.delaywise.ui.savedflights
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
-import com.cs446group18.delaywise.R
-import com.cs446group18.delaywise.ui.components.BottomBar
-import com.cs446group18.delaywise.ui.components.TopBar
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.*
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cs446group18.delaywise.R
 import com.cs446group18.delaywise.model.SavedAirportEntity
 import com.cs446group18.delaywise.model.SavedFlightEntity
 import com.cs446group18.delaywise.ui.components.*
-import com.cs446group18.delaywise.ui.flightinfo.FlightInfoViewModel
 import com.cs446group18.delaywise.ui.flightinfo.SavedFlightsViewModel
-import com.cs446group18.delaywise.ui.home.HomeViewModel
 import com.cs446group18.delaywise.ui.styles.bodyFont
 import com.cs446group18.delaywise.util.UiState
 import com.cs446group18.lib.models.Airport
 import com.cs446group18.lib.models.FlightInfo
-import com.patrykandpatrick.vico.core.component.dimension.Padding
-import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
@@ -61,7 +46,7 @@ private val appFontFamily = FontFamily(
 @Composable
 fun SavedFlightsView(
     navigator: DestinationsNavigator,
-    savedFlightsViewModel: SavedFlightsViewModel = viewModel { SavedFlightsViewModel()},
+    savedFlightsViewModel: SavedFlightsViewModel = viewModel { SavedFlightsViewModel() },
 ) {
     val state by savedFlightsViewModel.savedFlightAirportState.collectAsState()
     Scaffold(
@@ -72,56 +57,66 @@ fun SavedFlightsView(
             BottomBar(navigator)
         },
     ) { contentPadding ->
-            when (state) {
-                is UiState.Loading -> {
-                    LoadingCircle()
-                }
-                is UiState.Error -> {
-                    val message = (state as UiState.Error).message
-                    ErrorMessage(message)
-                }
-                is UiState.Loaded -> {
-                    val savedItems = (state as UiState.Loaded<Pair<List<SavedFlightEntity>,List<SavedAirportEntity>>>).data
-                    Column(modifier = Modifier.padding(contentPadding).verticalScroll(rememberScrollState())
-                    ) {
-                        Text(
-                            "Saved Flights/Airports",
-                            fontFamily = appFontFamily,
-                            fontSize = 40.sp,
-                            modifier = Modifier.absolutePadding(left = 20.dp)
-                        )
-                        if (savedItems.first.isEmpty() && savedItems.second.isEmpty()) {
-                            Column(
-                                modifier = Modifier.padding(vertical = 150.dp, horizontal = 50.dp).fillMaxSize(),
-                                verticalArrangement = Arrangement.spacedBy(60.dp, Alignment.CenterVertically),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                            ) {
-                                Image(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    painter = painterResource(R.drawable.no_flight),
-                                    contentDescription = null
-                                )
-                                Text("Nothing saved yet!",
-                                    fontFamily = bodyFont,
-                                    fontSize = 24.sp,
-                                    textAlign = TextAlign.Center)
-                            }
+        when (state) {
+            is UiState.Loading -> {
+                LoadingCircle()
+            }
+            is UiState.Error -> {
+                val message = (state as UiState.Error).message
+                ErrorMessage(message)
+            }
+            is UiState.Loaded -> {
+                val savedItems =
+                    (state as UiState.Loaded<Pair<List<SavedFlightEntity>, List<SavedAirportEntity>>>).data
+                Column(
+                    modifier = Modifier
+                        .padding(contentPadding)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Text(
+                        "Saved Flights/Airports",
+                        fontFamily = appFontFamily,
+                        fontSize = 40.sp,
+                        modifier = Modifier.absolutePadding(left = 20.dp)
+                    )
+                    if (savedItems.first.isEmpty() && savedItems.second.isEmpty()) {
+                        Column(
+                            modifier = Modifier
+                                .padding(vertical = 150.dp, horizontal = 50.dp)
+                                .fillMaxSize(),
+                            verticalArrangement = Arrangement.spacedBy(
+                                60.dp,
+                                Alignment.CenterVertically
+                            ),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            Image(
+                                modifier = Modifier.fillMaxWidth(),
+                                painter = painterResource(R.drawable.no_flight),
+                                contentDescription = null
+                            )
+                            Text(
+                                "Nothing saved yet!",
+                                fontFamily = bodyFont,
+                                fontSize = 24.sp,
+                                textAlign = TextAlign.Center
+                            )
                         }
-                        else{
-                            for (savedFlight in savedItems.first) {
-                                var flightInfo = Json.decodeFromString<FlightInfo>(savedFlight.json);
-                                SavedFlightCard(flightInfo, navigator)
-                            }
-                            for (savedAirport in savedItems.second) {
-                                var airportInfo = Json.decodeFromString<Airport>(savedAirport.json);
-                                SavedAirportCard(airportInfo, navigator)
-                            }
+                    } else {
+                        for (savedFlight in savedItems.first) {
+                            var flightInfo = Json.decodeFromString<FlightInfo>(savedFlight.json)
+                            SavedFlightCard(flightInfo, navigator)
+                        }
+                        for (savedAirport in savedItems.second) {
+                            var airportInfo = Json.decodeFromString<Airport>(savedAirport.json)
+                            SavedAirportCard(airportInfo, navigator)
                         }
                     }
                 }
             }
         }
     }
+}
 
 /* //todo: Delete Mocked SavedFlightCards
 SavedFlightCard(

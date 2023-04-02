@@ -13,14 +13,11 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.cs446group18.delaywise.model.ClientModel
 import com.cs446group18.delaywise.R
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
+import com.cs446group18.delaywise.model.ClientModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -68,15 +65,15 @@ fun LabeledCongestionGraph(keys: List<String>, values: List<Int>) {
                 .weight(1f),
             verticalAlignment = Alignment.Top
         ) {
-                Text(
-                    "Minutes Delayed",
-                    fontFamily = appFontFamily,
-                    fontSize = 15.sp,
-                    modifier = Modifier
-                        .rotate(-90f)
-                        .vertical()
-                        .padding(4.dp, 4.dp, 28.dp, 4.dp)
-                )
+            Text(
+                "Minutes Delayed",
+                fontFamily = appFontFamily,
+                fontSize = 15.sp,
+                modifier = Modifier
+                    .rotate(-90f)
+                    .vertical()
+                    .padding(4.dp, 4.dp, 28.dp, 4.dp)
+            )
             CongestionGraph(keys, values)
         }
     }
@@ -96,6 +93,6 @@ fun Modifier.vertical() =
 @Preview
 @Composable
 fun PreviewLabeledCongestionGraph() = LabeledCongestionGraph(
-    List<String>(1){"9am"},
-    List<Int>(1){15}
+    List<String>(1) { "9am" },
+    List<Int>(1) { 15 }
 )

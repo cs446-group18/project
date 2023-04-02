@@ -54,12 +54,17 @@ fun FlightInfoView(
             is UiState.Loaded -> {
                 val (flightInfo, flightList) = (state as UiState.Loaded).data
                 Column(
-                    modifier = Modifier.padding(contentPadding) ,
+                    modifier = Modifier.padding(contentPadding),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     var pastFlights = flightList.filterPastFlights()
 
-                    Row(horizontalArrangement = Arrangement.spacedBy(5.dp,Alignment.CenterHorizontally)) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(
+                            5.dp,
+                            Alignment.CenterHorizontally
+                        )
+                    ) {
                         Text(
                             "${flightInfo.getAirlineName() ?: flightInfo.operator_iata} ${flightInfo.flight_number}",
                             fontFamily = headingFont,
@@ -75,14 +80,16 @@ fun FlightInfoView(
                             flightInfoViewModel::removeActionTriggered
                         )
                     }
-                    Text("Choose a Departure Date: ",
+                    Text(
+                        "Choose a Departure Date: ",
                         fontFamily = bodyFont,
                         fontSize = 18.sp,
                         textAlign = TextAlign.Center
                     )
                     Row(modifier = Modifier.padding(10.dp)) {
                         DateDropdown(
-                            suggestions = flightList.filterPickableFlights().map{ it.getDepartureDate() },
+                            suggestions = flightList.filterPickableFlights()
+                                .map { it.getDepartureDate() },
                             defaultDate = flightInfo.scheduled_out,
                             changeDateFunc = flightInfoViewModel::dateChangeTriggered,
                             isReadOnly = true,
