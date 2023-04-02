@@ -43,7 +43,7 @@ val bodyStyle = TextStyle(
 )
 
 @Composable
-fun Heading(text: String, textAlign: TextAlign? = null,) {
+fun Heading(text: String, textAlign: TextAlign? = null) {
     Text(
         text = text,
         style = headingStyle,

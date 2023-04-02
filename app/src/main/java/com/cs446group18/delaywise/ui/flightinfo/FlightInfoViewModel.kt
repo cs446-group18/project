@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cs446group18.delaywise.model.ClientModel
-import com.cs446group18.delaywise.model.SavedFlightKey
 import com.cs446group18.delaywise.util.UiState
 import com.cs446group18.lib.models.FlightInfo
 import kotlinx.coroutines.Dispatchers
@@ -14,9 +13,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 
-class FlightInfoViewModel(private val flightIata: String, private val date: LocalDate? = null) : ViewModel() {
-    private val _flightState = MutableStateFlow<UiState<Pair<FlightInfo,List<FlightInfo>>>>(UiState.Loading())
-    val flightState: StateFlow<UiState<Pair<FlightInfo,List<FlightInfo>>>> = _flightState
+class FlightInfoViewModel(private val flightIata: String, private val date: LocalDate? = null) :
+    ViewModel() {
+    private val _flightState =
+        MutableStateFlow<UiState<Pair<FlightInfo, List<FlightInfo>>>>(UiState.Loading())
+    val flightState: StateFlow<UiState<Pair<FlightInfo, List<FlightInfo>>>> = _flightState
 
     val _isSaved = MutableStateFlow(false)
     val isSaved: StateFlow<Boolean> = _isSaved
@@ -28,7 +29,8 @@ class FlightInfoViewModel(private val flightIata: String, private val date: Loca
                 val flightInfo = ClientModel.getInstance().getFlight(flightIata, date)
 
                 _flightState.value = UiState.Loaded(flightInfo)
-                _isSaved.value = ClientModel.getInstance().savedFlightDao.getItem(flightInfo.first) != null
+                _isSaved.value =
+                    ClientModel.getInstance().savedFlightDao.getItem(flightInfo.first) != null
             } catch (ex: Exception) {
                 println(ex.toString())
                 println(ex.stackTraceToString())
@@ -79,10 +81,12 @@ class FlightInfoViewModel(private val flightIata: String, private val date: Loca
         val arrivalTerminal: String,
         val arrivalGate: String,
     )
+
     data class WeatherData(
         val date: String,
         val weather: String,
     )
+
     private val _text = MutableLiveData<String>().apply {
         value = "This is gallery Fragment"
     }

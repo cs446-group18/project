@@ -11,11 +11,13 @@ import kotlinx.coroutines.launch
 
 
 class HomeViewModel : ViewModel() {
-    private val _homeSavedState = MutableStateFlow<UiState<Pair<List<SavedFlightEntity>,List<SavedAirportEntity>>>>(UiState.Loading())
-    val homeSavedState: StateFlow<UiState<Pair<List<SavedFlightEntity>,List<SavedAirportEntity>>>> = _homeSavedState
+    private val _homeSavedState =
+        MutableStateFlow<UiState<Pair<List<SavedFlightEntity>, List<SavedAirportEntity>>>>(UiState.Loading())
+    val homeSavedState: StateFlow<UiState<Pair<List<SavedFlightEntity>, List<SavedAirportEntity>>>> =
+        _homeSavedState
 
     val _airportResults = MutableStateFlow<List<Airport>>(emptyList())
-    val airportResults:  StateFlow<List<Airport>> = _airportResults
+    val airportResults: StateFlow<List<Airport>> = _airportResults
 
     val _airlineResults = MutableStateFlow<List<Airline>>(emptyList())
     val airlineResults: StateFlow<List<Airline>> = _airlineResults

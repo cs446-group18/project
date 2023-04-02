@@ -9,14 +9,11 @@ import android.os.IBinder
 import android.os.Looper
 import androidx.core.app.NotificationCompat
 import com.cs446group18.delaywise.model.ClientModel
-import com.cs446group18.delaywise.model.SavedFlightEntity
 import com.cs446group18.delaywise.model.SavedFlightKey
 import com.cs446group18.lib.models.FlightInfo
-import io.ktor.util.Identity.decode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 class NotificationService : Service() {
@@ -32,14 +29,15 @@ class NotificationService : Service() {
                 flightEntities.forEach {
                     val key = Json.decodeFromString<SavedFlightKey>(it.id)
                     val oldFlight = Json.decodeFromString<FlightInfo>(it.json)
-                    val (newFlight, _) = ClientModel.getInstance().getFlight(key.flightIata, key.date)
-                    if(newFlight.getDepartureDelay() != oldFlight.getDepartureDelay()) {
+                    val (newFlight, _) = ClientModel.getInstance()
+                        .getFlight(key.flightIata, key.date)
+                    if (newFlight.getDepartureDelay() != oldFlight.getDepartureDelay()) {
                         createFlightNotification(context, newFlight)
                         ClientModel.getInstance().savedFlightDao.insert(newFlight)
                     }
                 }
             }
-            handler.postDelayed(this.runnable, 5*60*1000) // schedule again in 5 minutes
+            handler.postDelayed(this.runnable, 5 * 60 * 1000) // schedule again in 5 minutes
         }
         handler.post(runnable) // start the first execution
         return START_STICKY
@@ -68,7 +66,10 @@ fun createFlightNotification(context: Context, flightInfo: FlightInfo) {
     }
     val pendingIntent = TaskStackBuilder.create(context).run {
         addNextIntentWithParentStack(intent)
-        getPendingIntent(notificationId, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        getPendingIntent(
+            notificationId,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
     }
 
     val notification = NotificationCompat.Builder(context, channelId)
@@ -79,9 +80,14 @@ fun createFlightNotification(context: Context, flightInfo: FlightInfo) {
         .setPriority(NotificationCompat.PRIORITY_HIGH)
         .build()
 
-    val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    val notificationManager =
+        context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        val channel = NotificationChannel(channelId, "DelayWise Flight Notifications", NotificationManager.IMPORTANCE_HIGH)
+        val channel = NotificationChannel(
+            channelId,
+            "DelayWise Flight Notifications",
+            NotificationManager.IMPORTANCE_HIGH
+        )
         notificationManager.createNotificationChannel(channel)
     }
     notificationManager.notify(notificationId, notification)

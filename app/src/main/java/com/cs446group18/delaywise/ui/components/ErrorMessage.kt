@@ -1,6 +1,5 @@
 package com.cs446group18.delaywise.ui.components
 
-import android.view.Gravity.CENTER
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
@@ -39,9 +38,11 @@ private val bodyFontFamily = FontFamily(
 )
 
 @Composable
-fun ErrorMessage (errorMsg: String){
+fun ErrorMessage(errorMsg: String) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(50.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(50.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {

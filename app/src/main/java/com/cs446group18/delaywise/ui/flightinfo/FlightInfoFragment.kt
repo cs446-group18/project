@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.cs446group18.delaywise.databinding.FragmentFlightinfoBinding
@@ -18,12 +17,12 @@ class FlightInfoFragment : Fragment() {
     private val binding get() = _binding!!
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         val flightInfoViewModel =
-                ViewModelProvider(this).get(FlightInfoViewModel::class.java)
+            ViewModelProvider(this).get(FlightInfoViewModel::class.java)
 
         _binding = FragmentFlightinfoBinding.inflate(inflater, container, false)
         val root: View = binding.root

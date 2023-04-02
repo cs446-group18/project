@@ -10,16 +10,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.draw.paint
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.cs446group18.delaywise.model.getAirlineName
 import com.cs446group18.delaywise.ui.components.*
 import com.cs446group18.delaywise.ui.styles.BodyText
 import com.cs446group18.delaywise.ui.styles.headingFont
@@ -47,8 +42,7 @@ fun AirportInfoView(
     ) { contentPadding ->
         val airportState by airportInfoViewModel.airportState.collectAsState()
         val weatherState by airportInfoViewModel.weatherState.collectAsState()
-        when (airportState)
-        {
+        when (airportState) {
             is UiState.Loading -> {
                 LoadingCircle()
             }
@@ -60,36 +54,43 @@ fun AirportInfoView(
                 val airport = (airportState as UiState.Loaded).data.first
                 val airportDelay = (airportState as UiState.Loaded).data.second
                 val weather = (weatherState as UiState.Loaded).data
-                Row(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround
+                ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-                        if(weather.observations[0]!!.cloud_friendly.lowercase() == "heavy snow"){
+                        if (weather.observations[0].cloud_friendly.lowercase() == "heavy snow") {
                             BodyText("Extreme Weather: Heavy Snow", color = Color(0xffBF0000))
-                        } else if(weather.observations[0]!!.cloud_friendly.lowercase() == "freezing rain"){
+                        } else if (weather.observations[0].cloud_friendly.lowercase() == "freezing rain") {
                             BodyText("Extreme Weather: Freezing Rain", color = Color(0xffBF0000))
-                        }else if(weather.observations[0]!!.cloud_friendly.lowercase() == "thunderstorm"){
+                        } else if (weather.observations[0].cloud_friendly.lowercase() == "thunderstorm") {
                             BodyText("Extreme Weather:ThunderStorm", color = Color(0xffFF9900))
-                        }else{
+                        } else {
                             BodyText("No Extreme Weather")
                         }
                     }
                 }
                 Column(
-                    modifier = Modifier.padding(contentPadding) ,
+                    modifier = Modifier.padding(contentPadding),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(5.dp,Alignment.CenterHorizontally)) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(
+                            5.dp,
+                            Alignment.CenterHorizontally
+                        )
+                    ) {
                         Text(
-                            (airport.cleanName() + " (${airport.code_iata})") ?: "Unknown Airport",
+                            (airport.cleanName() + " (${airport.code_iata})"),
                             fontFamily = headingFont,
                             fontSize = 32.sp,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.absolutePadding(left = 10.dp)
                         )
                     }
-                    Row() {
+                    Row {
                         DisplaySaveToggleButton(
                             airport.code_iata,
                             passedModifier = Modifier
@@ -99,14 +100,19 @@ fun AirportInfoView(
                             airportInfoViewModel::removeActionTriggered
                         )
                     }
-                    AirportInfoUI(airportInfoData = airport ,timeLabels = timeLabelGenerator(airportDelay.size), airportDelay = airportDelay, weatherObservations = weather.observations)
+                    AirportInfoUI(
+                        airportInfoData = airport,
+                        timeLabels = timeLabelGenerator(airportDelay.size),
+                        airportDelay = airportDelay,
+                        weatherObservations = weather.observations
+                    )
                 }
             }
         }
     }
 }
 
-fun timeLabelGenerator(numPoints : Int): List<String> {
+fun timeLabelGenerator(numPoints: Int): List<String> {
     val rightNow = Calendar.getInstance()
     val currentHourIn24Format: Int = rightNow.get(Calendar.HOUR_OF_DAY)
     val times = mutableListOf<String>()
@@ -115,8 +121,10 @@ fun timeLabelGenerator(numPoints : Int): List<String> {
         if (curr < 0) { //to catch the formatting from AM to PM for points that cross over midnight
             curr += 24
         }
-        times.add((if (curr % 12 === 0) "12" else (curr % 12)).toString() +
-                if (curr >= 12) "PM" else "AM")
+        times.add(
+            (if (curr % 12 === 0) "12" else (curr % 12)).toString() +
+                    if (curr >= 12) "PM" else "AM"
+        )
     }
     return times
 }

@@ -51,26 +51,32 @@ fun FlightGateCard(flightGateInfoData: FlightInfoViewModel.FlightGateInfo) {
                     Column(
                         modifier = Modifier.padding(15.dp)
                     ) {}
-                    Text(fontSize = 15.sp, modifier = Modifier.padding(start = 25.dp), text = buildAnnotatedString {
-                        withStyle(
-                            style = SpanStyle(
-                                fontWeight = FontWeight.Medium,
-                                color = Color.DarkGray,
-                            )
-                        ) {
-                            append("Terminal:")
-                        }
-                    })
-                    Text(fontSize = 24.sp, modifier = Modifier.padding(start = 45.dp), text = buildAnnotatedString {
-                        withStyle(
-                            style = SpanStyle(
-                                fontWeight = FontWeight.W900,
-                                color = Color.Black,
-                            )
-                        ) {
-                            append(flightGateInfoData.departTerminal)
-                        }
-                    })
+                    Text(
+                        fontSize = 15.sp,
+                        modifier = Modifier.padding(start = 25.dp),
+                        text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color.DarkGray,
+                                )
+                            ) {
+                                append("Terminal:")
+                            }
+                        })
+                    Text(
+                        fontSize = 24.sp,
+                        modifier = Modifier.padding(start = 45.dp),
+                        text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    fontWeight = FontWeight.W900,
+                                    color = Color.Black,
+                                )
+                            ) {
+                                append(flightGateInfoData.departTerminal)
+                            }
+                        })
                     Column(
                         modifier = Modifier.padding(15.dp)
                     ) {}
@@ -96,26 +102,32 @@ fun FlightGateCard(flightGateInfoData: FlightInfoViewModel.FlightGateInfo) {
                     Column(
                         modifier = Modifier.padding(15.dp)
                     ) {}
-                    Text(fontSize = 15.sp, modifier = Modifier.padding(start = 45.dp), text = buildAnnotatedString {
-                        withStyle(
-                            style = SpanStyle(
-                                fontWeight = FontWeight.Medium,
-                                color = Color.DarkGray,
-                            )
-                        ) {
-                            append("Gate:")
-                        }
-                    })
-                    Text(fontSize = 24.sp, modifier = Modifier.padding(start = 45.dp), text = buildAnnotatedString {
-                        withStyle(
-                            style = SpanStyle(
-                                fontWeight = FontWeight.W900,
-                                color = Color.Black,
-                            )
-                        ) {
-                            append(flightGateInfoData.departGate)
-                        }
-                    })
+                    Text(
+                        fontSize = 15.sp,
+                        modifier = Modifier.padding(start = 45.dp),
+                        text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color.DarkGray,
+                                )
+                            ) {
+                                append("Gate:")
+                            }
+                        })
+                    Text(
+                        fontSize = 24.sp,
+                        modifier = Modifier.padding(start = 45.dp),
+                        text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    fontWeight = FontWeight.W900,
+                                    color = Color.Black,
+                                )
+                            ) {
+                                append(flightGateInfoData.departGate)
+                            }
+                        })
                     Column(
                         modifier = Modifier.padding(15.dp)
                     ) {}
@@ -125,6 +137,7 @@ fun FlightGateCard(flightGateInfoData: FlightInfoViewModel.FlightGateInfo) {
 
     }
 }
+
 @Preview
 @Composable
 fun PreviewFlightGateCard() = FlightGateCard(
