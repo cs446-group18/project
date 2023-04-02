@@ -26,6 +26,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cs446group18.delaywise.R
 import com.cs446group18.delaywise.model.Airline
+import com.cs446group18.delaywise.ui.styles.BodyText
+import com.cs446group18.delaywise.ui.styles.bodyFont
+import com.cs446group18.delaywise.ui.styles.bodyStyle
 import kotlinx.coroutines.launch
 
 data class AirlineSearchBoxItem(val airline: Airline, val displayText: String)
@@ -63,7 +66,7 @@ suspend fun filterResults(searchText: String, optionLists: List<AirlineSearchBox
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AirlineSearchBox(airlines: List<Airline>, mutableState: MutableState<Pair<Airline?, String>>) {
+fun RowScope.AirlineSearchBox(airlines: List<Airline>, mutableState: MutableState<Pair<Airline?, String>>) {
     var expanded by remember { mutableStateOf(false) }
     var dropDownWidth by remember { mutableStateOf(0) }
     val suggestions = mutableListOf<Pair<Airline, String>>()
@@ -84,10 +87,12 @@ fun AirlineSearchBox(airlines: List<Airline>, mutableState: MutableState<Pair<Ai
 
     val scope = rememberCoroutineScope()
 
-    Column(){
+    Column(modifier = Modifier.weight(0.65f, true)){
         TextField(
             value = mutableState.value.second,
             shape = RoundedCornerShape(8.dp),
+            singleLine = true,
+            textStyle = bodyStyle,
             colors = TextFieldDefaults.outlinedTextFieldColors(textColor = Color.Black, containerColor = Color.White,
                 focusedBorderColor = Color(
                 R.color.main_blue).copy(
@@ -98,9 +103,8 @@ fun AirlineSearchBox(airlines: List<Airline>, mutableState: MutableState<Pair<Ai
                 scope.launch {
                     searchResults = filterResults(mutableState.value.second, processedRawSearchResults)
                 }},
-            placeholder = { Text("Airline (ex. DAL, Delta)") },
+            placeholder = { BodyText("Airline (ex. DAL, Delta)") },
             modifier = Modifier
-                .width(220.dp)
                 .onFocusChanged {
                     showDropDown = it.isFocused
                 }

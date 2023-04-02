@@ -33,7 +33,9 @@ import com.cs446group18.delaywise.model.SavedFlightEntity
 import com.cs446group18.delaywise.ui.components.*
 import com.cs446group18.delaywise.ui.destinations.FlightInfoViewDestination
 import com.cs446group18.delaywise.ui.destinations.HomeViewDestination
+import com.cs446group18.delaywise.ui.styles.BodyText
 import com.cs446group18.delaywise.ui.styles.bodyFont
+import com.cs446group18.delaywise.ui.styles.bodyStyle
 import com.cs446group18.delaywise.ui.styles.headingFont
 import com.cs446group18.delaywise.util.UiState
 import com.cs446group18.lib.models.Airport
@@ -91,9 +93,8 @@ fun HomeView(
         ) {
             Text("Welcome to", fontFamily = headingFont, fontSize = 26.sp)
             Text("DelayWise!", fontFamily = headingFont, fontSize = 40.sp)
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Search by:", fontFamily = bodyFont, fontSize = 18.sp)
-                Spacer(modifier = Modifier.width(135.dp))
+            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                BodyText("Search by:", fontSize = 18.sp)
                 DropdownSmall(
                     suggestions = searchOptions,
                     mutableState = selectedText,
@@ -102,10 +103,15 @@ fun HomeView(
             }
             Spacer(modifier = Modifier.height(10.dp))
             if (selectedText.value == "Flights") { //User selected Search by Flight
-                Row(modifier = Modifier.align(Alignment.End)) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     AirlineSearchBox(homeViewModel.airlineResults.collectAsState().value, mutableState = airlinePair)
-                    Spacer(modifier = Modifier.width(9.dp))
-                    TextField(modifier = Modifier.height(55.dp), shape = RoundedCornerShape(8.dp), placeholder = { Text("Flight #") },
+                    Spacer(Modifier.width(8.dp))
+                    TextField(
+                        modifier = Modifier.weight(0.35f, true),
+                        singleLine = true,
+                        textStyle = bodyStyle,
+                        shape = RoundedCornerShape(8.dp),
+                        placeholder = { BodyText("Flight #") },
                         value = flightNumber,
                         onValueChange = {flightNumber = it},
                         colors = TextFieldDefaults.outlinedTextFieldColors(containerColor = Color.White,
