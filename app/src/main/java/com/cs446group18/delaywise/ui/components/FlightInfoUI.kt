@@ -27,7 +27,8 @@ import com.cs446group18.lib.models.HistoricalInfo
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.datetime.*
-import kotlin.time.Duration
+import com.cs446group18.delaywise.ui.styles.BodyText
+import com.cs446group18.delaywise.ui.styles.Heading
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
