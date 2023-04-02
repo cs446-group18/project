@@ -8,7 +8,16 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import androidx.core.app.NotificationCompat
+import com.cs446group18.delaywise.model.ClientModel
+import com.cs446group18.delaywise.model.SavedFlightEntity
+import com.cs446group18.delaywise.model.SavedFlightKey
 import com.cs446group18.lib.models.FlightInfo
+import io.ktor.util.Identity.decode
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 class NotificationService : Service() {
     private lateinit var handler: Handler
@@ -16,13 +25,21 @@ class NotificationService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         handler = Handler(Looper.getMainLooper())
-        println("STARTING NOTIFICATION SERVICE!!!")
+        val context = this
         runnable = Runnable {
-            println("RUNNING NOTIFICATION SERVICE!!!")
-            println("RUNNING NOTIFICATION SERVICE!!!")
-            println("RUNNING NOTIFICATION SERVICE!!!")
-            // query the API and compare to SQLite row
-            handler.postDelayed(this.runnable, 60000) // schedule again in 1 minute
+            runBlocking(Dispatchers.IO) {
+                val flightEntities = ClientModel.getInstance().savedFlightDao.listFlights()
+                flightEntities.forEach {
+                    val key = Json.decodeFromString<SavedFlightKey>(it.id)
+                    val oldFlight = Json.decodeFromString<FlightInfo>(it.json)
+                    val (newFlight, _) = ClientModel.getInstance().getFlight(key.flightIata, key.date)
+//                    if(newFlight.getDepartureDelay() != oldFlight.getDepartureDelay()) {
+                        createFlightNotification(context, newFlight)
+                        ClientModel.getInstance().savedFlightDao.insert(newFlight)
+//                    }
+                }
+            }
+            handler.postDelayed(this.runnable, 5*60*1000) // schedule again in 5 minutes
         }
         handler.post(runnable) // start the first execution
         return START_STICKY
@@ -47,6 +64,7 @@ fun createFlightNotification(context: Context, flightInfo: FlightInfo) {
         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         action = "FlightInfoView"
         putExtra("flightIata", flightInfo.ident_iata)
+        putExtra("date", flightInfo.getDepartureDate().toString())
     }
     val pendingIntent = TaskStackBuilder.create(context).run {
         addNextIntentWithParentStack(intent)

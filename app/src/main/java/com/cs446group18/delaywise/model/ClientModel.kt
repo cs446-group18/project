@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.cs446group18.lib.models.*
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -65,7 +66,7 @@ data class ClientFetcher(
         WeatherInfoEntity::class,
         AirportInfoEntity::class,
         SavedAirportEntity::class,
-    ], version = 6, exportSchema = false
+    ], version = 7, exportSchema = false
 )
 abstract class DelayWiseLocalDatabase : RoomDatabase() {
     abstract fun flightInfoDao(): FlightInfoDao
