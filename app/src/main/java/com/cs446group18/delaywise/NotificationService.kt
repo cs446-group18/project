@@ -33,10 +33,10 @@ class NotificationService : Service() {
                     val key = Json.decodeFromString<SavedFlightKey>(it.id)
                     val oldFlight = Json.decodeFromString<FlightInfo>(it.json)
                     val (newFlight, _) = ClientModel.getInstance().getFlight(key.flightIata, key.date)
-//                    if(newFlight.getDepartureDelay() != oldFlight.getDepartureDelay()) {
+                    if(newFlight.getDepartureDelay() != oldFlight.getDepartureDelay()) {
                         createFlightNotification(context, newFlight)
                         ClientModel.getInstance().savedFlightDao.insert(newFlight)
-//                    }
+                    }
                 }
             }
             handler.postDelayed(this.runnable, 5*60*1000) // schedule again in 5 minutes
