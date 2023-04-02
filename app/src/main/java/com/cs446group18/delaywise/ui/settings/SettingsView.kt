@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cs446group18.delaywise.R
+import com.cs446group18.delaywise.ui.components.BottomBar
 import com.cs446group18.delaywise.ui.styles.bodyFont
 import com.cs446group18.delaywise.ui.styles.headingFont
 import com.ramcosta.composedestinations.annotation.Destination
@@ -41,72 +42,76 @@ fun SettingsView(
         )
     }
     val context = LocalContext.current
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .paint(
-                painter = painterResource(id = R.drawable.homepage_bg),
-                contentScale = ContentScale.FillHeight,
-            )
-            .padding(top = 70.dp)
-            .padding(horizontal = 30.dp)
-
-    ) {
-        Text("Settings", fontSize = 40.sp, fontFamily = headingFont)
-        Spacer(modifier = Modifier.height(15.dp))
-        Row(
+    Scaffold(
+        bottomBar = { BottomBar(navigator) }
+    ) { contentPadding ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Enable Push Notifications", fontFamily = bodyFont, fontSize = 15.sp)
-                Switch(
-                    checked = checkedState.value,
-                    onCheckedChange = { checkedState.value = it }
+                .fillMaxSize()
+                .paint(
+                    painter = painterResource(id = R.drawable.homepage_bg),
+                    contentScale = ContentScale.FillHeight,
                 )
-            }
-        }
+                .padding(top = 70.dp)
+                .padding(horizontal = 30.dp)
 
-        Spacer(modifier = Modifier.height(15.dp))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround
         ) {
-            TextField(
-                value = textFieldValueState,
-                shape = RoundedCornerShape(8.dp),
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color.White,
-                    focusedIndicatorColor = Color(R.color.main_blue).copy(
-                        alpha = 1F
-                    )
-                ),
-                onValueChange = {
-                    textFieldValueState = it
-                },
-                placeholder = { Text("Optional: Add API Key") },
+            Text("Settings", fontSize = 40.sp, fontFamily = headingFont)
+            Spacer(modifier = Modifier.height(15.dp))
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-            )
-        }
-        Spacer(modifier = Modifier.height(15.dp))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround
-        ) {
-            PressIconButton(
-                onClick = { Toast.makeText(context, "Button Clicked!", Toast.LENGTH_SHORT).show() },
-                icon = { R.drawable.__plane_icon },
-                text = { Text("Add API Key", fontFamily = bodyFont, fontSize = 15.sp) }
-            )
+                    .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("Enable Push Notifications", fontFamily = bodyFont, fontSize = 15.sp)
+                    Switch(
+                        checked = checkedState.value,
+                        onCheckedChange = { checkedState.value = it }
+                    )
+                }
+            }
 
+            Spacer(modifier = Modifier.height(15.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                TextField(
+                    value = textFieldValueState,
+                    shape = RoundedCornerShape(8.dp),
+                    colors = TextFieldDefaults.textFieldColors(
+                        containerColor = Color.White,
+                        focusedIndicatorColor = Color(R.color.main_blue).copy(
+                            alpha = 1F
+                        )
+                    ),
+                    onValueChange = {
+                        textFieldValueState = it
+                    },
+                    placeholder = { Text("Optional: Add API Key") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+            }
+            Spacer(modifier = Modifier.height(15.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                PressIconButton(
+                    onClick = {
+                        Toast.makeText(context, "Button Clicked!", Toast.LENGTH_SHORT).show()
+                    },
+                    icon = { R.drawable.__plane_icon },
+                    text = { Text("Add API Key", fontFamily = bodyFont, fontSize = 15.sp) }
+                )
+
+            }
         }
     }
-
 }
 
 @Preview
