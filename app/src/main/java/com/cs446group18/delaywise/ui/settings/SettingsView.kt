@@ -100,21 +100,6 @@ fun SettingsView(
                         .fillMaxWidth()
                 )
             }
-            Spacer(modifier = Modifier.height(15.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround
-            ) {
-                PressIconButton(
-                    onClick = {
-                        Toast.makeText(context, "Button Clicked!", Toast.LENGTH_SHORT).show()
-                    },
-                    icon = { R.drawable.__plane_icon },
-                    text = { Text("Add API Key", fontFamily = bodyFont, fontSize = 15.sp) }
-                )
-
-            }
         }
     }
 }
