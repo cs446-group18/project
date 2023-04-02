@@ -9,6 +9,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -20,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cs446group18.delaywise.model.getAirlineName
 import com.cs446group18.delaywise.ui.components.*
+import com.cs446group18.delaywise.ui.styles.BodyText
 import com.cs446group18.delaywise.ui.styles.headingFont
 import com.cs446group18.delaywise.util.UiState
 import com.ramcosta.composedestinations.annotation.Destination
@@ -44,6 +46,7 @@ fun AirportInfoView(
         },
     ) { contentPadding ->
         val airportState by airportInfoViewModel.airportState.collectAsState()
+        val weatherState by airportInfoViewModel.weatherState.collectAsState()
         when (airportState)
         {
             is UiState.Loading -> {
@@ -56,6 +59,23 @@ fun AirportInfoView(
             is UiState.Loaded -> {
                 val airport = (airportState as UiState.Loaded).data.first
                 val airportDelay = (airportState as UiState.Loaded).data.second
+                val weather = (weatherState as UiState.Loaded).data
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+                        if(weather.observations[0]!!.cloud_friendly.lowercase() == "heavy snow"){
+                            BodyText("Extreme Weather: Heavy Snow", color = Color(0xffBF0000))
+                        } else if(weather.observations[0]!!.cloud_friendly.lowercase() == "freezing rain"){
+                            BodyText("Extreme Weather: Freezing Rain", color = Color(0xffBF0000))
+                        }else if(weather.observations[0]!!.cloud_friendly.lowercase() == "thunderstorm"){
+                            BodyText("Extreme Weather:ThunderStorm", color = Color(0xffFF9900))
+                        }else{
+                            BodyText("No Extreme Weather")
+                        }
+                    }
+                }
                 Column(
                     modifier = Modifier.padding(contentPadding) ,
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -79,7 +99,7 @@ fun AirportInfoView(
                             airportInfoViewModel::removeActionTriggered
                         )
                     }
-                    AirportInfoUI(airportInfoData = airport, timeLabels = timeLabelGenerator(airportDelay.size), airportDelay = airportDelay)
+                    AirportInfoUI(airportInfoData = airport ,timeLabels = timeLabelGenerator(airportDelay.size), airportDelay = airportDelay, weatherObservations = weather.observations)
                 }
             }
         }

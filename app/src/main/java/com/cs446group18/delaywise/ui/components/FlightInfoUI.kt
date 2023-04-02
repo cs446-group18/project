@@ -32,6 +32,7 @@ import com.cs446group18.delaywise.ui.styles.Heading
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
+
 @Composable
 fun FullRow(content: @Composable() () -> Unit) {
     Row(modifier = Modifier.fillMaxWidth(),
@@ -123,7 +124,17 @@ fun FlightInfoUI(flightInfoData: FlightInfo, navigator: DestinationsNavigator, h
         .padding(vertical = 10.dp)
         .fillMaxHeight()
         .verticalScroll(rememberScrollState())) {
-
+        FullCard {
+//            .Color(0xffBF0000)
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .padding(0.dp), horizontalArrangement = Arrangement.SpaceAround) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    BodyText("No Extreme Weather")
+                    /*TODO:Add Color Changes*/
+                }
+            }
+        }
         FullRow {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Heading(flightInfoData.getAirlineName() ?: "Unknown Airline")
@@ -240,6 +251,8 @@ fun FlightInfoUI(flightInfoData: FlightInfo, navigator: DestinationsNavigator, h
                 onClick = {navigator.navigate(AirportInfoViewDestination(flightInfoData.origin.code_iata))}
             )
         }
+
+
     }
 }
 

@@ -101,7 +101,7 @@ class ClientModel(
     }
     suspend fun getAirport(airportCode: String) = model.getAirport(airportCode)
 
-    suspend fun getWeather(airportCode: String) = model.getWeatherRaw(airportCode).observations.first()
+    suspend fun getWeather(airportCode: String) = model.getWeatherRaw(airportCode)
 
     suspend fun getFlight(flightIata: String, date: LocalDate? = null): Pair<FlightInfo, List<FlightInfo>> {
         val match = """^(.*?)(\d+)$""".toRegex().matchEntire(flightIata)
