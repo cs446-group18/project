@@ -65,7 +65,7 @@ data class ClientFetcher(
         WeatherInfoEntity::class,
         AirportInfoEntity::class,
         SavedAirportEntity::class,
-    ], version = 6, exportSchema = false
+    ], version = 7, exportSchema = false
 )
 abstract class DelayWiseLocalDatabase : RoomDatabase() {
     abstract fun flightInfoDao(): FlightInfoDao
