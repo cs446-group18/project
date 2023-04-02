@@ -17,11 +17,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.cs446group18.delaywise.ui.destinations.AirportInfoViewDestination
 import com.cs446group18.delaywise.ui.destinations.HomeViewDestination
 import com.cs446group18.delaywise.ui.destinations.SavedFlightsViewDestination
 import com.cs446group18.delaywise.ui.destinations.SettingsViewDestination
-import com.cs446group18.delaywise.ui.navArgs
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import kotlinx.coroutines.launch

@@ -7,19 +7,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.cs446group18.delaywise.ui.flightinfo.FlightInfoViewModel
-import com.cs446group18.delaywise.util.UiState
-import com.cs446group18.lib.models.FlightInfo
-import com.patrykandpatrick.vico.core.extension.getFieldValue
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 

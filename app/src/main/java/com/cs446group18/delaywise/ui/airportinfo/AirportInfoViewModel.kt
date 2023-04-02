@@ -1,17 +1,14 @@
 package com.cs446group18.delaywise.ui.airportinfo
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cs446group18.lib.models.Airport
 import com.cs446group18.delaywise.model.ClientModel
 import com.cs446group18.delaywise.model.SavedAirportEntity
 import com.cs446group18.delaywise.util.UiState
+import com.cs446group18.lib.models.Airport
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json

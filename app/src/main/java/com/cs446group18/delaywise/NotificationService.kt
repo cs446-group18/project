@@ -9,14 +9,11 @@ import android.os.IBinder
 import android.os.Looper
 import androidx.core.app.NotificationCompat
 import com.cs446group18.delaywise.model.ClientModel
-import com.cs446group18.delaywise.model.SavedFlightEntity
 import com.cs446group18.delaywise.model.SavedFlightKey
 import com.cs446group18.lib.models.FlightInfo
-import io.ktor.util.Identity.decode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 class NotificationService : Service() {

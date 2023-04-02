@@ -1,6 +1,5 @@
 package com.cs446group18.delaywise.ui.components
 
-import android.view.Gravity.CENTER
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
