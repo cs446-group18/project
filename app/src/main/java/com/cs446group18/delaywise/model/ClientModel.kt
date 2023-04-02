@@ -207,8 +207,8 @@ fun List<FlightInfo>.calcHistorical(): HistoricalInfo {
 
     for (flightInfo in this.sortedBy { it.scheduled_out }) {
         if (flightInfo.scheduled_in <= Clock.System.now() && flightInfo.scheduled_out >= Clock.System.now() - 10.toDuration(DurationUnit.DAYS)) {
-            var delay = flightInfo.departure_delay_raw / 60
-            if (flightInfo.status == "Cancelled") {
+            var delay: Int = flightInfo.departure_delay_raw / 60
+            if (flightInfo.cancelled) {
                 cancelledFlights++
                 numFlights++
             }
@@ -216,7 +216,7 @@ fun List<FlightInfo>.calcHistorical(): HistoricalInfo {
                 // calculate
                 if (delay > 0) {
                     totalDelay += delay
-                    delayedFlights++
+                    if (delay > 10) delayedFlights++
                 }
                 numFlights++
 

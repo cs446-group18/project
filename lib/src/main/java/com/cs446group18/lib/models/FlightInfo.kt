@@ -112,8 +112,8 @@ data class AirportDelayResponse(
 data class HistoricalInfo(
     var numDays: Int = 10,
     var delayRate: Int = 0,                                      // percentage of flights delayed in past 10 days
-    var cancellationRate: Int? = 0,                              // percentage of flights cancelled in past 10 days
-    var averageDelay: Int? = 0,                                  // average delay of flights in past 10 days
+    var cancellationRate: Int = 0,                              // percentage of flights cancelled in past 10 days
+    var averageDelay: Int = 0,                                  // average delay of flights in past 10 days
     var delayDates: MutableList<String> = mutableListOf(),       // list of dates for flights in past 10 days
     var delayLengths: MutableList<Int> = mutableListOf()      // list of delay lengths for flights in past 10 days
 )

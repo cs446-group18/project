@@ -195,28 +195,32 @@ fun FlightInfoUI(flightInfoData: FlightInfo, navigator: DestinationsNavigator, h
             }
         }
         else {
+            val avgDelayString = if (historical.averageDelay < 59) "${historical.averageDelay}min"
+            else {
+                val hours = historical.averageDelay / 60
+                val minutes = historical.averageDelay % 60
+
+                "${hours}h" + {if (minutes != 0) "${minutes}min"}
+            }
             Spacer(modifier = Modifier.padding(10.dp))
             FullCard {
                 Row {
                     Heading("In the last ${historical.numDays} days, " + flightInfoData.ident_iata + " saw a:")
-//                DropdownMenu(expanded = false, onDismissRequest = { /*TODO*/ }) {
-////                    DropdownMenuItem(text = { Text("7 days") }, onClick = { /*TODO*/ })
-////                }
                 }
                 Row(modifier = Modifier
                     .fillMaxWidth()
                     .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         BodyText(historical.delayRate.toString() + "%")
-                        BodyText("Delayed")
+                        BodyText("Delay Rate")
                     }
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        BodyText(historical.averageDelay.toString() + "min")
+                        BodyText(avgDelayString)
                         BodyText("Avg. Delay")
                     }
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         BodyText(historical.cancellationRate.toString() + "%")
-                        BodyText("Cancelled")
+                        BodyText("Cancel Rate")
                     }
                 }
             }
