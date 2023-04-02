@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.cs446group18.delaywise.util.formatAsShortDate
 import com.cs446group18.lib.models.*
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -13,12 +14,17 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.lang.Integer.max
 import kotlin.time.DurationUnit
+import kotlin.time.Duration
 import kotlin.time.toDuration
+import kotlin.time.ExperimentalTime
+import kotlin.time.days
 
 
 val client = HttpClient(CIO) {
@@ -191,3 +197,38 @@ fun pickFlight(date: LocalDate?, flightArray: List<FlightInfo>): FlightInfo? {
         else -> flightArray.find { it.getDepartureDate() == date }
     }
 }
+
+fun List<FlightInfo>.calcHistorical(): HistoricalInfo {
+    var totalDelay = 0
+    var delayedFlights = 0      // 15 minutes and up
+    var cancelledFlights = 0
+    var numFlights = 0
+    var historical: HistoricalInfo = HistoricalInfo()
+
+    for (flightInfo in this.sortedBy { it.scheduled_out }) {
+        if (flightInfo.scheduled_in <= Clock.System.now() && flightInfo.scheduled_out >= Clock.System.now() - 10.toDuration(DurationUnit.DAYS)) {
+            var delay = flightInfo.departure_delay_raw / 60
+            if (flightInfo.status == "Cancelled") {
+                cancelledFlights++
+                numFlights++
+            }
+            else if (delay != null) {
+                // calculate
+                if (delay > 0) {
+                    totalDelay += delay
+                    delayedFlights++
+                }
+                numFlights++
+
+                // add to list
+                historical.delayDates.add(flightInfo.scheduled_out.formatAsShortDate())
+                historical.delayLengths.add(max(delay, 0))
+            }
+        }
+    }
+    historical.delayRate = delayedFlights * 100 / numFlights
+    historical.cancellationRate = cancelledFlights * 100 / numFlights
+    historical.averageDelay = totalDelay / numFlights
+    return historical
+}
+

@@ -47,6 +47,7 @@ open class Model(
         if(decoded.flights.isEmpty()) {
             throw NoFlightsFoundException("No flights found with code $flightCode")
         }
+
         return decoded
     }
     suspend fun getScheduledFlights(flightCode: String) : ScheduledFlightsResponse {

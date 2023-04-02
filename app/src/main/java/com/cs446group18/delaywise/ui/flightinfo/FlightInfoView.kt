@@ -1,29 +1,17 @@
 package com.cs446group18.delaywise.ui.flightinfo
 
-import android.annotation.SuppressLint
-import android.widget.Toast
-import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.*
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cs446group18.delaywise.model.calcHistorical
 import com.cs446group18.delaywise.model.filterPickableFlights
 import com.cs446group18.delaywise.model.getAirlineName
 import com.cs446group18.delaywise.ui.components.*
@@ -33,12 +21,10 @@ import com.cs446group18.delaywise.ui.components.TopBar
 import com.cs446group18.delaywise.ui.styles.bodyFont
 import com.cs446group18.delaywise.ui.styles.headingFont
 import com.cs446group18.delaywise.util.UiState
+import com.cs446group18.lib.models.HistoricalInfo
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
-import com.cs446group18.delaywise.ui.destinations.AirportInfoViewDestination
-import com.cs446group18.delaywise.util.formatAsDate
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 
 
@@ -97,9 +83,11 @@ fun FlightInfoView(
                             fontSize = 18.sp)
                         DateDropdown(suggestions = dates, defaultDate = flightInfo.first.scheduled_out, flightInfoViewModel::dateChangeTriggered, isReadOnly = true, timeZone = TimeZone.of(flightInfo.first.origin.timezone))
                     }
+                    var historical = flightInfo.second.calcHistorical()
                     FlightInfoUI(
                         flightInfoData = flightInfo.first,
-                        navigator = navigator
+                        navigator = navigator,
+                        historical = historical
                     )
                 }
             }
