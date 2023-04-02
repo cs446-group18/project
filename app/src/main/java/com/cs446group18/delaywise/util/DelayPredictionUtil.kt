@@ -1,6 +1,9 @@
 package com.cs446group18.delaywise.util
 
 import com.cs446group18.lib.models.FlightInfo
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toJavaLocalDate
+import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
 import kotlin.time.Duration
 
@@ -8,6 +11,24 @@ fun Double.formatAsPercentString() : String {
     val ansInt = (this * 100).roundToInt()
 
     return "${ansInt}%"
+}
+
+val graphDateFormatter = DateTimeFormatter.ofPattern("MM-dd")
+
+fun List<FlightInfo>.getGraphInputs() : Pair<List<String>,List<Int>> {
+    val datesXAxis = this.filter{
+        !it.cancelled && (it.getDepartureDelay() != Duration.ZERO) && it.getDepartureDate() != null
+    }.map{
+        it.getDepartureDate().toJavaLocalDate().format(graphDateFormatter)
+    }
+
+    val minDelayYAxis = this.filter{
+        !it.cancelled && (it.getDepartureDelay() != Duration.ZERO)
+    }.map{
+        it.getDepartureDelay().inWholeMinutes.toInt()
+    }
+
+    return Pair(datesXAxis,minDelayYAxis)
 }
 
 fun List<FlightInfo>.getDelayPrediction() : List<String> {

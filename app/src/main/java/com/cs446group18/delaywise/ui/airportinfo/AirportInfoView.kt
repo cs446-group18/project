@@ -91,8 +91,12 @@ fun timeLabelGenerator(numPoints : Int): List<String> {
     val currentHourIn24Format: Int = rightNow.get(Calendar.HOUR_OF_DAY)
     val times = mutableListOf<String>()
     for (i in numPoints - 1 downTo 0 step 1) {
-        val curr = currentHourIn24Format - i
-        times.add((if (curr % 12 === 0) "12" else (curr % 12)).toString() + if (curr >= 12) "PM" else "AM")
+        var curr = currentHourIn24Format - i
+        if (curr < 0) { //to catch the formatting from AM to PM for points that cross over midnight
+            curr += 24
+        }
+        times.add((if (curr % 12 === 0) "12" else (curr % 12)).toString() +
+                if (curr >= 12) "PM" else "AM")
     }
     return times
 }

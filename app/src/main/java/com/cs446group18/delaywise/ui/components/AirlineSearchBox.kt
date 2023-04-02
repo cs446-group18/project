@@ -124,7 +124,7 @@ fun RowScope.AirlineSearchBox(airlines: List<Airline>, mutableState: MutableStat
                         mutableState.value = Pair(item.airline, item.displayText)
                         TextFieldValue(
                             text = item.displayText,
-                            selection = TextRange(item.displayText.length)
+                            selection = TextRange(index = item.displayText.length)
                         )
                     })
                 }
