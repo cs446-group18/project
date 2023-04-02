@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: caching-server
+spec:
+  selector:
+    matchLabels:
+      app: caching-server
+  template:
+    metadata:
+      labels:
+        app: caching-server
+    spec:
+      containers:
+        - image: ghcr.io/cs446-group18/delaywise-server:latest
+          name: caching-server
+          ports:
+            - containerPort: 8082
+      imagePullSecrets:
+        - name: dockerpullsecret

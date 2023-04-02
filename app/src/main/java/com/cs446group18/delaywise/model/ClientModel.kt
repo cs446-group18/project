@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.cs446group18.delaywise.BuildConfig
 import com.cs446group18.lib.models.*
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -38,7 +39,7 @@ data class ClientFetcher(
         block: HttpRequestBuilder.() -> Unit
     ): HttpResponse {
         val baseUrl = when (apiKey) {
-            null -> "http://10.0.2.2:8082"
+            null -> BuildConfig.API_SERVER_URL
             else -> "https://aeroapi.flightaware.com/aeroapi"
         }
         val response = client.get(baseUrl + url) {
