@@ -31,12 +31,13 @@ val client = HttpClient(CIO) {
 }
 
 data class ClientFetcher(
-    val apiKey: String? = null,
+    var apiKey: String? = null,
 ) : Fetcher {
     override suspend fun makeAeroApiCall(
         url: String,
         block: HttpRequestBuilder.() -> Unit
     ): HttpResponse {
+        val apiKey = apiKey
         val baseUrl = when (apiKey) {
             null -> "http://10.0.2.2:8082"
             else -> "https://aeroapi.flightaware.com/aeroapi"
