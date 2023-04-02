@@ -1,11 +1,13 @@
 package com.cs446group18.lib.models
 
+import com.google.common.util.concurrent.RateLimiter
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlinx.datetime.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
+import java.time.Duration
 import kotlin.collections.set
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -38,9 +40,12 @@ open class Model(
     private val airportCache: Cache<Airport>,
     private val weatherCache: Cache<WeatherResponse>,
 ) {
+    val rateLimiter = RateLimiter.create(10.0/60.0)
+
     suspend fun getFlightRaw(flightCode: String) : FlightInfoResponse {
         val cached = flightInfoCache.lookup(flightCode)
         if(cached != null) return cached
+        rateLimiter.acquire(1)
         val response = fetcher.makeAeroApiCall("/flights/${flightCode}")
         println(response.bodyAsText())
         val decoded = json.decodeFromString<FlightInfoResponse>(response.bodyAsText())
@@ -57,10 +62,11 @@ open class Model(
 
         val startInterval = Clock.System.todayIn(TimeZone.currentSystemDefault())
         val endInterval = startInterval + DatePeriod(days=15)
+        rateLimiter.acquire(3)
         val response = fetcher.makeAeroApiCall("/schedules/$startInterval/$endInterval") {
             parameter("airline", airlineIata)
             parameter("flight_number", flightNumber)
-            parameter("max_pages", 5)
+            parameter("max_pages", 3)
         }
         val decoded = json.decodeFromString<ScheduledFlightsResponse>(response.bodyAsText())
         scheduledFlightCache.insert(flightCode, decoded)
@@ -74,6 +80,7 @@ open class Model(
         val cached = weatherCache.lookup(airportCode)
         if(cached != null) return cached
         val currentDateTime = truncateToHours(Clock.System.now())
+        rateLimiter.acquire(1)
         val response = fetcher.makeAeroApiCall("/airports/$airportCode/weather/observations") {
             parameter("timestamp", currentDateTime)
         }
@@ -85,6 +92,7 @@ open class Model(
         val cached = airportCache.lookup(airportCode)
         if(cached != null) return cached
 
+        rateLimiter.acquire(1)
         val response = fetcher.makeAeroApiCall("/airports/$airportCode")
         val decoded = json.decodeFromString<Airport>(response.bodyAsText())
         airportCache.insert(airportCode, decoded)
@@ -95,10 +103,11 @@ open class Model(
                                    intervalStart: Instant = intervalEnd - HOURS_IN_AIRPORT_DELAY_GRAPH.toDuration(DurationUnit.HOURS)) : AirportDelayResponse {
         val cached = airportDelayCache.lookup(airportCode)
         if(cached != null) return cached
+        rateLimiter.acquire(3)
         val response = fetcher.makeAeroApiCall("/airports/$airportCode/flights/departures") {
             parameter("start", intervalStart.toLocalDateTime(TimeZone.UTC))
             parameter("end", intervalEnd.toLocalDateTime(TimeZone.UTC))
-            parameter("max_pages", 5)
+            parameter("max_pages", 3)
         }
         val filteredBody = filterBadFlights(response.bodyAsText())
         val decoded = json.decodeFromString<AirportDelayResponse>(filteredBody)
