@@ -54,17 +54,7 @@ fun HomeView(
     navigator: DestinationsNavigator,
     homeViewModel: HomeViewModel = viewModel { HomeViewModel()}
 ) {
-    val intent = (LocalContext.current as Activity).intent
-    val destination = when(intent?.action) {
-        "FlightInfoView" -> FlightInfoViewDestination(
-            flightIata = intent.getStringExtra("flightIata")!!,
-            date = LocalDate.parse(intent.getStringExtra("date")!!),
-        )
-        else -> null
-    }
-    if (destination != null) {
-        navigator.navigate(destination)
-    }
+    handleIntents(LocalContext.current as Activity, navigator)
 
     val focusManager = LocalFocusManager.current
     val state by homeViewModel.homeSavedState.collectAsState()
@@ -179,6 +169,21 @@ fun HomeView(
                 }
             }
         }
+    }
+}
+
+// Navigates to correct destination if specified in activity intent
+fun handleIntents(activity: Activity, navigator: DestinationsNavigator) {
+    val intent = activity.intent
+    val destination = when(intent?.action) {
+        "FlightInfoView" -> FlightInfoViewDestination(
+            flightIata = intent.getStringExtra("flightIata")!!,
+            date = LocalDate.parse(intent.getStringExtra("date")!!),
+        )
+        else -> null
+    }
+    if (destination != null) {
+        navigator.navigate(destination)
     }
 }
 
