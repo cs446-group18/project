@@ -61,7 +61,7 @@ fun HomeView(
 
     val focusManager = LocalFocusManager.current
     val state by homeViewModel.homeSavedState.collectAsState()
-    val searchOptions = listOf("Flights", "Airports")
+    val searchOptions = listOf("Flight", "Airport")
     val selectedText = remember { mutableStateOf(searchOptions[0]) }
     val airlinePair: MutableState<Pair<Airline?, TextFieldValue>> = remember { mutableStateOf(Pair(null, TextFieldValue("")))}
     var flightNumber by remember { mutableStateOf("")}
@@ -95,7 +95,7 @@ fun HomeView(
             Text("Welcome to", fontFamily = headingFont, fontSize = 26.sp)
             Text("DelayWise!", fontFamily = headingFont, fontSize = 40.sp)
             Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                BodyText("Search by:", fontSize = 18.sp)
+                BodyText("Search for:", fontSize = 18.sp)
                 DropdownSmall(
                     suggestions = searchOptions,
                     mutableState = selectedText,
@@ -103,7 +103,7 @@ fun HomeView(
                 )
             }
             Spacer(modifier = Modifier.height(10.dp))
-            if (selectedText.value == "Flights") { //User selected Search by Flight
+            if (selectedText.value == "Flight") { //User selected Search by Flight
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     AirlineSearchBox(homeViewModel.airlineResults.collectAsState().value, mutableState = airlinePair)
                     Spacer(Modifier.width(8.dp))
