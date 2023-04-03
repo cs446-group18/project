@@ -1,9 +1,9 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.google.devtools.ksp") version "1.8.10-1.0.9"
+    id("com.google.devtools.ksp")
     id("kotlinx-serialization")
-    kotlin("kapt")
+    id("org.jetbrains.kotlin.kapt")
     id("com.google.dagger.hilt.android")
 }
 
@@ -25,6 +25,17 @@ android {
         named("release") {
             isMinifyEnabled = false
             setProguardFiles(listOf(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"))
+        }
+    }
+    flavorDimensions += "environment"
+    productFlavors {
+        create("local") {
+            dimension = "environment"
+            buildConfigField("String", "API_SERVER_URL", "\"http://10.0.2.2:8082\"")
+        }
+        create("production") {
+            dimension = "environment"
+            buildConfigField("String", "API_SERVER_URL", "\"https://delaywise.mcnamee.io\"")
         }
     }
     compileOptions {
