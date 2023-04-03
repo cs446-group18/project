@@ -16,4 +16,5 @@ build
 .cxx
 local.properties
 bin
+app/production
 

@@ -36,7 +36,7 @@ fun RowScope.DropdownSmall(
             shape = RoundedCornerShape(8.dp),
             readOnly = isReadOnly,
             modifier = Modifier
-                .fillMaxWidth(0.48f)
+                .fillMaxWidth(0.53f)
                 .onSizeChanged {
                     dropDownWidth = it.width
                 },

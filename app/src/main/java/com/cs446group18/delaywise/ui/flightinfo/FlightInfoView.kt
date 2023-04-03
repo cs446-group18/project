@@ -7,8 +7,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -54,7 +56,12 @@ fun FlightInfoView(
             is UiState.Loaded -> {
                 val (flightInfo, flightList) = (state as UiState.Loaded).data
                 Column(
-                    modifier = Modifier.padding(contentPadding),
+                    modifier = Modifier.padding(
+                        top = 10.dp,
+                        bottom = contentPadding.calculateBottomPadding(),
+                        start = contentPadding.calculateStartPadding(LayoutDirection.Ltr),
+                        end = contentPadding.calculateEndPadding(LayoutDirection.Ltr),
+                    ),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     var pastFlights = flightList.filterPastFlights()
@@ -86,7 +93,7 @@ fun FlightInfoView(
                         fontSize = 18.sp,
                         textAlign = TextAlign.Center
                     )
-                    Row(modifier = Modifier.padding(10.dp)) {
+                    Row(modifier = Modifier.scale(0.75f)) {
                         DateDropdown(
                             suggestions = flightList.filterPickableFlights()
                                 .map { it.getDepartureDate() },
