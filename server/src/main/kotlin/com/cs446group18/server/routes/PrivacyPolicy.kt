@@ -5,6 +5,7 @@ import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
+// Created from template: https://gist.github.com/alphamu/c42f6c3fce530ca5e804e672fed70d78
 fun Route.privacyPolicy() {
     get("/privacy") {
         call.respondText("""
