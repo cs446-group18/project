@@ -19,6 +19,7 @@ push: load
 .PHONY: k8s_apply
 k8s_apply: push
 	kubectl apply -f k8s -n delaywise
+	kubectl delete pod --all -n delaywise
 
 .PHONY: clean
 clean:
