@@ -46,7 +46,7 @@ fun SettingsView(
                     .fillMaxSize()
                     .paint(
                         painter = painterResource(id = R.drawable.homepage_bg),
-                        contentScale = ContentScale.FillHeight,
+                        contentScale = ContentScale.Crop,
                     )
                     .padding(top = 70.dp)
                     .padding(horizontal = 30.dp)
