@@ -57,22 +57,23 @@ fun SettingsView(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround
+                        .padding(5.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Enable Push Notifications", fontFamily = bodyFont, fontSize = 15.sp)
-                        Switch(
-                            checked = checkedState.value,
-                            onCheckedChange = { checkedState.value = it }
-                        )
-                    }
+                    Text("Enable Push Notifications", fontFamily = bodyFont, fontSize = 15.sp)
+                    Switch(
+                        checked = checkedState.value,
+                        onCheckedChange = { checkedState.value = it }
+                    )
                 }
 
-                Spacer(modifier = Modifier.height(15.dp))
+                Spacer(modifier = Modifier.height(5.dp))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround
+                        .padding(5.dp),
+                    horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     TextField(
                         value = parentApiKey.data,
@@ -87,15 +88,14 @@ fun SettingsView(
                             settingsViewModel.onApiKeyChange(it)
                         },
                         placeholder = { Text("Optional: Add API Key") },
-                        modifier = Modifier
-                            .fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     )
                 }
-                Spacer(modifier = Modifier.height(15.dp))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(5.dp), horizontalArrangement = Arrangement.SpaceAround
+                        .padding(5.dp),
+                    horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     PressIconButton(
                         onClick = {
@@ -103,9 +103,8 @@ fun SettingsView(
                             settingsViewModel.setApiKey()
                         },
                         icon = { R.drawable.__plane_icon },
-                        text = { Text("Add API Key", fontFamily = bodyFont, fontSize = 15.sp) }
+                        text = { Text("Save API Key", fontFamily = bodyFont, fontSize = 15.sp) }
                     )
-
                 }
             }
         }
